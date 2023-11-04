@@ -16,7 +16,8 @@
               "application/json": {
                 "examples": [
                   {
-                    "id": "ee6f6eff-2827-43a2-b196-1179aa1d117d"
+                    "binId": "ee6f6eff-2827-43a2-b196-1179aa1d117d",
+                    "url": "https://api.mockbin.io/ee6f6eff-2827-43a2-b196-1179aa1d117d"
                   }
                 ]
               }
@@ -63,7 +64,7 @@
           "corsPolicy": "anything-goes",
           "handler": {
             "export": "default",
-            "module": "$import(./modules/hello-world)",
+            "module": "$import(./modules/create-bin)",
             "options": {}
           },
           "policies": {
@@ -107,13 +108,10 @@
                   {
                     "data": [
                       {
-                        "timestamp": "2023-11-04T18:02:19.446Z",
-                        "method": "POST",
-                        "headers": {
-                          "content-type": "text/plain",
-                          "foo-bar": "wibble-bobble"
-                        },
-                        "body": "Hello World!"
+                        "requestId": "req-2023-11-01-24-00-nxyz"
+                      },
+                      {
+                        "requestId": "req-2023-11-01-22-00-nxdfz"
                       }
                     ]
                   }
@@ -124,7 +122,50 @@
         }
       }
     },
-    "/{binId}": {
+    "/v1/bins/{binId}/requests/{requestId}": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get details of a request",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/get-request)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "sleep-inbound-2",
+              "mock-api-inbound"
+            ]
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": [
+                  {
+                    "timestamp": "2023-11-04T18:02:19.446Z",
+                    "method": "POST",
+                    "headers": {
+                      "content-type": "text/plain",
+                      "foo-bar": "wibble-bobble"
+                    },
+                    "body": "Hello World!"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "460b0c3d-6267-4913-9e42-46f6882e2a42"
+      }
+    },
+    "/{binId}/(.*)": {
       "x-zuplo-path": {
         "pathMode": "open-api"
       },
@@ -132,13 +173,11 @@
         "summary": "Invoke Bin",
         "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
           "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://echo.zuplo.io"
-            }
+            "export": "default",
+            "module": "$import(./modules/invoke-bin)",
+            "options": {}
           },
           "policies": {
             "inbound": []

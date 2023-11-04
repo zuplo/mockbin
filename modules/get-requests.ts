@@ -1,14 +1,15 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
 
 
-interface RequestFile {
-  timestamp: string,
-  name: string
+interface GetRequestsResponse {
+  data: {
+    "requestId": string
+  }[]
 }
 
-async function listFiles(binId: string): Promise<RequestFile[]> {
+async function listFiles(binId: string): Promise<GetRequestsResponse> {
   // todo implement this
-  return [];
+  return { data: [] };
 }
 
 /**

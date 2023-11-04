@@ -1,14 +1,5 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
 
-interface PostBody {
-  response: {
-    status: number,
-    statusText?: string,
-    headers?: Record<string, string>,
-    body?: string
-  }
-}
-
 async function uploadFile(name: string, content: string) {
   // todo implement this thing
   return;

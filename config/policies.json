@@ -43,6 +43,26 @@
       },
       "name": "sleep-inbound-1",
       "policyType": "sleep-inbound"
+    },
+    {
+      "handler": {
+        "export": "MockApiInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {}
+      },
+      "name": "mock-api-inbound-1",
+      "policyType": "mock-api-inbound"
+    },
+    {
+      "handler": {
+        "export": "SleepInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "sleepInMs": 1000
+        }
+      },
+      "name": "sleep-inbound-2",
+      "policyType": "sleep-inbound"
     }
   ]
 }
