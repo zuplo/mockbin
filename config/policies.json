@@ -1,3 +1,48 @@
 {
-  "policies": []
+  "policies": [
+    {
+      "handler": {
+        "export": "RequestValidationInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "logLevel": "info",
+          "validateBody": "validateBody",
+          "includeRequestInLogs": false
+        }
+      },
+      "name": "request-validation-inbound",
+      "policyType": "request-validation-inbound"
+    },
+    {
+      "handler": {
+        "export": "MockApiInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {}
+      },
+      "name": "mock-api-inbound",
+      "policyType": "mock-api-inbound"
+    },
+    {
+      "handler": {
+        "export": "SleepInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "sleepInMs": 1000
+        }
+      },
+      "name": "sleep-inbound",
+      "policyType": "sleep-inbound"
+    },
+    {
+      "handler": {
+        "export": "SleepInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "sleepInMs": 1000
+        }
+      },
+      "name": "sleep-inbound-1",
+      "policyType": "sleep-inbound"
+    }
+  ]
 }

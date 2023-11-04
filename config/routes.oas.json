@@ -4,5 +4,150 @@
     "version": "1.0.0",
     "title": "My Zuplo API"
   },
-  "paths": {}
+  "paths": {
+    "/v1/bins": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "post": {
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "examples": [
+                  {
+                    "id": "ee6f6eff-2827-43a2-b196-1179aa1d117d"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "response"
+                ],
+                "properties": {
+                  "response": {
+                    "type": "object",
+                    "required": [
+                      "status"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "number"
+                      },
+                      "statusText": {
+                        "type": "string"
+                      },
+                      "headers": {
+                        "type": "object"
+                      },
+                      "body": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/hello-world)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "request-validation-inbound",
+              "sleep-inbound",
+              "mock-api-inbound"
+            ]
+          }
+        },
+        "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
+      }
+    },
+    "/{binId}": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Invoke Bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://echo.zuplo.io"
+            }
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
+      }
+    },
+    "/v1/bins/{binId}/requests": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get requests for bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://echo.zuplo.io"
+            }
+          },
+          "policies": {
+            "inbound": [
+              "sleep-inbound-1",
+              "mock-api-inbound"
+            ]
+          }
+        },
+        "operationId": "b9e7cf1f-b70c-4b46-a304-db4cafeaea80",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": [
+                  {
+                    "data": [
+                      {
+                        "timestamp": "2023-11-04T18:02:19.446Z",
+                        "method": "POST",
+                        "headers": {
+                          "content-type": "text/plain",
+                          "foo-bar": "wibble-bobble"
+                        },
+                        "body": "Hello World!"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
