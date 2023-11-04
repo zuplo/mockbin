@@ -71,7 +71,7 @@
             "inbound": [
               "request-validation-inbound",
               "sleep-inbound",
-              "mock-api-inbound"
+              "dynamic-mock"
             ]
           }
         },
@@ -95,7 +95,7 @@
           "policies": {
             "inbound": [
               "sleep-inbound-1",
-              "mock-api-inbound"
+              "dynamic-mock"
             ]
           }
         },
@@ -139,7 +139,7 @@
           "policies": {
             "inbound": [
               "sleep-inbound-2",
-              "mock-api-inbound"
+              "dynamic-mock"
             ]
           }
         },

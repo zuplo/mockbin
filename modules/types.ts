@@ -14,7 +14,7 @@ export interface RequestsResponse {
 }
 
 export interface RequestDetails {
-  timestamp: "string",
+  timestamp: string,
   method: string,
   headers: Record<string, string>,
   body: string
