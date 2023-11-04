@@ -77,29 +77,6 @@
         "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
       }
     },
-    "/{binId}": {
-      "x-zuplo-path": {
-        "pathMode": "open-api"
-      },
-      "get": {
-        "summary": "Invoke Bin",
-        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
-        "x-zuplo-route": {
-          "corsPolicy": "none",
-          "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://echo.zuplo.io"
-            }
-          },
-          "policies": {
-            "inbound": []
-          }
-        },
-        "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
-      }
-    },
     "/v1/bins/{binId}/requests": {
       "x-zuplo-path": {
         "pathMode": "open-api"
@@ -110,11 +87,9 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://echo.zuplo.io"
-            }
+            "export": "default",
+            "module": "$import(./modules/get-requests)",
+            "options": {}
           },
           "policies": {
             "inbound": [
@@ -147,6 +122,29 @@
             }
           }
         }
+      }
+    },
+    "/{binId}": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get,post,put,head,patch,delete,connect,options,trace": {
+        "summary": "Invoke Bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://echo.zuplo.io"
+            }
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
       }
     }
   }
