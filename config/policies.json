@@ -63,6 +63,25 @@
       },
       "name": "sleep-inbound-2",
       "policyType": "sleep-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/log-request)"
+      },
+      "name": "log-request",
+      "policyType": "custom-code-inbound"
+    },
+    {
+      "handler": {
+        "export": "CachingInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "expirationSecondsTtl": 60
+        }
+      },
+      "name": "caching-inbound",
+      "policyType": "caching-inbound"
     }
   ]
 }

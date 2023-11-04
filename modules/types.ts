@@ -6,3 +6,16 @@ export interface BinResponse {
     body?: string
   }
 }
+
+export interface GetRequestsResponse {
+  data: {
+    "requestId": string
+  }[]
+}
+
+export interface GetRequestResponse {
+  timestamp: "string",
+  method: string,
+  headers: Record<string, string>,
+  body: string
+}
