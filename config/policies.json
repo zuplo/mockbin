@@ -46,15 +46,6 @@
     },
     {
       "handler": {
-        "export": "MockApiInboundPolicy",
-        "module": "$import(@zuplo/runtime)",
-        "options": {}
-      },
-      "name": "mock-api-inbound-1",
-      "policyType": "mock-api-inbound"
-    },
-    {
-      "handler": {
         "export": "SleepInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
@@ -82,6 +73,14 @@
       },
       "name": "caching-inbound",
       "policyType": "caching-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/dynamic-mock)"
+      },
+      "name": "custom-code-inbound",
+      "policyType": "custom-code-inbound"
     }
   ]
 }
