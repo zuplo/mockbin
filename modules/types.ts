@@ -7,13 +7,13 @@ export interface BinResponse {
   }
 }
 
-export interface GetRequestsResponse {
+export interface RequestsResponse {
   data: {
     "requestId": string
   }[]
 }
 
-export interface GetRequestResponse {
+export interface RequestDetails {
   timestamp: "string",
   method: string,
   headers: Record<string, string>,

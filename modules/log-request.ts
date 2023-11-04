@@ -16,6 +16,8 @@ export default async function (
 
   const clone = request.clone();
 
+  
+
 
   return request;
 }
