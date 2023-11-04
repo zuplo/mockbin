@@ -1,21 +1,25 @@
 export interface BinResponse {
-  response: {
-    status: number,
-    statusText?: string,
-    headers?: Record<string, string>,
-    body?: string
-  }
+  status: number,
+  statusText?: string,
+  headers?: Record<string, string>,
+  body?: string
 }
 
 export interface RequestsResponse {
   data: {
-    "requestId": string
+    requestId: string;
+    method: string;
+    pathname: string;
+    timestamp: string;
   }[]
 }
 
 export interface RequestDetails {
-  timestamp: string,
-  method: string,
-  headers: Record<string, string>,
-  body: string
+  url: {
+    pathname: string;
+    search: string;
+  };
+  method: string;
+  headers: Record<string, string>;
+  body: string | null;
 }

@@ -188,6 +188,27 @@
         },
         "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
       }
+    },
+    "/v1/bins/{binId}": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/get-bin)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
+      }
     }
   }
 }
