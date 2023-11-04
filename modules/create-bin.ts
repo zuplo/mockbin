@@ -1,9 +1,5 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
-
-async function uploadFile(name: string, content: string) {
-  // todo implement this thing
-  return;
-}
+import { uploadFile } from "./file-utils";
 
 export default async function (request: ZuploRequest, context: ZuploContext) {
   const binId = crypto.randomUUID();

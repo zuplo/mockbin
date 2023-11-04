@@ -180,7 +180,10 @@
             "options": {}
           },
           "policies": {
-            "inbound": []
+            "inbound": [
+              "log-request",
+              "caching-inbound"
+            ]
           }
         },
         "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"

@@ -1,16 +1,5 @@
 import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
-
-
-interface GetRequestsResponse {
-  data: {
-    "requestId": string
-  }[]
-}
-
-async function listFiles(binId: string): Promise<GetRequestsResponse> {
-  // todo implement this
-  return { data: [] };
-}
+import { listFiles } from "./file-utils";
 
 /**
  * /storage/{binId}.txt
