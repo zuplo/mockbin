@@ -11,4 +11,5 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
   const binId = request.params.binId;
   const files = await listRequests(binId);
   // TODO - what if no folder, should return a 404
-  return fi
+  return files;
+} 
