@@ -1,0 +1,73 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug: Attach to Running Zup",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Dev",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "smartStep": true,
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "dev"],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/dist/**",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Start",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "smartStep": true,
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "serve"],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Build: Workers",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "smartStep": true,
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "build"],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run: Tests",
+      "env": {
+        "NODE_ENV": "development",
+        "LOG_LEVEL": "info"
+      },
+      "smartStep": true,
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "test"],
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

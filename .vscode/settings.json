@@ -1,0 +1,24 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["config/*.oas.json"],
+      "url": "https://cdn.zuplo.com/schemas/openapi-v3.1-zuplo.json"
+    },
+    {
+      "fileMatch": ["config/policies.json"],
+      "url": "https://cdn.zuplo.com/schemas/policies.json"
+    },
+    {
+      "fileMatch": ["config/dev-portal.json"],
+      "url": "https://cdn.zuplo.com/schemas/dev-portal.json"
+    },
+    {
+      "fileMatch": ["docs/sidebar.json"],
+      "url": "https://cdn.zuplo.com/schemas/sidebar.json"
+    },
+    {
+      "fileMatch": ["config/routes.json"],
+      "url": "https://cdn.zuplo.com/schemas/routes.json"
+    }
+  ]
+}
