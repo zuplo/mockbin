@@ -1,6 +1,6 @@
 import { AwsClient } from "./aws";
 import { BinResponse, RequestDetails, RequestsResponse } from "./types";
-import { environment } from "@zuplo/runtime";
+import { environment, ZuploContext } from "@zuplo/runtime";
 
 const R2_ACCESS_KEY_ID = environment.R2_ACCESS_KEY_ID;
 const R2_SECRET_ACCESS_KEY = environment.R2_SECRET_ACCESS_KEY;
@@ -15,7 +15,10 @@ const aws = new AwsClient({
 export async function uploadResponse(binId: string, content: string) {
   // TODO 
   // 1. create a file with the name {binId}.json
-  return;
+  const r2Response = await aws.fetch(`${R2_BUCKET_URL}/${binId}.json`, {
+    method: "PUT",
+    body: content,
+  });
 }
 
 export async function listRequests(binId: string): Promise<RequestsResponse> {
@@ -29,11 +32,13 @@ export async function getResponse(binId: string): Promise<BinResponse> {
   // TODO
   // 1. Get the JSON from the file at /{binId}.json
   // 2. Deserialize into JSON as below, and return
-  const r2Response = await aws.fetch(`${R2_BUCKET_URL}/${binId}.json`, {
+  const fileResponse = await aws.fetch(`${R2_BUCKET_URL}/${binId}.json`, {
     method: "GET"
   });
 
-  return { "response": { "status": r2Response.status, "statusText": r2Response.statusText } };
+  const data: BinResponse = await fileResponse.json();
+
+  return data;
 }
 
 export async function getRequest(binId: string, requestId: string): Promise<RequestDetails> {
@@ -43,11 +48,9 @@ export async function getRequest(binId: string, requestId: string): Promise<Requ
   return {} as RequestDetails;
 }
 
-export async function uploadRequest(binId: string, request: RequestDetails) {
-  // TODO
-  // 1. Take the request parameter and serialize to JSON
-  // 2. Write to the /{binId} folder
-  const r2Response = await aws.fetch(`${R2_BUCKET_URL}/${binId}.json`, {
+export async function uploadRequest(binId: string, request: RequestDetails, context: ZuploContext) {
+  const requestId = `req-${encodeURIComponent(new Date().toISOString())}-${context.requestId}`;
+  const r2Response = await aws.fetch(`${R2_BUCKET_URL}/${binId}/${requestId}.json`, {
     method: "PUT",
     body: JSON.stringify(request),
   });

@@ -79,7 +79,7 @@
         "export": "default",
         "module": "$import(./modules/dynamic-mock)"
       },
-      "name": "custom-code-inbound",
+      "name": "dynamic-mock",
       "policyType": "custom-code-inbound"
     }
   ]

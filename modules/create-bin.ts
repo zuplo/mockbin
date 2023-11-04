@@ -6,6 +6,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
   const content = await request.text();
   await uploadResponse(binId, content);
   return {
-    id: binId
+    id: binId,
+    url: `/${binId}/`
   }
 }
