@@ -6,7 +6,7 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "logLevel": "info",
-          "validateBody": "validateBody",
+          "validateBody": "reject-and-log",
           "includeRequestInLogs": false
         }
       },

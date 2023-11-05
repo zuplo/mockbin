@@ -27,12 +27,6 @@ export interface GetObjectResult {
   contentType: string | undefined;
   lastModified: Date | undefined;
 }
-export interface CloudflareApiResponse<TResult = any> {
-  success: boolean;
-  errors: { code: string; message: string }[];
-  messages: string[];
-  result: TResult[];
-}
 
 export class StorageError extends Error {
   status: number;
@@ -78,6 +72,7 @@ export class StorageClient {
     const response = await this.S3.send(command);
 
     if (!response.Body) {
+      this.logger.error(`No body on S3 object`);
       throw new StorageError("Not found", 404);
     }
 
@@ -116,8 +111,12 @@ export class StorageClient {
       Body: body,
       Metadata: metadata,
     });
-    await this.S3.send(command);
-
+    try {
+      await this.S3.send(command);
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
     return {
       key: objectId,
     };

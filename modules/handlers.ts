@@ -61,6 +61,7 @@ export async function createMockResponse(
   const storage = storageClient(context.log);
 
   const body = await request.text();
+
   const size = sizeInBytes(body);
 
   // Enforce maximum bin size
@@ -81,18 +82,15 @@ export async function createMockResponse(
   );
   mockUrl.pathname = USE_SUBDOMAIN ? "/" : `/${binId}`;
 
-
   const responseData = {
     id: binId,
     url: mockUrl.href,
   };
 
-  return new Response(JSON.stringify(responseData, null, 2),
-    {
-      status: 201,
-      statusText: "Created"
-    });
-
+  return new Response(JSON.stringify(responseData, null, 2), {
+    status: 201,
+    statusText: "Created",
+  });
 }
 
 export async function getMockResponse(
@@ -102,9 +100,6 @@ export async function getMockResponse(
   const { binId } = request.params;
 
   const storage = storageClient(context.log);
-  // TODO
-  // 1. Get the JSON from the file at /{binId}.json
-  // 2. Deserialize into JSON as below, and return
   let data: BinResponse;
   try {
     data = await getBinFromStorage(storage, binId);
