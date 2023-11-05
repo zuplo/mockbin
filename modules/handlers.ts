@@ -74,6 +74,7 @@ export async function createMockResponse(
   try {
     await storage.uploadObject(`${binId}.json`, body);
   } catch (err) {
+    context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
 
@@ -104,6 +105,7 @@ export async function getMockResponse(
   try {
     data = await getBinFromStorage(storage, binId);
   } catch (err) {
+    context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
 
@@ -119,6 +121,7 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   try {
     response = await storage.getObject(`${binId}/${requestId}.json`);
   } catch (err) {
+    context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
   const result: RequestDetails = JSON.parse(response.body);
@@ -137,13 +140,14 @@ export async function listRequests(
   try {
     response = await storage.listObjects({ prefix: `${binId}/`, limit: 100 });
   } catch (err) {
+    context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
 
   const data = response.map((r) => ({
     requestId: r.key.substring(binId.length + 1, r.key.length - ".json".length),
     timestamp: r.lastModified,
-    site: r.size,
+    size: r.size,
     // method: r.customMetadata?.method,
     // pathname: r.customMetadata?.pathname,
   }));
@@ -161,7 +165,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   }
 
   const requestId = `req-${encodeURIComponent(
-    new Date().toISOString(),
+    Date.now(),
   )}-${context.requestId.replaceAll("-", "")}`;
 
   const url = new URL(request.url);
