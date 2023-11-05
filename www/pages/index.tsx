@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import { getURL } from "@/utils/helpers";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 
@@ -107,9 +108,9 @@ const Index = () => {
                 return (
                   <div>
                     <a
-                      href={`https://mockbin.io/bins/${bin.binId}`}
+                      href={`${getURL()}bins/${bin.binId}`}
                       className="text-[#FF00BD] hover:text-[#C0008F] mr-4"
-                    >{`mockbin.io/bins/${bin.binId}`}</a>
+                    >{`${getURL()}bins/${bin.binId}`}</a>
                     {timeAgo(Number(new Date(bin.createdTime)))}
                   </div>
                 );
