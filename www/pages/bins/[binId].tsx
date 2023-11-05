@@ -1,3 +1,4 @@
+import FullScreenLoading from "@/components/FullScreenLoading";
 import Header from "@/components/Header";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -77,13 +78,7 @@ const Bin = () => {
     );
   }
 
-  if (!data)
-    return (
-      <div className="flex flex-col w-full h-full items-center">
-        <Header />
-        <span>Loading...</span>
-      </div>
-    );
+  if (!data) return <FullScreenLoading />;
 
   return (
     <div className="flex flex-col w-full items-center">
