@@ -72,10 +72,18 @@ export async function createMockResponse(
   );
   mockUrl.pathname = USE_SUBDOMAIN ? "/" : `/${binId}`;
 
-  return {
+
+  const responseData = {
     id: binId,
     url: mockUrl.href,
   };
+
+  return new Response(JSON.stringify(responseData, null, 2),
+    {
+      status: 201,
+      statusText: "Created"
+    });
+
 }
 
 export async function getMockResponse(
