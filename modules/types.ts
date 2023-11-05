@@ -1,5 +1,5 @@
 export interface BinResponse {
-  response: {
+  response?: {
     status: number;
     statusText?: string;
     headers?: Record<string, string>;

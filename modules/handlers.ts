@@ -214,10 +214,10 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
 
   const { response: mockResponse } = mockResponsePromise.value;
 
-  const response = new Response(mockResponse.body, {
-    headers: mockResponse.headers,
-    status: mockResponse.status,
-    statusText: mockResponse.statusText,
+  const response = new Response(mockResponse?.body ?? null, {
+    headers: mockResponse?.headers,
+    status: mockResponse?.status,
+    statusText: mockResponse?.statusText,
   });
   return response;
 }
