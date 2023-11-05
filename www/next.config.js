@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["localhost", "cdn.zuplo.com"],
+    remotePatterns: [
+      {
+        hostname: "cdn.zuplo.com",
+      },
+    ],
   },
 };
 
