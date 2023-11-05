@@ -135,7 +135,7 @@ export async function listRequests(
   let response: ListObjectsResult[];
 
   try {
-    response = await storage.listObjects(`${binId}/`);
+    response = await storage.listObjects({ prefix: `${binId}/`, limit: 100 });
   } catch (err) {
     return getProblemFromStorageError(err, request, context);
   }

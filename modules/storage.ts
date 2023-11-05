@@ -83,10 +83,14 @@ export class StorageClient {
     };
   }
 
-  public async listObjects(prefix: string): Promise<ListObjectsResult[]> {
+  public async listObjects(options: {
+    prefix: string;
+    limit?: number;
+  }): Promise<ListObjectsResult[]> {
     const command = new ListObjectsV2Command({
       Bucket: this.bucketName,
-      Prefix: prefix,
+      Prefix: options.prefix,
+      MaxKeys: options.limit,
     });
     const response = await this.S3.send(command);
     const data: ListObjectsResult[] =
