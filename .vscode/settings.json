@@ -20,5 +20,6 @@
       "fileMatch": ["config/routes.json"],
       "url": "https://cdn.zuplo.com/schemas/routes.json"
     }
-  ]
+  ],
+  "cSpell.words": ["mockbin"]
 }
