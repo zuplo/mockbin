@@ -29,10 +29,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["response"],
+                "additionalProperties": false,
                 "properties": {
                   "response": {
                     "type": "object",
+                    "additionalProperties": false,
                     "required": ["status"],
                     "properties": {
                       "status": {
@@ -64,7 +65,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["request-validation-inbound"]
+            "inbound": ["request-validation-inbound", "rate-limit-inbound"]
           }
         },
         "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
@@ -85,7 +86,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": []
+            "inbound": ["rate-limit-inbound"]
           }
         },
         "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
@@ -106,7 +107,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": []
+            "inbound": ["rate-limit-inbound"]
           }
         },
         "operationId": "b9e7cf1f-b70c-4b46-a304-db4cafeaea80",
@@ -147,7 +148,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": []
+            "inbound": ["rate-limit-inbound"]
           }
         },
         "responses": {
@@ -187,7 +188,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["caching-inbound"]
+            "inbound": ["rate-limit-inbound", "caching-inbound"]
           }
         },
         "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"

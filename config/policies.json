@@ -6,7 +6,7 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "logLevel": "info",
-          "validateBody": "validateBody",
+          "validateBody": "reject-and-log",
           "includeRequestInLogs": false
         }
       },
@@ -23,6 +23,19 @@
       },
       "name": "caching-inbound",
       "policyType": "caching-inbound"
+    },
+    {
+      "handler": {
+        "export": "RateLimitInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "rateLimitBy": "ip",
+          "requestsAllowed": 60,
+          "timeWindowMinutes": 1
+        }
+      },
+      "name": "rate-limit-inbound",
+      "policyType": "rate-limit-inbound"
     }
   ]
 }
