@@ -11,10 +11,7 @@ const Header = () => {
           src="/mockbin-header.png"
         />
       </a>
-      <a
-        href="https://github.com/zuplo-samples/mockbin"
-        target="_blank"
-      >
+      <a href="https://github.com/zuplo-samples/mockbin" target="_blank">
         <Image
           className="h-fit"
           width={30}
@@ -23,8 +20,6 @@ const Header = () => {
           src="/github-mark-white.png"
         />
       </a>
-    
-      
     </header>
   );
 };
