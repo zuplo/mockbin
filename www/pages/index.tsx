@@ -60,7 +60,7 @@ const Index = () => {
     e.preventDefault();
     const requestBody = {
       response: {
-        status,
+        status: parseInt(status),
         statusText,
         headers: {
           [headerTitle]: headerValue,
