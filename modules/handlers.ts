@@ -4,29 +4,25 @@ import {
   ZuploContext,
   ZuploRequest,
 } from "@zuplo/runtime";
-import {
-  CF_ACCOUNT_ID,
-  R2_API_KEY,
-  R2_BUCKET_NAME,
-  USE_SUBDOMAIN,
-} from "./env";
+import { MAX_BIN_SIZE, USE_SUBDOMAIN, requiredEnvVariable } from "./env";
 import { nanoid } from "./nanoid";
 import {
-  CloudflareApiResponse,
-  CloudflareError,
-  CloudflareR2Client,
+  GetObjectResult,
   ListObjectsResult,
+  StorageClient,
+  StorageError,
 } from "./storage";
 import { BinResponse, RequestDetails } from "./types";
 
-function r2Client(logger: Logger) {
-  const r2 = new CloudflareR2Client({
-    apiKey: R2_API_KEY,
-    accountId: CF_ACCOUNT_ID,
-    bucketName: R2_BUCKET_NAME,
+function storageClient(logger: Logger) {
+  const client = new StorageClient({
+    endpoint: requiredEnvVariable("S3_ENDPOINT"),
+    accessKeyId: requiredEnvVariable("S3_ACCESS_KEY_ID"),
+    accessKeySecret: requiredEnvVariable("S3_SECRET_ACCESS_KEY"),
+    bucketName: requiredEnvVariable("BUCKET_NAME"),
     logger,
   });
-  return r2;
+  return client;
 }
 
 function getProblemFromStorageError(
@@ -34,7 +30,7 @@ function getProblemFromStorageError(
   request: ZuploRequest,
   context: ZuploContext,
 ) {
-  if (err instanceof CloudflareError) {
+  if (err instanceof StorageError) {
     if (err.status === 404) {
       return HttpProblems.notFound(request, context);
     } else {
@@ -46,10 +42,13 @@ function getProblemFromStorageError(
   return HttpProblems.internalServerError(request, context);
 }
 
-async function getBinFromStorage(r2: CloudflareR2Client, binId: string) {
-  const response = await r2.getObject(`${binId}.json`);
-  const data: BinResponse = await response.json();
+async function getBinFromStorage(storage: StorageClient, binId: string) {
+  const response = await storage.getObject(`${binId}.json`);
+  const data: BinResponse = JSON.parse(response.body);
   return data;
+}
+function sizeInBytes(data: string) {
+  return new TextEncoder().encode(JSON.stringify(data)).length;
 }
 
 export async function createMockResponse(
@@ -59,10 +58,20 @@ export async function createMockResponse(
   const url = new URL(request.url);
   const binId = nanoid();
 
-  const r2 = r2Client(context.log);
+  const storage = storageClient(context.log);
+
+  const body = await request.text();
+  const size = sizeInBytes(body);
+
+  // Enforce maximum bin size
+  if (size > MAX_BIN_SIZE) {
+    return HttpProblems.badRequest(request, context, {
+      detail: `The bin size exceeded the maximum allowed size of ${MAX_BIN_SIZE} bytes`,
+    });
+  }
 
   try {
-    await r2.uploadObject(`${binId}.json`, request.body ?? "");
+    await storage.uploadObject(`${binId}.json`, body);
   } catch (err) {
     return getProblemFromStorageError(err, request, context);
   }
@@ -92,18 +101,16 @@ export async function getMockResponse(
 ) {
   const { binId } = request.params;
 
-  const r2 = r2Client(context.log);
+  const storage = storageClient(context.log);
   // TODO
   // 1. Get the JSON from the file at /{binId}.json
   // 2. Deserialize into JSON as below, and return
   let data: BinResponse;
   try {
-    data = await getBinFromStorage(r2, binId);
+    data = await getBinFromStorage(storage, binId);
   } catch (err) {
     return getProblemFromStorageError(err, request, context);
   }
-
-  // TODO: Handle errors
 
   return data;
 }
@@ -111,15 +118,15 @@ export async function getMockResponse(
 export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   const { binId, requestId } = request.params;
 
-  const r2 = r2Client(context.log);
+  const storage = storageClient(context.log);
 
-  let response: Response;
+  let response: GetObjectResult;
   try {
-    response = await r2.getObject(`${binId}/${requestId}.json`);
+    response = await storage.getObject(`${binId}/${requestId}.json`);
   } catch (err) {
     return getProblemFromStorageError(err, request, context);
   }
-  const result: RequestDetails = await response.json();
+  const result: RequestDetails = JSON.parse(response.body);
   return result;
 }
 
@@ -129,20 +136,21 @@ export async function listRequests(
 ) {
   const { binId } = request.params;
 
-  const r2 = r2Client(context.log);
-  let response: CloudflareApiResponse<ListObjectsResult>;
+  const storage = storageClient(context.log);
+  let response: ListObjectsResult[];
 
   try {
-    response = await r2.listObjects(`${binId}/`);
+    response = await storage.listObjects(`${binId}/`);
   } catch (err) {
     return getProblemFromStorageError(err, request, context);
   }
 
-  const data = response.result.map((r) => ({
+  const data = response.map((r) => ({
     requestId: r.key.substring(binId.length + 1, r.key.length - ".json".length),
-    timestamp: r.last_modified,
-    method: r.custom_metadata?.method,
-    pathname: r.custom_metadata?.pathname,
+    timestamp: r.lastModified,
+    site: r.size,
+    // method: r.customMetadata?.method,
+    // pathname: r.customMetadata?.pathname,
   }));
   return { data };
 }
@@ -152,7 +160,9 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
 
   const headers: Record<string, string> = {};
   for (const [key, value] of request.headers) {
-    headers[key] = value;
+    if (!key.startsWith("cf-")) {
+      headers[key] = value;
+    }
   }
 
   const requestId = `req-${encodeURIComponent(
@@ -172,14 +182,24 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     },
   };
 
-  const r2 = r2Client(context.log);
+  const storage = storageClient(context.log);
+
+  const data = JSON.stringify(req);
+  const size = sizeInBytes(data);
+
+  // Enforce maximum request size
+  if (size > MAX_BIN_SIZE) {
+    return HttpProblems.badRequest(request, context, {
+      detail: `The request size including (body and headers) exceeded the maximum allowed size of ${MAX_BIN_SIZE} bytes`,
+    });
+  }
 
   const [saveRequestResponse, mockResponsePromise] = await Promise.allSettled([
-    r2.uploadObject(`${binId}/${requestId}.json`, JSON.stringify(req), {
+    storage.uploadObject(`${binId}/${requestId}.json`, data, {
       method: request.method,
       pathname: url.pathname,
     }),
-    getBinFromStorage(r2, binId),
+    getBinFromStorage(storage, binId),
   ]);
 
   if (saveRequestResponse.status === "rejected") {
@@ -197,7 +217,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     );
   }
 
-  const mockResponse = mockResponsePromise.value;
+  const { response: mockResponse } = mockResponsePromise.value;
 
   const response = new Response(mockResponse.body, {
     headers: mockResponse.headers,
