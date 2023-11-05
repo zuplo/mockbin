@@ -189,35 +189,26 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     });
   }
 
-  const [saveRequestResponse, mockResponsePromise] = await Promise.allSettled([
-    storage.uploadObject(`${binId}/${requestId}.json`, data, {
+  storage
+    .uploadObject(`${binId}/${requestId}.json`, data, {
       method: request.method,
       pathname: url.pathname,
-    }),
-    getBinFromStorage(storage, binId),
-  ]);
+    })
+    .catch((err) => {
+      context.log.error("Error saving request to storage", err);
+    });
 
-  if (saveRequestResponse.status === "rejected") {
-    context.log.error(
-      "Error saving request to storage",
-      saveRequestResponse.reason,
-    );
+  let binResponse: BinResponse;
+  try {
+    binResponse = await getBinFromStorage(storage, binId);
+  } catch (err) {
+    return getProblemFromStorageError(err, request, context);
   }
 
-  if (mockResponsePromise.status === "rejected") {
-    return getProblemFromStorageError(
-      mockResponsePromise.reason,
-      request,
-      context,
-    );
-  }
-
-  const { response: mockResponse } = mockResponsePromise.value;
-
-  const response = new Response(mockResponse?.body ?? null, {
-    headers: mockResponse?.headers,
-    status: mockResponse?.status,
-    statusText: mockResponse?.statusText,
+  const response = new Response(binResponse.response?.body ?? null, {
+    headers: binResponse.response?.headers,
+    status: binResponse.response?.status,
+    statusText: binResponse.response?.statusText,
   });
   return response;
 }
