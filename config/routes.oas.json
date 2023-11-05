@@ -29,9 +29,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "response": {
                     "type": "object",
+                    "additionalProperties": false,
                     "required": ["status"],
                     "properties": {
                       "status": {
