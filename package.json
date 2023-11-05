@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "zuplo": "latest"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
   }
 }

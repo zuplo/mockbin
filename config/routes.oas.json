@@ -29,15 +29,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "response"
-                ],
+                "required": ["response"],
                 "properties": {
                   "response": {
                     "type": "object",
-                    "required": [
-                      "status"
-                    ],
+                    "required": ["status"],
                     "properties": {
                       "status": {
                         "type": "number"
@@ -63,19 +59,36 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/create-bin)",
+            "export": "createMockResponse",
+            "module": "$import(./modules/handlers)",
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "request-validation-inbound",
-              "sleep-inbound",
-              "dynamic-mock"
-            ]
+            "inbound": ["request-validation-inbound"]
           }
         },
         "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
+      }
+    },
+    "/v1/bins/{binId}": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "getMockResponse",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
       }
     },
     "/v1/bins/{binId}/requests": {
@@ -88,15 +101,12 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/get-requests)",
+            "export": "listRequests",
+            "module": "$import(./modules/handlers)",
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "sleep-inbound-1",
-              "dynamic-mock"
-            ]
+            "inbound": []
           }
         },
         "operationId": "b9e7cf1f-b70c-4b46-a304-db4cafeaea80",
@@ -132,15 +142,12 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/get-request)",
+            "export": "getRequest",
+            "module": "$import(./modules/handlers)",
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "sleep-inbound-2",
-              "dynamic-mock"
-            ]
+            "inbound": []
           }
         },
         "responses": {
@@ -165,9 +172,9 @@
         "operationId": "460b0c3d-6267-4913-9e42-46f6882e2a42"
       }
     },
-    "/{binId}/(.*)": {
+    "/:binId(.*)": {
       "x-zuplo-path": {
-        "pathMode": "open-api"
+        "pathMode": "url-pattern"
       },
       "get,post,put,head,patch,delete,connect,options,trace": {
         "summary": "Invoke Bin",
@@ -175,39 +182,15 @@
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "default",
-            "module": "$import(./modules/invoke-bin)",
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "log-request",
-              "caching-inbound"
-            ]
+            "inbound": ["caching-inbound"]
           }
         },
         "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
-      }
-    },
-    "/v1/bins/{binId}": {
-      "x-zuplo-path": {
-        "pathMode": "open-api"
-      },
-      "get": {
-        "summary": "Get bin",
-        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
-        "x-zuplo-route": {
-          "corsPolicy": "anything-goes",
-          "handler": {
-            "export": "default",
-            "module": "$import(./modules/get-bin)",
-            "options": {}
-          },
-          "policies": {
-            "inbound": []
-          }
-        },
-        "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
       }
     }
   }

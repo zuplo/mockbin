@@ -8,8 +8,8 @@ export interface BinResponse {
 export interface RequestsResponse {
   data: {
     requestId: string;
-    method: string;
-    pathname: string;
+    method: string | undefined;
+    pathname: string | undefined;
     timestamp: string;
   }[]
 }
