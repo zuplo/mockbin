@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Header = () => {
   return (
-    <header className="flex w-full justify-between">
+    <header className="flex flex-row w-full justify-between items-center">
       <a href="https://mockbin.io">
         <Image
           width={360}
@@ -12,7 +12,6 @@ const Header = () => {
         />
       </a>
       <a
-        className="self-end justify-self-end mb-6"
         href="https://github.com/zuplo-samples/mockbin"
         target="_blank"
       >
@@ -24,6 +23,8 @@ const Header = () => {
           src="/github-mark-white.png"
         />
       </a>
+    
+      
     </header>
   );
 };
