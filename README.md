@@ -1,4 +1,7 @@
-![](https://cdn.zuplo.com/assets/53e83603-7b0c-4d0c-af0e-5878c330c263.png)
+<div align="center">
+<img alt="Mockbin by Zuplo logo" src="https://cdn.zuplo.com/assets/53e83603-7b0c-4d0c-af0e-5878c330c263.png">
+
+</div>
 
 <div align="center">
 <h1>Mockbin by Zuplo</h1>
@@ -22,6 +25,7 @@ Easily generate custom endpoints to test HTTP requests, and view the request log
 
 Visit https://mockbin.io, create a new bin, and start sending requests to your new endpoint.
 
+https://raw.githubusercontent.com/zuplo/mockbin/main/assets/mockbin.gif
 
 ## About 
 
