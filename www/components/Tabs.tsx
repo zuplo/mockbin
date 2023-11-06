@@ -37,8 +37,8 @@ export default function Tabs({ tabs, selectedTab, onChange }: TabsProps) {
                 <span
                   className={classNames(
                     tab.name === selectedTab
-                      ? "bg-pink-500 text-nav-text-selected"
-                      : "bg-pink-500 text-nav-text",
+                      ? "bg-[#FF00BD] text-nav-text-selected"
+                      : "bg-[#FF00BD] text-nav-text",
                     "ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block",
                   )}
                 >

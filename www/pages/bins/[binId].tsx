@@ -26,7 +26,7 @@ export type BinRequestData = {
 };
 
 const Bin = () => {
-  const [data, setData] = useState<BinRequest[] | null>(null);
+  const [requests, setRequests] = useState<BinRequest[] | null>(null);
   const [binId, setBinId] = useState<string | null>(null);
   const [currentRequestId, setCurrentRequestId] = useState<string | null>(null);
   const [currentRequest, setCurrentRequest] = useState<BinRequestData | null>(
@@ -64,7 +64,7 @@ const Bin = () => {
     }
 
     const data = await response.json();
-    setData(data.data);
+    setRequests(data.data);
     setIsRefreshing(false);
   };
 
@@ -94,10 +94,10 @@ const Bin = () => {
     );
   }
 
-  if (!data) return <FullScreenLoading />;
+  if (!requests) return <FullScreenLoading />;
 
   const binUrl = `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
-  const activeRequest = data.find(
+  const activeRequest = requests.find(
     (request) => currentRequestId === request.requestId,
   );
   return (
@@ -145,7 +145,7 @@ const Bin = () => {
       <div className="grid grid-cols-6">
         <div className="flex flex-col col-span-2 mr-4">
           <ul>
-            {data.map((request, i) => {
+            {requests.map((request, i) => {
               const isActive = currentRequestId === request.requestId;
               return (
                 <li
@@ -156,13 +156,14 @@ const Bin = () => {
                   className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border border-white ${
                     isActive ? "bg-[#FF00BD]" : "hover:text-[#FF00BD]"
                   } ${i === 0 ? "rounded-t-md" : ""} ${
-                    i === data.length - 1 ? "rounded-b-md" : ""
+                    i === requests.length - 1 ? "rounded-b-md" : ""
                   }`}
                 >
                   <div>{timeAgo(Number(new Date(request.timestamp)))}</div>
                 </li>
               );
             })}
+            {requests.length === 0 ? "No requests yet" : null}
           </ul>
         </div>
         <div className="col-span-4">

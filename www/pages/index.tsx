@@ -3,6 +3,8 @@ import { getURL, timeAgo } from "@/utils/helpers";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import HeadersList, { Header } from "./HeadersList";
+import { v4 } from "uuid";
 
 const RECENT_BIN_KEY = "RECENT_BINS";
 type RecentBin = {
@@ -14,8 +16,20 @@ type RecentBin = {
 const Index = () => {
   const [status, setStatus] = useState("200");
   const [statusText, setStatusText] = useState("OK");
-  const [headerTitle, setHeaderTitle] = useState("Content-Type");
-  const [headerValue, setHeaderValue] = useState("application/json");
+  const [headers, setHeaders] = useState<Header[]>([
+    {
+      key: "Content-Type",
+      value: "application/json",
+      hasError: false,
+      id: v4(),
+    },
+    {
+      key: "",
+      value: "",
+      hasError: true,
+      id: v4(),
+    },
+  ]);
   const [responseBody, setResponseBody] = useState("{}");
   const [recentBins, setRecentBins] = useState<RecentBin[]>([]);
 
@@ -33,13 +47,17 @@ const Index = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const responseHeaders = headers.reduce((cleanHeaders, header) => {
+      if (header.key === "") {
+        return cleanHeaders;
+      }
+      return { ...cleanHeaders, [header.key]: header.value };
+    }, {});
     const requestBody = {
       response: {
         status: parseInt(status),
         statusText,
-        headers: {
-          [headerTitle]: headerValue,
-        },
+        headers: responseHeaders,
         body: responseBody,
       },
     };
@@ -101,7 +119,7 @@ const Index = () => {
               );
             })}
           </div>
-          <p className="mt-4">
+          <p className="mt-4 text-sm">
             Mockbin is free of sign-ups, so there is no account. The IDs of
             these bins are stored in browser storage.{" "}
           </p>
@@ -117,7 +135,7 @@ const Index = () => {
         }}
       >
         <h1 className="text-3xl">Create a new bin</h1>
-        <p className="text-xs">
+        <p className="text-sm">
           Just specify the details of the response below and we’ll create you a
           new API endpoint in a jiffy.
         </p>
@@ -140,25 +158,14 @@ const Index = () => {
             className="text-black border-2 col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
           />
           <div className="col-span-2"></div>
-          <label className="mt-4">Headers</label>
-          <input
-            type="text"
-            placeholder="Key"
-            className="text-black border-2 font-mono p-1 px-2 mt-3 border-gray-300 mr-4 col-span-2 rounded-md"
-            value={headerTitle}
-            onChange={(e) => setHeaderTitle(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Value"
-            value={headerValue}
-            onChange={(e) => setHeaderValue(e.target.value)}
-            className="text-black border-2 font-mono p-1 px-2 mt-3 border-gray-300 col-span-2 rounded-md"
-          />
-          <label className="mt-4">Body</label>
+          <label className="mt-1">Headers</label>
+          <div className="col-span-4">
+            <HeadersList headers={headers} onChange={setHeaders} />
+          </div>
+          <label className="mt-1">Body</label>
           <textarea
             placeholder="{}"
-            className="text-black border-2 font-mono p-1 px-2 mt-3 border-gray-300 h-32 w-full col-span-4 rounded-md"
+            className="text-black border-2 font-mono p-1 px-2 mt-1 border-gray-300 h-32 w-full col-span-4 rounded-md"
             value={responseBody}
             onChange={(e) => setResponseBody(e.target.value)}
           />

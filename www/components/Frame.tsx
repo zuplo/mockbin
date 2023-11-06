@@ -10,7 +10,9 @@ export default function Frame({ children }: { children: ReactNode }) {
         </div>
         <div className="flex-grow">{children}</div>
         <div className="flex-none flex-row items-center justify-between py-3 w-full self-end justify-self-end">
-          <div>Made with ❤️ by zuplo</div>
+          <a target="_blank" href="https://zuplo.com">
+            Made with ❤️ by zuplo
+          </a>
         </div>
       </div>
     </div>
