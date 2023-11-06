@@ -18,7 +18,7 @@ const Bin = () => {
   >();
   const [currentBody, setCurrentBody] = useState<string | undefined>();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [easterEggActive, setEasterEggActive] = useState(false);
 
   const router = useRouter();
@@ -32,11 +32,11 @@ const Bin = () => {
   useEffect(() => {
     if (!binId) return;
 
-    getRequestBody();
+    getRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [binId]);
 
-  const getRequestBody = async () => {
+  const getRequests = async () => {
     setIsRefreshing(true);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}`,
@@ -49,13 +49,12 @@ const Bin = () => {
     }
 
     const data = await response.json();
-    console.log(data);
     setRequests(data.requests ?? []);
     setIsRefreshing(false);
   };
 
   const getRequestData = async (requestId: string) => {
-    setLoading(true);
+    setIsLoading(true);
     setCurrentRequestId(requestId);
     setCurrentBody(undefined);
     const response = await fetch(
@@ -63,19 +62,16 @@ const Bin = () => {
     );
     const data = await response.text();
     setCurrentBody(data);
-    setLoading(false);
+    setIsLoading(false);
   };
 
   if (easterEggActive) {
     return (
       <Frame>
-        <h1>🐒 Could not find bin</h1>
-        <Image
-          src="https://cdn.zuplo.com/assets/c7513238-58bd-4b72-ac4d-3d67d0636b3b.png"
-          alt="monkey"
-          width={500}
-          height={500}
-        />
+        <div className="flex w-full h-full flex-col items-center justify-center">
+          <h1 className="text-3xl mb-8">🐒 Could not find bin</h1>
+          <Image src="/ape.png" alt="ape" width={500} height={500} />
+        </div>
       </Frame>
     );
   }
@@ -106,7 +102,7 @@ const Bin = () => {
         <button
           className="flex items-center justify-center border border-white rounded-md hover:border-[#FF00BD] hover:text-[#FF00BD] px-2 py-1"
           onClick={() => {
-            getRequestBody();
+            getRequests();
           }}
         >
           <div className={`mr-2 ${isRefreshing ? "animate-spin" : ""}`}>
@@ -118,8 +114,8 @@ const Bin = () => {
               stroke="currentColor"
             >
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 stroke-width="2"
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
@@ -151,7 +147,10 @@ const Bin = () => {
                       i === requests.length - 1 ? "rounded-b-md" : ""
                     }`}
                   >
-                    <div>{timeAgo(Number(new Date(request.timestamp)))}</div>
+                    <div>
+                      {request.method.toUpperCase()} &middot;{" "}
+                      {timeAgo(Number(new Date(request.timestamp)))}
+                    </div>
                   </li>
                 );
               })}
@@ -160,7 +159,7 @@ const Bin = () => {
         </div>
         <div className="col-span-4">
           <BinRequest
-            isLoading={loading && isRefreshing}
+            isLoading={isLoading || isRefreshing}
             hasRequests={requests.length > 0}
             requestData={activeRequest}
             body={currentBody}

@@ -11,7 +11,7 @@ type TestOperationResponseProps = {
 };
 
 const FloatingCopyButton = ({ textToCopy }: { textToCopy: string }) => (
-  <div className="hidden sm:block absolute right-12 pt-2 z-50">
+  <div className="hidden sm:block absolute right-4 pt-2 z-50">
     <CopyButton textToCopy={textToCopy} />
   </div>
 );
@@ -64,17 +64,12 @@ const BinRequest = ({
     },
   ];
 
-  const requestIsJson = getRequestIsJson(body, requestData);
-  useEffect(() => {
-    // Reset the tab when the request type changes
-    setSelectedTab(requestIsJson ? "JSON" : "RAW");
-  }, [requestIsJson]);
-
+  const requestIsJson = !isLoading ? getRequestIsJson(body, requestData) : true;
   const [selectedTab, setSelectedTab] = useState(
     requestIsJson ? "JSON" : "RAW",
   );
 
-  const noResponseDataPlaceholder = isLoading ? (
+  const noRequestDataPlaceholder = isLoading ? (
     <div className="px-4 w-full h-full flex items-center justify-center text-xs">
       Loading...
     </div>
@@ -89,7 +84,7 @@ const BinRequest = ({
   );
 
   return (
-    <div className="flex flex-col h-full w-full border border-input-border rounded-md pt-4 mb-4">
+    <div className="sticky top-4 flex flex-col h-fit w-full border border-input-border rounded-md pt-4 mb-4">
       <div className="flex flex-col sm:flex-row text-xs px-4 pb-3 gap-x-4">
         <div className="flex gap-x-1">
           <span>METHOD: </span>
@@ -119,10 +114,10 @@ const BinRequest = ({
       </div>
       <div className="flex my-4 h-full">
         {selectedTab === "JSON" ? (
-          requestData ? (
-            <div className="flex w-full h-full">
+          requestData && body ? (
+            <div className="flex relative w-full h-full">
               <code className="flex items-center h-full w-fit overflow-x-auto break-words px-2 whitespace-pre text-xs">
-                {body && requestIsJson
+                {requestIsJson
                   ? // Formats JSON response with 2 spaces
                     JSON.stringify(JSON.parse(body), null, 2)
                   : "Request body is not JSON. Click 'RAW' to see request body"}
@@ -134,19 +129,19 @@ const BinRequest = ({
               ) : null}
             </div>
           ) : (
-            noResponseDataPlaceholder
+            noRequestDataPlaceholder
           )
         ) : null}
         {selectedTab === "RAW" ? (
           requestData ? (
-            <div className="flex w-full h-full">
+            <div className="flex relative w-full h-full">
               <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-xs">
                 {body === "" ? "No body was sent in the request" : body}
               </code>
               {body ? <FloatingCopyButton textToCopy={body ?? ""} /> : null}
             </div>
           ) : (
-            noResponseDataPlaceholder
+            noRequestDataPlaceholder
           )
         ) : null}
         {selectedTab === "HEADERS" ? (
@@ -176,7 +171,7 @@ const BinRequest = ({
                 : null}
             </table>
           ) : (
-            noResponseDataPlaceholder
+            noRequestDataPlaceholder
           )
         ) : null}
       </div>
