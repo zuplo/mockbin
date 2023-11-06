@@ -9,7 +9,7 @@ import { nanoid } from "./nanoid";
 import { GetObjectResult, StorageClient, StorageError } from "./storage";
 import { BinResponse, RequestDetails } from "./types";
 
-const MAX_SIZE = 256000;
+const MAX_SIZE = 1048576;
 
 function storageClient(logger: Logger) {
   const client = new StorageClient({
