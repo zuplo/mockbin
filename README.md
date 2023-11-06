@@ -31,7 +31,7 @@ Visit https://mockbin.io, create a new bin, and start sending requests to your n
 
 At Zuplo we were big fans of [mockbin.org](https://mockbin.org) and used it for testing APIs and doing demos. Unfortunately, it was shut down.
 
-In the spirit of being scrappy and shipping quickly, a group of us decided to build a replacement as a impromptu hackathon project on the weekend.
+In the spirit of being scrappy and shipping quickly, a group of us decided to build a replacement as an impromptu hackathon project on a weekend - and we shipped with love ❤️ and a bit of coffee ☕️.
 
 ### How it works
 
