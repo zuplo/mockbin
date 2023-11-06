@@ -1,0 +1,17 @@
+{
+  "name": "mockbin",
+  "version": "1.0.0",
+  "author": "",
+  "copyright": "",
+  "scripts": {
+    "dev": "zup dev",
+    "test": "zup test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.441.0",
+    "zuplo": "latest"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  }
+}

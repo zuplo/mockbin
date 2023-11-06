@@ -1,0 +1,22 @@
+{
+  "include": ["modules/**/*", ".zuplo/**/*", "tests/**/*"],
+  "exclude": ["./node_modules", "./dist"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "module": "commonjs",
+    "target": "ESNext",
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "useUnknownInCatchVariables": false,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true
+  }
+}
