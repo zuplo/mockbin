@@ -6,7 +6,7 @@ import { timeAgo } from "@/utils/helpers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import BinRequest from "./BinRequest";
+import BinRequest from "../../components/BinRequest";
 
 type BinRequest = {
   requestId: string;

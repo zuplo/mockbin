@@ -27,8 +27,8 @@ const HeadersList = ({ headers, onChange }: HeaderListProps) => {
     const newHeaders = headers.map((header) =>
       header.id === newHeader.id ? newHeader : header,
     );
-    const lastHeader = newHeaders[newHeaders.length - 1];
-    if (!(lastHeader.key === "" && lastHeader.value === "")) {
+    const lastHeader = newHeaders.at(newHeaders.length - 1);
+    if (lastHeader && !(lastHeader.key === "" && lastHeader.value === "")) {
       // Prefill a new row for the user to type more headers
       newHeaders.push(getDefaultEditorHeader());
     }

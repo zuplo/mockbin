@@ -1,7 +1,7 @@
 import CopyButton from "@/components/CopyButton";
 import Tabs, { Tab } from "@/components/Tabs";
 import { useEffect, useState } from "react";
-import { BinRequestData } from "./[binId]";
+import { BinRequestData } from "../pages/bins/[binId]";
 
 type TestOperationResponseProps = {
   isLoading: boolean;

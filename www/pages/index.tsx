@@ -3,7 +3,7 @@ import { getURL, timeAgo } from "@/utils/helpers";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import HeadersList, { Header } from "./HeadersList";
+import HeadersList, { Header } from "../components/HeadersList";
 import { v4 } from "uuid";
 
 const RECENT_BIN_KEY = "RECENT_BINS";
@@ -48,7 +48,7 @@ const Index = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const responseHeaders = headers.reduce((cleanHeaders, header) => {
-      if (header.key === "") {
+      if (!header.key || header.hasError) {
         return cleanHeaders;
       }
       return { ...cleanHeaders, [header.key]: header.value };
@@ -109,7 +109,7 @@ const Index = () => {
           <div className="flex flex-col gap-y-2 mt-3">
             {recentBins.slice(0, 5).map((bin) => {
               return (
-                <div>
+                <div key={bin.id}>
                   <Link
                     href={`/bins/${bin.id}`}
                     className="text-[#FF00BD] hover:text-[#C0008F] mr-4 break-all"
