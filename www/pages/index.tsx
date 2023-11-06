@@ -101,7 +101,7 @@ const Index = () => {
       <p className="mb-4 text-sm">
         Welcome to mockbin2 (the revival). This is an open-source and fully-free
         tool that allows you to quickly mock an API endpoint, configure a fixed
-        response and track requests to your endpoint.{" "}
+        response and track requests to your endpoint.
       </p>
       {recentBins.length > 0 ? (
         <div className="flex flex-col mb-4">
