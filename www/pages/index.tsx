@@ -1,39 +1,14 @@
 import Frame from "@/components/Frame";
-import Header from "@/components/Header";
-import { getURL } from "@/utils/helpers";
+import { getURL, timeAgo } from "@/utils/helpers";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const RECENT_BIN_KEY = "RECENT_BINS";
 type RecentBin = {
-  binId: string;
+  id: string;
   createdTime: string;
-};
-
-const timeAgo = (prevDate: number) => {
-  const diff = Number(new Date()) - prevDate;
-  const minute = 60 * 1000;
-  const hour = minute * 60;
-  const day = hour * 24;
-  const month = day * 30;
-  const year = day * 365;
-  switch (true) {
-    case diff < minute:
-      const seconds = Math.round(diff / 1000);
-      return `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
-    case diff < hour:
-      return Math.round(diff / minute) + " minutes ago";
-    case diff < day:
-      return Math.round(diff / hour) + " hours ago";
-    case diff < month:
-      return Math.round(diff / day) + " days ago";
-    case diff < year:
-      return Math.round(diff / month) + " months ago";
-    case diff > year:
-      return Math.round(diff / year) + " years ago";
-    default:
-      return "";
-  }
+  url: string;
 };
 
 const Index = () => {
@@ -85,12 +60,13 @@ const Index = () => {
         alert(`Error ${response.status}\n\n ${await response.text()}`);
         return;
       }
-      const result = await response.json();
-      router.push(`/bins/${result.binId}`);
+      const result: { id: string; url: string } = await response.json();
+      router.push(`/bins/${result.id}`);
       const createdTime = new Date().toISOString();
       const recentBinEntry: RecentBin = {
-        binId: result.binId,
+        id: result.id,
         createdTime,
+        url: result.url,
       };
       const newRecentBins = [recentBinEntry, ...recentBins];
       if (typeof window !== "undefined") {
@@ -116,10 +92,10 @@ const Index = () => {
             {recentBins.slice(0, 5).map((bin) => {
               return (
                 <div>
-                  <a
-                    href={`${getURL()}bins/${bin.binId}`}
-                    className="text-[#FF00BD] hover:text-[#C0008F] mr-4"
-                  >{`${getURL()}bins/${bin.binId}`}</a>
+                  <Link
+                    href={`/bins/${bin.id}`}
+                    className="text-[#FF00BD] hover:text-[#C0008F] mr-4 break-all"
+                  >{`${getURL()}bins/${bin.id}`}</Link>
                   {timeAgo(Number(new Date(bin.createdTime)))}
                 </div>
               );
@@ -188,7 +164,7 @@ const Index = () => {
           />
         </div>
         <button
-          className="self-end bg-[#FF00BD] rounded-md p-2 mt-3 px-4 font-extrabold hover:bg-[#C0008F]"
+          className="self-end bg-[#FF00BD] rounded-md p-2 mt-3 px-4 font-bold hover:bg-[#C0008F]"
           type="submit"
         >
           Create Bin
