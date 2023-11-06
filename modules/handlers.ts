@@ -9,6 +9,8 @@ import { nanoid } from "./nanoid";
 import { GetObjectResult, StorageClient, StorageError } from "./storage";
 import { BinResponse, RequestDetails } from "./types";
 
+const MAX_SIZE = 256000;
+
 function storageClient(logger: Logger) {
   const client = new StorageClient({
     endpoint: requiredEnvVariable("S3_ENDPOINT"),
@@ -39,10 +41,6 @@ function getProblemFromStorageError(
   return HttpProblems.internalServerError(request, context, overrides);
 }
 
-function sizeInBytes(data: string) {
-  return new TextEncoder().encode(JSON.stringify(data)).length;
-}
-
 export async function createMockResponse(
   request: ZuploRequest,
   context: ZuploContext,
@@ -53,6 +51,12 @@ export async function createMockResponse(
   const storage = storageClient(context.log);
 
   const body = await request.text();
+  const size = new TextEncoder().encode(JSON.stringify(body)).length;
+  if (size > MAX_SIZE) {
+    return HttpProblems.badRequest(request, context, {
+      detail: `Mock size cannot be larger than ${MAX_SIZE} bytes`,
+    });
+  }
 
   try {
     await storage.uploadObject(`${binId}.json`, body);
@@ -159,6 +163,14 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
       search: url.search,
     },
   };
+
+  const reqJson = JSON.stringify(req);
+  const reqSize = new TextEncoder().encode(JSON.stringify(reqJson)).length;
+  if (reqSize + (body?.size ?? 0) > MAX_SIZE) {
+    return HttpProblems.badRequest(request, context, {
+      detail: `Mock size cannot be larger than ${MAX_SIZE} bytes`,
+    });
+  }
 
   const storage = storageClient(context.log);
 
