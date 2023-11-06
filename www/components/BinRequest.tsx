@@ -127,7 +127,7 @@ const BinRequest = ({
                     ? // Formats JSON response with 2 spaces
                       JSON.stringify(JSON.parse(body), null, 2)
                     : "Request body is not JSON. Click 'RAW' to see request body"
-                  : null}
+                  : "Click 'Test' to see response"}
               </code>
               {requestIsJson && body ? (
                 <FloatingCopyButton
@@ -145,7 +145,7 @@ const BinRequest = ({
               <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-xs">
                 {requestData && body
                   ? body === "" ?? "No body was sent in the request"
-                  : null}
+                  : "Click 'Test' to see response"}
               </code>
               {body ? <FloatingCopyButton textToCopy={body ?? ""} /> : null}
             </div>

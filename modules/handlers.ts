@@ -103,13 +103,18 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
 
   let response: GetObjectResult;
   try {
-    response = await storage.getObject(`${binId}/${requestId}.json`);
+    response = await storage.getObject(`${binId}/${requestId}`);
   } catch (err) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
-  const result: RequestDetails = JSON.parse(response.body);
-  return result;
+  const headers = new Headers();
+  if (response.contentType) {
+    headers.set("content-type", response.contentType);
+  }
+  return new Response(response.body, {
+    headers,
+  });
 }
 
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
@@ -175,7 +180,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     }
     binResponse.requests.unshift(req);
     await Promise.all([
-      storage.uploadObject(`${binId}/${requestId}.json`, body as Blob),
+      storage.uploadObject(`${binId}/${requestId}`, body as Blob),
       storage.uploadObject(`${binId}.json`, JSON.stringify(binResponse)),
     ]);
   };
