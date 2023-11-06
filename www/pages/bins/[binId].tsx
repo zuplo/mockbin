@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BinRequest from "../../components/BinRequest";
 import { BinRequestData } from "../../utils/interfaces";
+import Link from "next/link";
 
 const Bin = () => {
   const [requests, setRequests] = useState<BinRequestData[] | undefined>(
@@ -69,7 +70,16 @@ const Bin = () => {
     return (
       <Frame>
         <div className="flex w-full h-full flex-col items-center justify-center">
-          <h1 className="text-3xl mb-8">🐒 Could not find bin</h1>
+          <h1 className="text-3xl mb-2 text-center">
+            No bin with ID &lsquo;{binId}&rsquo; was found
+          </h1>
+          <h2 className="text-3xl mb-8 text-center">
+            But you can{" "}
+            <Link className="text-[#FF00BD] hover:text-[#C0008F]" href="/">
+              create a new bin
+            </Link>{" "}
+            in seconds
+          </h2>
           <Image src="/ape.png" alt="ape" width={500} height={500} />
         </div>
       </Frame>
@@ -84,6 +94,12 @@ const Bin = () => {
   );
   return (
     <Frame>
+      <div className="text-xs mb-8 mt-2">
+        <Link className="text-[#FF00BD] hover:text-[#C0008F]" href="/">
+          Home
+        </Link>{" "}
+        &rsaquo; {binId}
+      </div>
       <div className="text-xl font-bold">
         Your bin is live at{" "}
         <a
@@ -126,7 +142,7 @@ const Bin = () => {
       </div>
       <div className="grid grid-cols-6">
         <div className="flex flex-col col-span-2 mr-4">
-          <ul>
+          <ul className="border border-white rounded-md">
             {requests
               .sort((a, b) => {
                 return (
@@ -141,11 +157,9 @@ const Bin = () => {
                     onClick={() => {
                       getRequestData(request.id);
                     }}
-                    className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border border-white ${
+                    className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border-white ${
                       isActive ? "bg-[#FF00BD]" : "hover:text-[#FF00BD]"
-                    } ${i === 0 ? "rounded-t-md" : ""} ${
-                      i === requests.length - 1 ? "rounded-b-md" : ""
-                    }`}
+                    } ${i === requests.length - 1 ? "" : "border-b"}`}
                   >
                     <div>
                       {request.method.toUpperCase()} &middot;{" "}
