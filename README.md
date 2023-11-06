@@ -25,7 +25,7 @@ Easily generate custom endpoints to test HTTP requests, and view the request log
 
 Visit https://mockbin.io, create a new bin, and start sending requests to your new endpoint.
 
-https://raw.githubusercontent.com/zuplo/mockbin/main/assets/mockbin.gif
+![How mockbin works](./assets/mockbin.gif)
 
 ## About 
 
