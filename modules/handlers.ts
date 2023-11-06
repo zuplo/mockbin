@@ -100,7 +100,10 @@ export async function getMockResponse(
   return data;
 }
 
-export async function getRequest(request: ZuploRequest, context: ZuploContext) {
+export async function getRequestBody(
+  request: ZuploRequest,
+  context: ZuploContext,
+) {
   const { binId, requestId } = request.params;
 
   const storage = storageClient(context.log);
