@@ -157,6 +157,12 @@ export async function listRequests(
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   const { binId } = request.params;
 
+  if (!binId) {
+    return HttpProblems.badRequest(request, context, {
+      detail: "No binId specified in request",
+    });
+  }
+
   const headers: Record<string, string> = {};
   for (const [key, value] of request.headers) {
     if (!key.startsWith("cf-")) {

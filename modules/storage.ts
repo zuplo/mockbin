@@ -5,7 +5,6 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { Logger } from "@zuplo/runtime";
-const BASE_URL = "https://api.cloudflare.com/client/v4";
 
 export interface UploadObjectResult {
   key: string;
