@@ -108,9 +108,17 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
-  const headers = new Headers();
+  const headers = new Headers({
+    "cache-control": "public, max-age=31536000",
+  });
   if (response.contentType) {
     headers.set("content-type", response.contentType);
+  }
+  if (response.contentDisposition) {
+    headers.set("content-disposition", response.contentDisposition);
+  }
+  if (response.contentEncoding) {
+    headers.set("content-encoding", response.contentEncoding);
   }
   return new Response(response.body, {
     headers,

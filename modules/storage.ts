@@ -26,6 +26,8 @@ export interface ListObjectsResult {
 export interface GetObjectResult {
   body: string;
   contentType: string | undefined;
+  contentEncoding: string | undefined;
+  contentDisposition: string | undefined;
   lastModified: Date | undefined;
 }
 
@@ -88,6 +90,8 @@ export class StorageClient {
     return {
       body: await response.Body?.transformToString(),
       contentType: response.ContentType,
+      contentDisposition: response.ContentDisposition,
+      contentEncoding: response.ContentDisposition,
       lastModified: response.LastModified,
     };
   }
