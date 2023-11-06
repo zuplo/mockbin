@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
-    "title": "My Zuplo API"
+    "title": "Mockbin API"
   },
   "paths": {
     "/v1/bins": {
@@ -138,7 +138,6 @@
       },
       "get,post,put,head,patch,delete,connect,options,trace": {
         "summary": "Invoke Bin",
-        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
