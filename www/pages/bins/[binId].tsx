@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BinRequest from "../../components/BinRequest";
 import { RequestDetails, RequestListItem } from "../../utils/interfaces";
+import posthog from "posthog-js";
 
 const Bin = () => {
   const [requests, setRequests] = useState<RequestListItem[] | undefined>(
@@ -63,6 +64,10 @@ const Bin = () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests/${requestId}`,
     );
+    posthog.capture("bin_request_viewed", {
+      binId,
+      requestId,
+    });
     const data = await response.json();
     setCurrentRequest(data);
     setIsLoading(false);
