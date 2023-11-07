@@ -1,34 +1,11 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { USE_WILDCARD_SUBDOMAIN } from "./env";
 import { nanoid } from "./nanoid";
-import {
-  GetObjectResult,
-  ListObjectsResult,
-  StorageError,
-  storageClient,
-} from "./storage";
+import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
 import { BinResponse } from "./types";
+import { getBinFromUrl, getProblemFromStorageError } from "./utils";
 
 const MAX_SIZE = 1048576;
-
-function getProblemFromStorageError(
-  err: unknown,
-  request: ZuploRequest,
-  context: ZuploContext,
-  overrides?: { detail: string },
-) {
-  if (err instanceof StorageError) {
-    if (err.status === 404) {
-      return HttpProblems.notFound(request, context, overrides);
-    } else {
-      return HttpProblems.internalServerError(request, context, {
-        detail: err.message,
-        ...(overrides ?? {}),
-      });
-    }
-  }
-  return HttpProblems.internalServerError(request, context, overrides);
-}
 
 export async function createMockResponse(
   request: ZuploRequest,
@@ -141,7 +118,14 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
 }
 
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
-  const { binId } = request.params;
+  const url = new URL(request.url);
+  const urlInfo = getBinFromUrl(url);
+  if (!urlInfo) {
+    return HttpProblems.badRequest(request, context, {
+      detail: "No binId specified in request",
+    });
+  }
+  const { binId } = urlInfo;
 
   if (!binId) {
     return HttpProblems.badRequest(request, context, {

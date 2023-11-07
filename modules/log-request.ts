@@ -2,15 +2,17 @@ import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { BASE_TIME } from "./env";
 import { storageClient } from "./storage";
 import { RequestData } from "./types";
+import { getBinFromUrl } from "./utils";
 
 export default async function (request: ZuploRequest, context: ZuploContext) {
-  const { binId } = request.params;
-
-  if (!binId) {
+  const url = new URL(request.url);
+  const urlInfo = getBinFromUrl(url);
+  if (!urlInfo) {
     return HttpProblems.badRequest(request, context, {
       detail: "No binId specified in request",
     });
   }
+  const { binId, pathname } = urlInfo;
 
   const headers: Record<string, string> = {};
   for (const [key, value] of request.headers) {
@@ -25,7 +27,6 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
 
   const storage = storageClient(context.log);
 
-  const url = new URL(request.url);
   const body = request.body ? await request.text() : null;
   const size = body ? new TextEncoder().encode(JSON.stringify(body)).length : 0;
   const req: RequestData = {
@@ -33,7 +34,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
     headers,
     size,
     url: {
-      pathname: url.pathname,
+      pathname,
       search: url.search,
     },
     body,
