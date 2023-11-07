@@ -1,5 +1,5 @@
 import Frame from "@/components/Frame";
-import { getURL, timeAgo } from "@/utils/helpers";
+import { timeAgo } from "@/utils/helpers";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -111,9 +111,11 @@ const Index = () => {
               return (
                 <div key={bin.id}>
                   <Link
-                    href={`/bins/${bin.id}`}
+                    href={bin.url}
                     className="text-[#FF00BD] hover:text-[#C0008F] mr-4 break-all"
-                  >{`${getURL()}bins/${bin.id}`}</Link>
+                  >
+                    {bin.url}
+                  </Link>
                   {timeAgo(Number(new Date(bin.createdTime)))}
                 </div>
               );
