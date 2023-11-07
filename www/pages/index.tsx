@@ -102,11 +102,16 @@ const Index = () => {
 
   return (
     <Frame>
-      <p className="mb-4 text-sm">
-        Welcome to mockbin (the revival). This is an open-source and fully-free
-        tool that allows you to quickly mock an API endpoint, configure a fixed
-        response and track requests to your endpoint.
-      </p>
+      <div className="mt-10 mb-20 w-2/3">
+        <p className="mb-4 text-3xl">
+          Welcome to <span className="font-bold">Mockbin by Zuplo</span>
+        </p>
+        <p className="text-gray-300 ">
+          This is an open-source and fully-free tool that allows you to quickly
+          mock an API endpoint, configure a fixed response and track requests to
+          your endpoint.
+        </p>
+      </div>
       {recentBins.length > 0 ? (
         <div className="flex flex-col mb-4">
           <h1 className="text-3xl">Your recent bins</h1>
@@ -130,7 +135,7 @@ const Index = () => {
         </div>
       ) : null}
       <form
-        className="gap-y-2"
+        className="gap-y-2 px-4 py-4 border border-dashed border-gray-700 shadow-xl shadow-[#FF00BD]/10 rounded-md"
         onSubmit={handleSubmit}
         style={{
           display: "flex",
@@ -138,38 +143,38 @@ const Index = () => {
           alignItems: "start",
         }}
       >
-        <h1 className="text-3xl">Create a new bin</h1>
-        <p className="text-sm">
+        <h1 className="text-3xl font-bold">Create a new bin</h1>
+        <p className="">
           Just specify the details of the response below and we’ll create you a
           new API endpoint in a jiffy.
         </p>
         <div className="mt-8 w-full grid grid-cols-5 gap-y-4">
-          <label className="mt-1">Status</label>
+          <label className="mt-1 font-bold">Status</label>
           <input
             type="text"
             placeholder="Status Code"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="text-black border-2 col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
+            className="text-white bg-[#000019] border col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
           />
           <div className="col-span-2"></div>
-          <label className="mt-1">Status Text</label>
+          <label className="mt-1 font-bold">Status Text</label>
           <input
             type="text"
             placeholder="Status Text"
             value={statusText}
             onChange={(e) => setStatusText(e.target.value)}
-            className="text-black border-2 col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
+            className="text-white bg-[#000019] border-2 col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
           />
           <div className="col-span-2"></div>
-          <label className="mt-1">Headers</label>
+          <label className="mt-1 font-bold">Headers</label>
           <div className="col-span-4">
             <HeadersList headers={headers} onChange={setHeaders} />
           </div>
-          <label className="mt-1">Body</label>
+          <label className="mt-1 font-bold">Body</label>
           <textarea
             placeholder="{}"
-            className="text-black border-2 font-mono p-1 px-2 mt-1 border-gray-300 h-32 w-full col-span-4 rounded-md"
+            className="text-white bg-[#000019] border-2 font-mono p-1 px-2 mt-1 border-gray-300 h-32 w-full col-span-4 rounded-md"
             value={responseBody}
             onChange={(e) => setResponseBody(e.target.value)}
           />
