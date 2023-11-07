@@ -27,7 +27,7 @@ Visit https://mockbin.io, create a new bin, and start sending requests to your n
 
 ![How mockbin works](./assets/mockbin.gif)
 
-## About 
+## About
 
 At Zuplo we were big fans of [mockbin.org](https://mockbin.org) and used it for testing APIs and doing demos. Unfortunately, it was shut down.
 
@@ -35,7 +35,7 @@ In the spirit of being scrappy and shipping quickly, a group of us decided to bu
 
 ### How it works
 
-The API for this project is built using [Zuplo](https://zuplo.com) and Cloudflare's [R2](https://www.cloudflare.com/developer-platform/r2/) (or any S3 API compatible storage) for the backend. 
+The API for this project is built using [Zuplo](https://zuplo.com) and Cloudflare's [R2](https://www.cloudflare.com/developer-platform/r2/) (or any S3 API compatible storage) for the backend.
 
 The frontend is a simple Next.js app that can be deployed to Vercel or anywhere else you prefer.
 
