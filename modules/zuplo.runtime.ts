@@ -26,7 +26,7 @@ export function runtimeInit(runtime: RuntimeExtensions) {
       // Remove the binId from the hostname
       url.hostname = url.hostname.substring(parts[0].length + 1);
       // Add the binId to the path
-      url.pathname = `/${parts[0]}${url.pathname}`;
+      url.pathname = `/${parts[0]}${url.pathname === "/" ? "" : url.pathname}`;
     }
 
     context.log.info(`Rewriting URL`, {
