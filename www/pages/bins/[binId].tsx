@@ -5,18 +5,19 @@ import { timeAgo } from "@/utils/helpers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import BinRequest from "../../components/BinRequest";
 import { RequestDetails, RequestListResponse } from "../../utils/interfaces";
 
 const Bin = () => {
   const router = useRouter();
-  const { binId, requestId } = router.query;
-
+  const { binId } = router.query;
   const [requests, setRequests] = useState<RequestListResponse | undefined>(
     undefined,
   );
+  const [currentRequestId, setCurrentRequestId] = useState<
+    string | undefined
+  >();
   const [currentRequest, setCurrentRequest] = useState<
     RequestDetails | undefined
   >();
@@ -50,14 +51,11 @@ const Bin = () => {
 
   const getRequestData = async (requestId: string) => {
     setIsLoading(true);
+    setCurrentRequestId(requestId);
     setCurrentRequest(undefined);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests/${requestId}`,
     );
-    posthog.capture("bin_request_viewed", {
-      binId,
-      requestId,
-    });
     const data = await response.json();
     setCurrentRequest(data);
     setIsLoading(false);
@@ -85,7 +83,6 @@ const Bin = () => {
 
   if (!requests) return <FullScreenLoading />;
 
-  // Get the real bin url from the API, the one with NEXT_PUBLIC_API_URL is legacy
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
     <Frame>
@@ -145,7 +142,7 @@ const Bin = () => {
                 );
               })
               .map((request, i) => {
-                const isActive = requestId === request.id;
+                const isActive = currentRequestId === request.id;
                 return (
                   <li
                     key={request.id}
