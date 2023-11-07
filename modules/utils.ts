@@ -48,6 +48,5 @@ export function getInvokeBinUrl(url: URL, binId: string) {
 const binRegEx = /^[0-9a-fA-F]{32}$/;
 
 export function validateBinId(binId: string) {
-  return true;
-  //return binRegEx.test(binId);
+  return binRegEx.test(binId);
 }

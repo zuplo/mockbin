@@ -17,10 +17,6 @@ export async function createMockResponse(
   const url = new URL(request.url);
   const binId = crypto.randomUUID().replaceAll("-", "");
 
-  if (validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
-  }
-
   const storage = storageClient(context.log);
 
   const body = await request.text();
@@ -57,7 +53,7 @@ export async function getMockResponse(
 ) {
   const url = new URL(request.url);
   const { binId } = request.params;
-  if (validateBinId(binId)) {
+  if (!validateBinId(binId)) {
     return HttpProblems.badRequest(request, context);
   }
 
@@ -81,7 +77,7 @@ export async function listRequests(
 ) {
   const url = new URL(request.url);
   const { binId } = request.params;
-  if (validateBinId(binId)) {
+  if (!validateBinId(binId)) {
     return HttpProblems.badRequest(request, context);
   }
 
@@ -117,7 +113,7 @@ export async function listRequests(
 export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   const { binId, requestId } = request.params;
 
-  if (validateBinId(binId)) {
+  if (!validateBinId(binId)) {
     return HttpProblems.badRequest(request, context);
   }
 
@@ -147,7 +143,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   }
   const { binId } = urlInfo;
 
-  if (validateBinId(binId)) {
+  if (!validateBinId(binId)) {
     return HttpProblems.badRequest(request, context);
   }
 

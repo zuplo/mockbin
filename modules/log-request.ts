@@ -14,7 +14,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
   }
   const { binId, pathname } = urlInfo;
 
-  if (validateBinId(binId)) {
+  if (!validateBinId(binId)) {
     return HttpProblems.badRequest(request, context);
   }
 
