@@ -160,7 +160,9 @@ const Bin = () => {
                   </li>
                 );
               })}
-            {requests.data.length === 0 ? "No requests yet" : null}
+            {requests.data.length === 0 ? (
+              <p className="px-2 py-1">No requests yet</p>
+            ) : null}
           </ul>
         </div>
         <div className="col-span-4">
@@ -168,6 +170,7 @@ const Bin = () => {
             isLoading={isLoading || isRefreshing}
             hasRequests={requests.data.length > 0}
             requestDetails={currentRequest}
+            binUrl={binUrl}
           />
         </div>
       </div>

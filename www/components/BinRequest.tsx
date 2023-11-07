@@ -6,6 +6,7 @@ import { RequestDetails } from "../utils/interfaces";
 type TestOperationResponseProps = {
   isLoading: boolean;
   hasRequests: boolean;
+  binUrl: string;
   requestDetails: RequestDetails | undefined;
 };
 
@@ -43,6 +44,7 @@ const BinRequest = ({
   isLoading,
   requestDetails,
   hasRequests,
+  binUrl,
 }: TestOperationResponseProps) => {
   const tabs: Tab[] = [
     {
@@ -78,6 +80,12 @@ const BinRequest = ({
     </div>
   );
 
+  let requestUrl = null;
+  if (requestDetails?.url) {
+    requestUrl = new URL(requestDetails.url.pathname, binUrl);
+    requestUrl.search = requestDetails.url.search;
+  }
+
   return (
     <div className="sticky top-4 flex flex-col h-fit w-full border border-input-border rounded-md pt-4 mb-4">
       <div className="flex flex-col sm:flex-row text-xs px-4 pb-3 gap-x-4">
@@ -96,6 +104,12 @@ const BinRequest = ({
           <span>
             {requestDetails?.size != null ? `${requestDetails.size} B` : null}
           </span>
+        </div>
+      </div>
+      <div className="flex flex-col sm:flex-row text-xs px-4 pb-3 gap-x-4">
+        <div className="flex gap-x-1">
+          <span>URL: </span>
+          <span>{requestUrl?.toString()}</span>
         </div>
       </div>
       <div>
@@ -128,10 +142,12 @@ const BinRequest = ({
           requestDetails ? (
             <div className="flex relative w-full h-full">
               <code className="flex items-center h-full w-fit overflow-x-auto break-words px-2 whitespace-pre text-xs">
-                {requestIsJson && requestDetails.body
-                  ? // Formats JSON response with 2 spaces
-                    JSON.stringify(JSON.parse(requestDetails.body), null, 2)
-                  : "Request body is not JSON. Click 'RAW' to see request body"}
+                {requestDetails.body
+                  ? requestIsJson
+                    ? // Formats JSON response with 2 spaces
+                      JSON.stringify(JSON.parse(requestDetails.body), null, 2)
+                    : "Request body is not JSON. Click 'RAW' to see request body"
+                  : "No body was sent in the request"}
               </code>
               {requestIsJson && requestDetails.body ? (
                 <FloatingCopyButton

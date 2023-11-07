@@ -32,7 +32,7 @@ const Index = () => {
   ]);
   const [responseBody, setResponseBody] = useState("{}");
   const [recentBins, setRecentBins] = useState<RecentBin[]>([]);
-
+  const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -47,6 +47,7 @@ const Index = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsCreating(true);
     const responseHeaders = headers.reduce((cleanHeaders, header) => {
       if (!header.key || header.hasError) {
         return cleanHeaders;
@@ -76,9 +77,11 @@ const Index = () => {
 
       if (response.status !== 201) {
         alert(`Error ${response.status}\n\n ${await response.text()}`);
+        setIsCreating(false);
         return;
       }
       const result: { id: string; url: string } = await response.json();
+      setIsCreating(false);
       router.push(`/bins/${result.id}`);
       const createdTime = new Date().toISOString();
       const recentBinEntry: RecentBin = {
@@ -92,6 +95,7 @@ const Index = () => {
       }
     } catch (err: any) {
       alert(`Error - ${err.message}`);
+      setIsCreating(false);
       return;
     }
   };
@@ -111,7 +115,7 @@ const Index = () => {
               return (
                 <div key={bin.id}>
                   <Link
-                    href={`/bins/${bin}`}
+                    href={`/bins/${bin.id}`}
                     className="text-[#FF00BD] hover:text-[#C0008F] mr-4 break-all"
                   >{`${getURL()}bins/${bin.id}`}</Link>
                   {timeAgo(Number(new Date(bin.createdTime)))}
@@ -171,10 +175,11 @@ const Index = () => {
           />
         </div>
         <button
-          className="self-end bg-[#FF00BD] rounded-md p-2 mt-3 px-4 font-bold hover:bg-[#C0008F]"
+          className="self-end bg-[#FF00BD] rounded-md p-2 mt-3 px-4 font-bold enabled:hover:bg-[#C0008F] disabled:opacity-50"
+          disabled={isCreating}
           type="submit"
         >
-          Create Bin
+          {isCreating ? "Creating" : "Create Bin"}
         </button>
       </form>
     </Frame>

@@ -11,15 +11,30 @@ const Header = () => {
           src="/mockbin-header.png"
         />
       </Link>
-      <a href="https://github.com/zuplo-samples/mockbin" target="_blank">
-        <Image
-          className="h-fit"
-          width={30}
-          height={30}
-          alt="github logo"
-          src="/github-mark-white.png"
-        />
-      </a>
+      <div className="flex gap-x-2 items-center">
+        <a
+          target="_blank"
+          className="flex items-center gap-x-1 bg-[#5865F2] h-[31px] border border-[#464ec7] hover:bg-[#464ec7] p-2 py-[4px] rounded-[4px]"
+          href="https://discord.gg/Y87N4SxjvJ"
+        >
+          <Image
+            className="h-[16px] w-auto"
+            height={16}
+            width={16}
+            alt="Discord"
+            src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"
+          />
+          <p className="text-white text-sm font-semibold">Discord</p>
+        </a>
+        <iframe
+          src="https://ghbtns.com/github-btn.html?user=zuplo&repo=mockbin&type=star&count=true&size=large"
+          frameBorder="0"
+          scrolling="0"
+          width="120"
+          height="30"
+          title="GitHub"
+        ></iframe>
+      </div>
     </header>
   );
 };
