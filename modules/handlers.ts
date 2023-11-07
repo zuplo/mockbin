@@ -174,8 +174,13 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     });
   }
 
+  const headers = new Headers(binResponse.response?.headers);
+  if (!headers.has("Cache-Control")) {
+    headers.set("Cache-Control", "no-cache");
+  }
+
   const response = new Response(binResponse.response?.body ?? null, {
-    headers: binResponse.response?.headers,
+    headers,
     status: binResponse.response?.status,
     statusText: binResponse.response?.statusText,
   });
