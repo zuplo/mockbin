@@ -82,13 +82,12 @@ const BinRequest = ({
 
   let requestUrl = null;
   if (requestDetails?.url) {
-    requestUrl = new URL(requestDetails.url.pathname, binUrl);
-    requestUrl.search = requestDetails.url.search;
+    requestUrl = `${requestDetails.url.pathname}${requestDetails.url.search}`;
   }
 
   return (
     <div className="sticky top-4 flex flex-col h-fit w-full border border-input-border rounded-md pt-4 mb-4">
-      <div className="flex flex-col sm:flex-row text-xs px-4 pb-3 gap-x-4">
+      <div className="flex flex-col sm:flex-row gap-y-2 text-xs px-4 pb-3 gap-x-4">
         <div className="flex gap-x-1">
           <span>METHOD: </span>
           <span>{requestDetails?.method}</span>
@@ -108,8 +107,8 @@ const BinRequest = ({
       </div>
       <div className="flex flex-col sm:flex-row text-xs px-4 pb-3 gap-x-4">
         <div className="flex gap-x-1">
-          <span>URL: </span>
-          <span>{requestUrl?.toString()}</span>
+          <span>PATH: </span>
+          <span className="break-all">{requestUrl}</span>
         </div>
       </div>
       <div>

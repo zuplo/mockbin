@@ -9,10 +9,20 @@ export default function Frame({ children }: { children: ReactNode }) {
           <Header />
         </div>
         <div className="flex-grow">{children}</div>
-        <div className="flex-none flex-row items-center justify-between py-3 w-full self-end justify-self-end">
+        <div className="mt-4 flex flex-none flex-row py-3 w-full self-end justify-self-end">
           <a target="_blank" href="https://zuplo.com">
             Made with ❤️ by zuplo
           </a>
+          <div className="sm:hidden ml-1">
+            &middot;{" "}
+            <a
+              href="https://discord.gg/s8QHDPerbE"
+              className="text-[#5865F2]"
+              target="_blank"
+            >
+              Discord
+            </a>
+          </div>
         </div>
       </div>
     </div>

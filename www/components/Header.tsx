@@ -14,8 +14,8 @@ const Header = () => {
       <div className="flex gap-x-2 items-center">
         <a
           target="_blank"
-          className="flex items-center gap-x-1 bg-[#5865F2] h-[31px] border border-[#464ec7] hover:bg-[#464ec7] p-2 py-[4px] rounded-[4px]"
-          href="https://discord.gg/Y87N4SxjvJ"
+          className="hidden sm:flex items-center gap-x-1 bg-[#5865F2] h-[31px] border border-[#464ec7] hover:bg-[#464ec7] p-2 py-[4px] rounded-[4px]"
+          href="https://discord.gg/s8QHDPerbE"
         >
           <Image
             className="h-[16px] w-auto"
