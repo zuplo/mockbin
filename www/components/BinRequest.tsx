@@ -46,10 +46,10 @@ const BinRequest = ({
 }: TestOperationResponseProps) => {
   const tabs: Tab[] = [
     {
-      name: "JSON",
+      name: "RAW",
     },
     {
-      name: "RAW",
+      name: "JSON",
     },
     {
       name: "HEADERS",
