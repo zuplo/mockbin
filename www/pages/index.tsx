@@ -1,11 +1,10 @@
 import Frame from "@/components/Frame";
-import { timeAgo } from "@/utils/helpers";
+import { getURL, timeAgo } from "@/utils/helpers";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import HeadersList, { Header } from "../components/HeadersList";
-import posthog from "posthog-js";
 
 const RECENT_BIN_KEY = "RECENT_BINS";
 type RecentBin = {
@@ -76,21 +75,10 @@ const Index = () => {
       );
 
       if (response.status !== 201) {
-        posthog.capture("error", {
-          status: response.status,
-          statusText: response.statusText,
-          url: `${process.env.NEXT_PUBLIC_API_URL}/v1/bins`,
-          requestBody: requestBody,
-          responseBody: await response.text(),
-        });
         alert(`Error ${response.status}\n\n ${await response.text()}`);
         return;
       }
       const result: { id: string; url: string } = await response.json();
-      posthog.capture("bin_created", {
-        binId: result.id,
-        url: result.url,
-      });
       router.push(`/bins/${result.id}`);
       const createdTime = new Date().toISOString();
       const recentBinEntry: RecentBin = {
@@ -103,14 +91,6 @@ const Index = () => {
         localStorage.setItem(RECENT_BIN_KEY, JSON.stringify(newRecentBins));
       }
     } catch (err: any) {
-      posthog.capture("error", {
-        status: err.status,
-        statusText: err.statusText,
-        url: `${process.env.NEXT_PUBLIC_API_URL}/v1/bins`,
-        requestBody: requestBody,
-        responseBody: err.message,
-      });
-
       alert(`Error - ${err.message}`);
       return;
     }
@@ -131,11 +111,9 @@ const Index = () => {
               return (
                 <div key={bin.id}>
                   <Link
-                    href={bin.url}
+                    href={`/bins/${bin}`}
                     className="text-[#FF00BD] hover:text-[#C0008F] mr-4 break-all"
-                  >
-                    {bin.url}
-                  </Link>
+                  >{`${getURL()}bins/${bin.id}`}</Link>
                   {timeAgo(Number(new Date(bin.createdTime)))}
                 </div>
               );
