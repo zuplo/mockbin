@@ -1,6 +1,6 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
-import { BinResponse } from "./types";
+import { BinResponse, RequestData, RequestDetails } from "./types";
 import {
   getBinFromUrl,
   getInvokeBinUrl,
@@ -126,11 +126,20 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
-  return new Response(response.body, {
-    headers: {
-      "content-type": "application/json",
-    },
-  });
+
+  if (!response.lastModified) {
+    throw new Error("Invalid response from storage");
+  }
+
+  let data: RequestData = JSON.parse(response.body);
+
+  const body: RequestDetails = {
+    ...data,
+    id: requestId,
+    timestamp: response.lastModified.toISOString(),
+  };
+
+  return body;
 }
 
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
