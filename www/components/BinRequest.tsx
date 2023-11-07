@@ -21,7 +21,7 @@ const getRequestIsJson = (requestDetails: RequestDetails | undefined) => {
     return true;
   }
 
-  const requestContentType = requestDetails.headers["Content-Type"];
+  const requestContentType = requestDetails.headers?.["Content-Type"];
   if (requestContentType) {
     return requestContentType.includes("json");
   }
