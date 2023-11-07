@@ -91,7 +91,6 @@ const Index = () => {
         binId: result.id,
         url: result.url,
       });
-      posthog.identify(result.id);
       router.push(`/bins/${result.id}`);
       const createdTime = new Date().toISOString();
       const recentBinEntry: RecentBin = {
