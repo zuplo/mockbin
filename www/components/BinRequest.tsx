@@ -110,6 +110,20 @@ const BinRequest = ({
         </div>
       </div>
       <div className="flex my-4 h-full">
+        {selectedTab === "RAW" ? (
+          requestDetails ? (
+            <div className="flex relative w-full h-full">
+              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-xs">
+                {requestDetails.body ?? "No body was sent in the request"}
+              </code>
+              {requestDetails.body ? (
+                <FloatingCopyButton textToCopy={requestDetails.body} />
+              ) : null}
+            </div>
+          ) : (
+            noRequestDataPlaceholder
+          )
+        ) : null}
         {selectedTab === "JSON" ? (
           requestDetails ? (
             <div className="flex relative w-full h-full">
@@ -127,20 +141,6 @@ const BinRequest = ({
                     2,
                   )}
                 />
-              ) : null}
-            </div>
-          ) : (
-            noRequestDataPlaceholder
-          )
-        ) : null}
-        {selectedTab === "RAW" ? (
-          requestDetails ? (
-            <div className="flex relative w-full h-full">
-              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-xs">
-                {requestDetails.body ?? "No body was sent in the request"}
-              </code>
-              {requestDetails.body ? (
-                <FloatingCopyButton textToCopy={requestDetails.body} />
               ) : null}
             </div>
           ) : (
