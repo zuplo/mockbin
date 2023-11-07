@@ -39,11 +39,9 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
     body,
   };
 
-  storage
-    .uploadObject(`${binId}/${requestId}.json`, JSON.stringify(req))
-    .catch((err) => {
-      context.log.error(err);
-    });
+  context.waitUntil(
+    storage.uploadObject(`${binId}/${requestId}.json`, JSON.stringify(req)),
+  );
 
   return request;
 }
