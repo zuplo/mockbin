@@ -5,6 +5,7 @@ import {
   getBinFromUrl,
   getInvokeBinUrl,
   getProblemFromStorageError,
+  validateBinId,
 } from "./utils";
 
 const MAX_SIZE = 1048576;
@@ -15,6 +16,10 @@ export async function createMockResponse(
 ) {
   const url = new URL(request.url);
   const binId = crypto.randomUUID().replaceAll("-", "");
+
+  if (validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context);
+  }
 
   const storage = storageClient(context.log);
 
@@ -52,6 +57,9 @@ export async function getMockResponse(
 ) {
   const url = new URL(request.url);
   const { binId } = request.params;
+  if (validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context);
+  }
 
   const storage = storageClient(context.log);
   let data: BinResponse;
@@ -73,6 +81,9 @@ export async function listRequests(
 ) {
   const url = new URL(request.url);
   const { binId } = request.params;
+  if (validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context);
+  }
 
   const storage = storageClient(context.log);
   let response: ListObjectsResult[];
@@ -106,6 +117,10 @@ export async function listRequests(
 export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   const { binId, requestId } = request.params;
 
+  if (validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context);
+  }
+
   const storage = storageClient(context.log);
 
   let response: GetObjectResult;
@@ -131,6 +146,10 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     });
   }
   const { binId } = urlInfo;
+
+  if (validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context);
+  }
 
   if (!binId) {
     return HttpProblems.badRequest(request, context, {

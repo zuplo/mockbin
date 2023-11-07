@@ -44,3 +44,9 @@ export function getInvokeBinUrl(url: URL, binId: string) {
   mockUrl.pathname = USE_WILDCARD_SUBDOMAIN ? "/" : `/${binId}`;
   return mockUrl;
 }
+
+const binRegEx = /^[0-9a-fA-F]{32}$/;
+
+export function validateBinId(binId: string) {
+  return binRegEx.test(binId);
+}

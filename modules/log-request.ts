@@ -2,7 +2,7 @@ import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { BASE_TIME } from "./env";
 import { storageClient } from "./storage";
 import { RequestData } from "./types";
-import { getBinFromUrl } from "./utils";
+import { getBinFromUrl, validateBinId } from "./utils";
 
 export default async function (request: ZuploRequest, context: ZuploContext) {
   const url = new URL(request.url);
@@ -13,6 +13,10 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
     });
   }
   const { binId, pathname } = urlInfo;
+
+  if (validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context);
+  }
 
   const headers: Record<string, string> = {};
   for (const [key, value] of request.headers) {
