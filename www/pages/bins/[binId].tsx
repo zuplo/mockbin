@@ -42,7 +42,7 @@ const Bin = () => {
   const getRequests = async () => {
     setIsRefreshing(true);
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests`,
     );
 
     if (!response.ok) {
@@ -52,7 +52,7 @@ const Bin = () => {
     }
 
     const data = await response.json();
-    setRequests(data.requests ?? []);
+    setRequests(data.data ?? []);
     setIsRefreshing(false);
   };
 
