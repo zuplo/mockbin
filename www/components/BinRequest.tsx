@@ -94,7 +94,7 @@ const BinRequest = ({
         <div className="flex gap-x-1">
           <span>SIZE: </span>
           <span>
-            {requestDetails?.size ? `${requestDetails.size} B` : null}
+            {requestDetails?.size != null ? `${requestDetails.size} B` : null}
           </span>
         </div>
       </div>
