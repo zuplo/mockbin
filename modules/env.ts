@@ -1,5 +1,7 @@
 import { environment } from "@zuplo/runtime";
 
+export const BASE_TIME = 100000000000000;
+
 /**
  * Set to 'true' if you are hosting this service on a wildcard subdomain
  *

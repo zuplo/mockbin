@@ -3,21 +3,23 @@ import Frame from "@/components/Frame";
 import FullScreenLoading from "@/components/FullScreenLoading";
 import { timeAgo } from "@/utils/helpers";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BinRequest from "../../components/BinRequest";
-import { BinRequestData } from "../../utils/interfaces";
-import Link from "next/link";
+import { RequestDetails, RequestListItem } from "../../utils/interfaces";
 
 const Bin = () => {
-  const [requests, setRequests] = useState<BinRequestData[] | undefined>(
+  const [requests, setRequests] = useState<RequestListItem[] | undefined>(
     undefined,
   );
   const [binId, setBinId] = useState<string | undefined>();
   const [currentRequestId, setCurrentRequestId] = useState<
     string | undefined
   >();
-  const [currentBody, setCurrentBody] = useState<string | undefined>();
+  const [currentRequest, setCurrentRequest] = useState<
+    RequestDetails | undefined
+  >();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [easterEggActive, setEasterEggActive] = useState(false);
@@ -40,7 +42,7 @@ const Bin = () => {
   const getRequests = async () => {
     setIsRefreshing(true);
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests`,
     );
 
     if (!response.ok) {
@@ -50,19 +52,19 @@ const Bin = () => {
     }
 
     const data = await response.json();
-    setRequests(data.requests ?? []);
+    setRequests(data.data ?? []);
     setIsRefreshing(false);
   };
 
   const getRequestData = async (requestId: string) => {
     setIsLoading(true);
     setCurrentRequestId(requestId);
-    setCurrentBody(undefined);
+    setCurrentRequest(undefined);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests/${requestId}`,
     );
-    const data = await response.text();
-    setCurrentBody(data);
+    const data = await response.json();
+    setCurrentRequest(data);
     setIsLoading(false);
   };
 
@@ -89,9 +91,6 @@ const Bin = () => {
   if (!requests) return <FullScreenLoading />;
 
   const binUrl = `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
-  const activeRequest = requests.find(
-    (request) => currentRequestId === request.id,
-  );
   return (
     <Frame>
       <div className="text-xs mb-8 mt-2">
@@ -175,8 +174,7 @@ const Bin = () => {
           <BinRequest
             isLoading={isLoading || isRefreshing}
             hasRequests={requests.length > 0}
-            requestData={activeRequest}
-            body={currentBody}
+            requestDetails={currentRequest}
           />
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { Logger } from "@zuplo/runtime";
+import { requiredEnvVariable } from "./env";
 
 export interface UploadObjectResult {
   key: string;
@@ -17,10 +18,6 @@ export interface ListObjectsResult {
   size: number;
   etag: string;
   lastModified: Date;
-  // httpMetadata?: {
-  //   contentType?: string;
-  // };
-  // customMetadata?: Record<string, string>;
 }
 
 export interface GetObjectResult {
@@ -38,6 +35,17 @@ export class StorageError extends Error {
     super(message);
     this.status = status;
   }
+}
+
+export function storageClient(logger: Logger) {
+  const client = new StorageClient({
+    endpoint: requiredEnvVariable("S3_ENDPOINT"),
+    accessKeyId: requiredEnvVariable("S3_ACCESS_KEY_ID"),
+    accessKeySecret: requiredEnvVariable("S3_SECRET_ACCESS_KEY"),
+    bucketName: requiredEnvVariable("BUCKET_NAME"),
+    logger,
+  });
+  return client;
 }
 
 export class StorageClient {

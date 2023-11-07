@@ -36,6 +36,14 @@
       },
       "name": "rate-limit-inbound",
       "policyType": "rate-limit-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/log-request)"
+      },
+      "name": "log-request",
+      "policyType": "custom-code-inbound"
     }
   ]
 }

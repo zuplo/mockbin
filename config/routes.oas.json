@@ -99,17 +99,59 @@
         "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
       }
     },
+    "/v1/bins/{binId}/requests": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "List requests",
+        "description": "Lists the saved requests of a bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "listRequests",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "rate-limit-inbound"
+            ]
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": [
+                  {
+                    "timestamp": "2023-11-04T18:02:19.446Z",
+                    "method": "POST",
+                    "headers": {
+                      "content-type": "text/plain",
+                      "foo-bar": "wibble-bobble"
+                    },
+                    "body": "Hello World!"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operationId": "460b0c3d-6267-4913-9e42-46f6882e2a42"
+      }
+    },
     "/v1/bins/{binId}/requests/{requestId}": {
       "x-zuplo-path": {
         "pathMode": "open-api"
       },
       "get": {
-        "summary": "Get a Request body",
-        "description": "Gets the body of a saved request",
+        "summary": "Get a Request",
+        "description": "Gets the saved request",
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
-            "export": "getRequestBody",
+            "export": "getRequest",
             "module": "$import(./modules/handlers)",
             "options": {}
           },
@@ -156,7 +198,9 @@
           },
           "policies": {
             "inbound": [
-              "rate-limit-inbound"
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
             ]
           }
         },
