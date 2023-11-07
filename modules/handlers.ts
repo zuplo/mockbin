@@ -1,5 +1,4 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
-import { nanoid } from "./nanoid";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
 import { BinResponse } from "./types";
 import {
@@ -15,7 +14,7 @@ export async function createMockResponse(
   context: ZuploContext,
 ) {
   const url = new URL(request.url);
-  const binId = nanoid();
+  const binId = crypto.randomUUID().replaceAll("-", "");
 
   const storage = storageClient(context.log);
 
