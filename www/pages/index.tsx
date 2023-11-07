@@ -117,6 +117,7 @@ const Index = () => {
           <h1 className="text-3xl">Your recent bins</h1>
           <div className="flex flex-col gap-y-2 mt-3">
             {recentBins.slice(0, 5).map((bin) => {
+              console.log("🚀 ~ file: index.tsx:116 ~ {recentBins.slice ~ bin:", bin)
               return (
                 <div key={bin.id}>
                   <Link
