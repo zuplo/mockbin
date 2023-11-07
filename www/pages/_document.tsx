@@ -4,9 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <title>Mockbin by Zuplo</title>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
 
         {/* twitter og image */}
         <meta name="twitter:card" content="summary_large_image" />
