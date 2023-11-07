@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import HeadersList, { Header } from "../components/HeadersList";
 
-const RECENT_BIN_KEY = "RECENT_BINS";
+const RECENT_BIN_KEY = "LAST_BINS";
 type RecentBin = {
   id: string;
   createdTime: string;
