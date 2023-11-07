@@ -103,7 +103,7 @@ const Index = () => {
   return (
     <Frame>
       <p className="mb-4 text-sm">
-        Welcome to mockbin2 (the revival). This is an open-source and fully-free
+        Welcome to mockbin (the revival). This is an open-source and fully-free
         tool that allows you to quickly mock an API endpoint, configure a fixed
         response and track requests to your endpoint.
       </p>
@@ -124,7 +124,7 @@ const Index = () => {
             })}
           </div>
           <p className="mt-4 text-sm">
-            Mockbin is free of sign-ups, so there is no account. The IDs of
+            mockbin is free of sign-ups, so there is no account. The IDs of
             these bins are stored in browser storage.{" "}
           </p>
         </div>
