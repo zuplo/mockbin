@@ -5,17 +5,20 @@ export interface BinResponse {
     headers?: Record<string, string>;
     body?: string;
   };
-  requests?: RequestDetails[];
 }
 
-export interface RequestDetails {
-  id: string;
+export interface RequestData {
   url: {
     pathname: string;
     search: string;
   };
   size: number;
   method: string;
-  timestamp: string;
   headers: Record<string, string>;
+  body: string | null;
+}
+
+export interface RequestDetails extends RequestData {
+  id: string;
+  timestamp: string;
 }

@@ -1,26 +1,15 @@
-import {
-  HttpProblems,
-  Logger,
-  ZuploContext,
-  ZuploRequest,
-} from "@zuplo/runtime";
-import { USE_WILDCARD_SUBDOMAIN, requiredEnvVariable } from "./env";
+import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { USE_WILDCARD_SUBDOMAIN } from "./env";
 import { nanoid } from "./nanoid";
-import { GetObjectResult, StorageClient, StorageError } from "./storage";
-import { BinResponse, RequestDetails } from "./types";
+import {
+  GetObjectResult,
+  ListObjectsResult,
+  StorageError,
+  storageClient,
+} from "./storage";
+import { BinResponse } from "./types";
 
 const MAX_SIZE = 1048576;
-
-function storageClient(logger: Logger) {
-  const client = new StorageClient({
-    endpoint: requiredEnvVariable("S3_ENDPOINT"),
-    accessKeyId: requiredEnvVariable("S3_ACCESS_KEY_ID"),
-    accessKeySecret: requiredEnvVariable("S3_SECRET_ACCESS_KEY"),
-    bucketName: requiredEnvVariable("BUCKET_NAME"),
-    logger,
-  });
-  return client;
-}
 
 function getProblemFromStorageError(
   err: unknown,
@@ -100,35 +89,54 @@ export async function getMockResponse(
   return data;
 }
 
-export async function getRequestBody(
+export async function listRequests(
   request: ZuploRequest,
   context: ZuploContext,
 ) {
+  const { binId } = request.params;
+
+  const storage = storageClient(context.log);
+  let response: ListObjectsResult[];
+
+  try {
+    response = await storage.listObjects({ prefix: `${binId}/`, limit: 100 });
+  } catch (err) {
+    context.log.error(err);
+    return getProblemFromStorageError(err, request, context);
+  }
+
+  const data = response.map((r) => {
+    const requestId = r.key.substring(
+      binId.length + 1,
+      r.key.length - ".json".length,
+    );
+    const parts = requestId.split("-");
+    return {
+      id: requestId,
+      method: parts[2],
+      timestamp: r.lastModified,
+      size: r.size,
+    };
+  });
+  return { data };
+}
+
+export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   const { binId, requestId } = request.params;
 
   const storage = storageClient(context.log);
 
   let response: GetObjectResult;
   try {
-    response = await storage.getObject(`${binId}/${requestId}`);
+    response = await storage.getObject(`${binId}/${requestId}.json`);
   } catch (err) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
   }
-  const headers = new Headers({
-    "cache-control": "public, max-age=31536000",
-  });
-  if (response.contentType) {
-    headers.set("content-type", response.contentType);
-  }
-  if (response.contentDisposition) {
-    headers.set("content-disposition", response.contentDisposition);
-  }
-  if (response.contentEncoding) {
-    headers.set("content-encoding", response.contentEncoding);
-  }
   return new Response(response.body, {
-    headers,
+    headers: {
+      "content-type": "application/json",
+    },
   });
 }
 
@@ -138,40 +146,6 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   if (!binId) {
     return HttpProblems.badRequest(request, context, {
       detail: "No binId specified in request",
-    });
-  }
-
-  const headers: Record<string, string> = {};
-  for (const [key, value] of request.headers) {
-    if (!key.startsWith("cf-")) {
-      headers[key] = value;
-    }
-  }
-
-  const requestId = `req-${encodeURIComponent(
-    Date.now(),
-  )}-${context.requestId.replaceAll("-", "")}`;
-
-  const url = new URL(request.url);
-  const body = request.body ? await request.blob() : null;
-
-  const req: RequestDetails = {
-    id: requestId,
-    method: request.method,
-    headers,
-    timestamp: new Date().toISOString(),
-    size: body?.size ?? 0,
-    url: {
-      pathname: url.pathname,
-      search: url.search,
-    },
-  };
-
-  const reqJson = JSON.stringify(req);
-  const reqSize = new TextEncoder().encode(JSON.stringify(reqJson)).length;
-  if (reqSize + (body?.size ?? 0) > MAX_SIZE) {
-    return HttpProblems.badRequest(request, context, {
-      detail: `Mock size cannot be larger than ${MAX_SIZE} bytes`,
     });
   }
 
@@ -195,20 +169,6 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
         "Invalid bin found in storage. The bin is corrupt, create a new mock and try again.",
     });
   }
-
-  const updateResponses = async () => {
-    binResponse.requests = binResponse.requests ?? [];
-    if (binResponse.requests.length > 100) {
-      binResponse.requests.pop();
-    }
-    binResponse.requests.unshift(req);
-    await Promise.all([
-      storage.uploadObject(`${binId}/${requestId}`, body as Blob),
-      storage.uploadObject(`${binId}.json`, JSON.stringify(binResponse)),
-    ]);
-  };
-
-  context.waitUntil(updateResponses());
 
   const response = new Response(binResponse.response?.body ?? null, {
     headers: binResponse.response?.headers,

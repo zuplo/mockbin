@@ -1,21 +1,31 @@
-export interface BinResponseData {
+export interface BinResponse {
   response?: {
     status: number;
     statusText?: string;
     headers?: Record<string, string>;
     body?: string;
   };
-  requests?: BinRequestData[];
 }
 
-export interface BinRequestData {
+export interface RequestListItem {
   id: string;
+  method: string;
+  timestamp: string;
+  size: number;
+}
+
+export interface RequestData {
   url: {
     pathname: string;
     search: string;
   };
   size: number;
   method: string;
-  timestamp: string;
   headers: Record<string, string>;
+  body: string | null;
+}
+
+export interface RequestDetails extends RequestData {
+  id: string;
+  timestamp: string;
 }
