@@ -112,28 +112,32 @@ const Index = () => {
           your endpoint.
         </p>
       </div>
-      {recentBins.length > 0 ? (
-        <div className="flex flex-col mb-4">
-          <h1 className="text-3xl">Your recent bins</h1>
-          <div className="flex flex-col gap-y-2 mt-3">
-            {recentBins.slice(0, 5).map((bin) => {
-              return (
-                <div key={bin.id}>
-                  <Link
-                    href={`/bins/${bin.id}`}
-                    className="text-[#FF00BD] hover:text-[#C0008F] mr-4 break-all"
-                  >{`${getURL()}bins/${bin.id}`}</Link>
-                  {timeAgo(Number(new Date(bin.createdTime)))}
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-4 text-sm">
-            mockbin is free of sign-ups, so there is no account. The IDs of
-            these bins are stored in browser storage.{" "}
-          </p>
-        </div>
-      ) : null}
+      <div className="my-10">
+        {recentBins.length > 0 ? (
+          <ul className="flex flex-col mb-4 list-disc list-inside">
+            <h1 className="text-3xl font-bold">Your recent bins</h1>
+            <div className="flex flex-col gap-y-2 mt-3">
+              {recentBins.slice(0, 5).map((bin) => {
+                return (
+                  <li key={bin.id}>
+                    <Link
+                      href={`/bins/${bin}`}
+                      className="text-[#FF00BD] hover:text-[#FF90E3] text-sm md:text-xl font-mono mr-4 break-all transition-all"
+                    >{`${bin.id}`}</Link>
+                    <span className="font-mono opacity-70">
+                      {timeAgo(Number(new Date(bin.createdTime)))}
+                    </span>
+                  </li>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-sm w-fit border border-gray-700 p-2 rounded-md opacity-70">
+              Mockbin is free of sign-ups, there is no account. <br /> These bin
+              IDs are stored in browser storage.{" "}
+            </p>
+          </ul>
+        ) : null}
+      </div>
       <form
         className="gap-y-2 px-4 py-4 border border-dashed border-gray-700 shadow-xl shadow-[#FF00BD]/10 rounded-md"
         onSubmit={handleSubmit}

@@ -26,7 +26,7 @@ export default function Tabs({ tabs, selectedTab, onChange }: TabsProps) {
               onClick={() => onChange(tab.name)}
               className={classNames(
                 tab.name === selectedTab
-                  ? "border-[#FF00BD] text-[#FF00BD]"
+                  ? "border-[#FF00BD] text-[#FF00BD] font-bold"
                   : "border-transparent hover:border-gray-200",
                 "flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium",
               )}

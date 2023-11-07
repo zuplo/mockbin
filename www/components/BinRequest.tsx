@@ -87,20 +87,22 @@ const BinRequest = ({
 
   return (
     <div className="sticky top-4 flex flex-col h-fit w-full border border-input-border rounded-md pt-4 mb-4">
-      <div className="flex flex-col sm:flex-row gap-y-2 text-xs px-4 pb-3 gap-x-4">
+      <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-lg">
         <div className="flex gap-x-1">
           <span>METHOD: </span>
-          <span>{requestDetails?.method}</span>
+          <span className="font-mono font-bold px-1">
+            {requestDetails?.method}
+          </span>
         </div>
         <div className="flex gap-x-1">
           <span>TIME: </span>
-          <span className="">
+          <span className="font-mono">
             {requestDetails?.timestamp ? `${requestDetails.timestamp}` : null}
           </span>
         </div>
         <div className="flex gap-x-1">
           <span>SIZE: </span>
-          <span>
+          <span className="font-mono">
             {requestDetails?.size != null ? `${requestDetails.size} B` : null}
           </span>
         </div>
@@ -126,7 +128,7 @@ const BinRequest = ({
         {selectedTab === "RAW" ? (
           requestDetails ? (
             <div className="flex relative w-full h-full">
-              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-xs">
+              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-lg pl-5">
                 {requestDetails.body ?? "No body was sent in the request"}
               </code>
               {requestDetails.body ? (
@@ -164,7 +166,7 @@ const BinRequest = ({
         ) : null}
         {selectedTab === "HEADERS" ? (
           requestDetails ? (
-            <table className="text-sm mx-4 border-collapse  h-full table-auto">
+            <table className="text-sm mx-4 border-collapse h-full table-auto">
               <tr>
                 <th className="text-left border border-input-border px-2">
                   HEADER

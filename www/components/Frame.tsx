@@ -3,7 +3,7 @@ import Header from "./Header";
 
 export default function Frame({ children }: { children: ReactNode }) {
   return (
-    <div className="flex bg-[#000019] flex-col text-white items-center w-[95%] md:max-w-3xl mx-auto min-h-screen h-full my-20 justify-between">
+    <div className="flex bg-[#000019] flex-col text-white items-center w-[95%] md:max-w-7xl mx-auto min-h-screen h-full my-20 justify-between">
       <div className="w-full h-full min-h-screen max-w-5xl px-4 flex flex-col">
         <div className="flex-none">
           <Header />

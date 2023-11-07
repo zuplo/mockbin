@@ -86,16 +86,16 @@ const Bin = () => {
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
     <Frame>
-      <div className="text-xs mb-8 mt-2">
+      <div className="text-md mb-8 mt-2">
         <Link className="text-[#FF00BD] hover:text-[#C0008F]" href="/">
           Home
         </Link>{" "}
-        &rsaquo; {binId}
+        &rsaquo; <span className="font-mono">{binId}</span>
       </div>
-      <div className="text-xl font-bold">
-        Your bin is live at{" "}
+      <div className="text-2xl">
+        🎉 Your bin is live at <br />{" "}
         <a
-          className="text-[#FF00BD] hover:text-[#C0008F] break-all"
+          className="text-[#FF00BD] hover:text-[#C0008F] break-all font-mono text-base lg:text-2xl"
           target="_blank"
           href={binUrl}
         >
@@ -105,8 +105,8 @@ const Bin = () => {
           <CopyButton textToCopy={binUrl} />
         </span>
       </div>
-      <div className="flex justify-between my-4">
-        <h1 className="text-xl font-bold">Requests</h1>
+      <div className="flex justify-between items-end mt-20 mb-5">
+        <h1 className="font-bold text-3xl">Requests</h1>
         <button
           className="flex items-center justify-center border border-white rounded-md hover:border-[#FF00BD] hover:text-[#FF00BD] px-2 py-1"
           onClick={() => {
@@ -132,9 +132,9 @@ const Bin = () => {
           Refresh
         </button>
       </div>
-      <div className="grid grid-cols-6">
-        <div className="flex flex-col col-span-2 mr-4">
-          <ul className=" border-white">
+      <div className="grid grid-cols-10">
+        <div className="flex flex-col col-span-3 mr-4">
+          <ul className="border border-gray-700 rounded-md">
             {requests.data
               .sort((a, b) => {
                 return (
@@ -149,15 +149,19 @@ const Bin = () => {
                     onClick={() => {
                       getRequestData(request.id);
                     }}
-                    className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border-white border-l border-r border-b ${
-                      isActive ? "bg-[#FF00BD]" : "hover:text-[#FF00BD]"
-                    } ${i === requests.data.length - 1 ? "rounded-b-md" : ""} ${
-                      i === 0 ? "border-t rounded-t-md" : ""
-                    }`}
+                    className={`flex justify-between hover:cursor-pointer px-2 py-1 border-gray-700 transition-all ${
+                      isActive
+                        ? "bg-[#FF00BD] text-white"
+                        : "hover:text-[#FF00BD]"
+                    } ${i === requests.data.length - 1 ? "" : "border-b"}`}
                   >
-                    <div>
-                      {request.method.toUpperCase()} &middot;{" "}
-                      {timeAgo(Number(new Date(request.timestamp)))}
+                    <div className="font-mono w-full justify-between flex">
+                      <span className="font-bold">
+                        {request.method.toUpperCase()}
+                      </span>{" "}
+                      <span className="opacity-80">
+                        {timeAgo(Number(new Date(request.timestamp)))}
+                      </span>
                     </div>
                   </li>
                 );
@@ -167,7 +171,7 @@ const Bin = () => {
             ) : null}
           </ul>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-7">
           <BinRequest
             isLoading={isLoading || isRefreshing}
             hasRequests={requests.data.length > 0}

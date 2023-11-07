@@ -58,7 +58,7 @@ const CopyButton = ({ classNames, textToCopy }: CopyButtonProps) => {
   return (
     <button
       type="button"
-      className={`items-center rounded-md p-1 hover:bg-slate-400`}
+      className={`items-center rounded-md p-1 hover:bg-slate-400 transition-all`}
       onClick={onCopy}
     >
       {hasCopied ? (
