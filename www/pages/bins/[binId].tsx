@@ -134,7 +134,7 @@ const Bin = () => {
       </div>
       <div className="grid grid-cols-6">
         <div className="flex flex-col col-span-2 mr-4">
-          <ul className="border border-white rounded-md">
+          <ul className=" border-white">
             {requests.data
               .sort((a, b) => {
                 return (
@@ -149,9 +149,11 @@ const Bin = () => {
                     onClick={() => {
                       getRequestData(request.id);
                     }}
-                    className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border-white ${
+                    className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border-white border-l border-r border-b ${
                       isActive ? "bg-[#FF00BD]" : "hover:text-[#FF00BD]"
-                    } ${i === requests.data.length - 1 ? "" : "border-b"}`}
+                    } ${i === requests.data.length - 1 ? "rounded-b-md" : ""} ${
+                      i === 0 ? "border-t rounded-t-md" : ""
+                    }`}
                   >
                     <div>
                       {request.method.toUpperCase()} &middot;{" "}
