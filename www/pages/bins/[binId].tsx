@@ -5,33 +5,24 @@ import { timeAgo } from "@/utils/helpers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import BinRequest from "../../components/BinRequest";
-import { RequestDetails, RequestListItem } from "../../utils/interfaces";
-import posthog from "posthog-js";
+import { RequestDetails, RequestListResponse } from "../../utils/interfaces";
 
 const Bin = () => {
-  const [requests, setRequests] = useState<RequestListItem[] | undefined>(
+  const router = useRouter();
+  const { binId, requestId } = router.query;
+
+  const [requests, setRequests] = useState<RequestListResponse | undefined>(
     undefined,
   );
-  const [binId, setBinId] = useState<string | undefined>();
-  const [currentRequestId, setCurrentRequestId] = useState<
-    string | undefined
-  >();
   const [currentRequest, setCurrentRequest] = useState<
     RequestDetails | undefined
   >();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [easterEggActive, setEasterEggActive] = useState(false);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!router) return;
-
-    setBinId(router.query.binId as string);
-  }, [router]);
 
   useEffect(() => {
     if (!binId) return;
@@ -53,13 +44,12 @@ const Bin = () => {
     }
 
     const data = await response.json();
-    setRequests(data.data ?? []);
+    setRequests(data);
     setIsRefreshing(false);
   };
 
   const getRequestData = async (requestId: string) => {
     setIsLoading(true);
-    setCurrentRequestId(requestId);
     setCurrentRequest(undefined);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests/${requestId}`,
@@ -95,7 +85,8 @@ const Bin = () => {
 
   if (!requests) return <FullScreenLoading />;
 
-  const binUrl = `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
+  // Get the real bin url from the API, the one with NEXT_PUBLIC_API_URL is legacy
+  const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
     <Frame>
       <div className="text-xs mb-8 mt-2">
@@ -147,14 +138,14 @@ const Bin = () => {
       <div className="grid grid-cols-6">
         <div className="flex flex-col col-span-2 mr-4">
           <ul className="border border-white rounded-md">
-            {requests
+            {requests.data
               .sort((a, b) => {
                 return (
                   Number(new Date(b.timestamp)) - Number(new Date(a.timestamp))
                 );
               })
               .map((request, i) => {
-                const isActive = currentRequestId === request.id;
+                const isActive = requestId === request.id;
                 return (
                   <li
                     key={request.id}
@@ -163,7 +154,7 @@ const Bin = () => {
                     }}
                     className={`flex w-full justify-between hover:cursor-pointer px-2 py-1 border-white ${
                       isActive ? "bg-[#FF00BD]" : "hover:text-[#FF00BD]"
-                    } ${i === requests.length - 1 ? "" : "border-b"}`}
+                    } ${i === requests.data.length - 1 ? "" : "border-b"}`}
                   >
                     <div>
                       {request.method.toUpperCase()} &middot;{" "}
@@ -172,13 +163,13 @@ const Bin = () => {
                   </li>
                 );
               })}
-            {requests.length === 0 ? "No requests yet" : null}
+            {requests.data.length === 0 ? "No requests yet" : null}
           </ul>
         </div>
         <div className="col-span-4">
           <BinRequest
             isLoading={isLoading || isRefreshing}
-            hasRequests={requests.length > 0}
+            hasRequests={requests.data.length > 0}
             requestDetails={currentRequest}
           />
         </div>

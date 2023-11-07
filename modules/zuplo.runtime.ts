@@ -6,6 +6,15 @@ import {
 } from "@zuplo/runtime";
 
 export function runtimeInit(runtime: RuntimeExtensions) {
+  if (environment.DATADOG_API_KEY) {
+    runtime.addPlugin(
+      new DataDogLoggingPlugin({
+        url: "https://http-intake.logs.datadoghq.com/api/v2/logs",
+        apiKey: environment.DATADOG_API_KEY,
+      }),
+    );
+  }
+
   // This rewrites the URL of the request when the service is hosted
   // with wildcard subdomains by taking the binId from the subdomain and
   // adding it to the path. This way this app works for both hosting options
@@ -20,16 +29,11 @@ export function runtimeInit(runtime: RuntimeExtensions) {
       url.pathname = `/${parts[0]}${url.pathname}`;
     }
 
+    context.log.info(`Rewriting URL`, {
+      incoming: request.url,
+      rewritten: url.toString(),
+    });
     const newRequest = new ZuploRequest(url.toString(), request);
     return newRequest;
   });
-
-  if (environment.DATADOG_API_KEY) {
-    runtime.addPlugin(
-      new DataDogLoggingPlugin({
-        url: "https://http-intake.logs.datadoghq.com/api/v2/logs",
-        apiKey: environment.DATADOG_API_KEY,
-      }),
-    );
-  }
 }

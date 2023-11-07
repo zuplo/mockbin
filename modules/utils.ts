@@ -1,4 +1,5 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { USE_WILDCARD_SUBDOMAIN } from "./env";
 import { StorageError } from "./storage";
 
 export function getProblemFromStorageError(
@@ -34,4 +35,12 @@ export function getBinFromUrl(
   }
 
   return { binId, pathname: `/${params.slice(2).join("/")}` };
+}
+
+export function getInvokeBinUrl(url: URL, binId: string) {
+  const mockUrl = new URL(
+    USE_WILDCARD_SUBDOMAIN ? `https://${binId}.${url.hostname}` : url,
+  );
+  mockUrl.pathname = USE_WILDCARD_SUBDOMAIN ? "/" : `/${binId}`;
+  return mockUrl;
 }

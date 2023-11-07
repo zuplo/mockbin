@@ -1,9 +1,12 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
-import { USE_WILDCARD_SUBDOMAIN } from "./env";
 import { nanoid } from "./nanoid";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
 import { BinResponse } from "./types";
-import { getBinFromUrl, getProblemFromStorageError } from "./utils";
+import {
+  getBinFromUrl,
+  getInvokeBinUrl,
+  getProblemFromStorageError,
+} from "./utils";
 
 const MAX_SIZE = 1048576;
 
@@ -31,10 +34,7 @@ export async function createMockResponse(
     return getProblemFromStorageError(err, request, context);
   }
 
-  const mockUrl = new URL(
-    USE_WILDCARD_SUBDOMAIN ? `https://${binId}.${url.hostname}` : url,
-  );
-  mockUrl.pathname = USE_WILDCARD_SUBDOMAIN ? "/" : `/${binId}`;
+  const mockUrl = getInvokeBinUrl(url, binId);
 
   const responseData = {
     id: binId,
@@ -51,6 +51,7 @@ export async function getMockResponse(
   request: ZuploRequest,
   context: ZuploContext,
 ) {
+  const url = new URL(request.url);
   const { binId } = request.params;
 
   const storage = storageClient(context.log);
@@ -58,6 +59,7 @@ export async function getMockResponse(
   try {
     const response = await storage.getObject(`${binId}.json`);
     data = JSON.parse(response.body);
+    data.url = getInvokeBinUrl(url, binId).href;
   } catch (err) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
@@ -70,6 +72,7 @@ export async function listRequests(
   request: ZuploRequest,
   context: ZuploContext,
 ) {
+  const url = new URL(request.url);
   const { binId } = request.params;
 
   const storage = storageClient(context.log);
@@ -95,7 +98,10 @@ export async function listRequests(
       size: r.size,
     };
   });
-  return { data };
+
+  const mockUrl = getInvokeBinUrl(url, binId).href;
+
+  return { data, url: mockUrl };
 }
 
 export async function getRequest(request: ZuploRequest, context: ZuploContext) {
