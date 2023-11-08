@@ -132,54 +132,59 @@ const Bin = () => {
           Refresh
         </button>
       </div>
-      <div className="grid grid-cols-10">
-        <div className="flex flex-col col-span-3 mr-4">
-          <ul className="border border-gray-700 rounded-md">
-            {requests.data
-              .sort((a, b) => {
-                return (
-                  Number(new Date(b.timestamp)) - Number(new Date(a.timestamp))
-                );
-              })
-              .map((request, i) => {
-                const isActive = currentRequestId === request.id;
-                return (
-                  <li
-                    key={request.id}
-                    onClick={() => {
-                      getRequestData(request.id);
-                    }}
-                    className={`flex justify-between hover:cursor-pointer px-2 py-1 border-gray-700 transition-all ${
-                      isActive
-                        ? "bg-[#FF00BD] text-white"
-                        : "hover:text-[#FF00BD]"
-                    } ${i === requests.data.length - 1 ? "" : "border-b"}`}
-                  >
-                    <div className="font-mono w-full justify-between flex">
-                      <span className="font-bold">
-                        {request.method.toUpperCase()}
-                      </span>{" "}
-                      <span className="opacity-80">
-                        {timeAgo(Number(new Date(request.timestamp)))}
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-            {requests.data.length === 0 ? (
-              <p className="px-2 py-1">No requests yet</p>
-            ) : null}
-          </ul>
+      {requests.data.length === 0 ? (
+        <div>
+          No requests made to your bin. Click Refresh once you&apos;ve made
+          some.
         </div>
-        <div className="col-span-7">
-          <BinRequest
-            isLoading={isLoading || isRefreshing}
-            hasRequests={requests.data.length > 0}
-            requestDetails={currentRequest}
-            binUrl={binUrl}
-          />
+      ) : (
+        <div className="grid grid-cols-10">
+          <div className="flex flex-col col-span-3 mr-4">
+            <ul className="border border-gray-700 rounded-md">
+              {requests.data
+                .sort((a, b) => {
+                  return (
+                    Number(new Date(b.timestamp)) -
+                    Number(new Date(a.timestamp))
+                  );
+                })
+                .map((request, i) => {
+                  const isActive = currentRequestId === request.id;
+                  return (
+                    <li
+                      key={request.id}
+                      onClick={() => {
+                        getRequestData(request.id);
+                      }}
+                      className={`flex justify-between hover:cursor-pointer px-2 py-1 border-gray-700 transition-all ${
+                        isActive
+                          ? "bg-[#FF00BD] text-white"
+                          : "hover:text-[#FF00BD]"
+                      } ${i === requests.data.length - 1 ? "" : "border-b"}`}
+                    >
+                      <div className="font-mono w-full justify-between flex">
+                        <span className="font-bold">
+                          {request.method.toUpperCase()}
+                        </span>{" "}
+                        <span className="opacity-80">
+                          {timeAgo(Number(new Date(request.timestamp)))}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              {requests.data.length === 0 ? "No requests yet" : null}
+            </ul>
+          </div>
+          <div className="col-span-7">
+            <BinRequest
+              isLoading={isLoading || isRefreshing}
+              hasRequests={requests.data.length > 0}
+              requestDetails={currentRequest}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </Frame>
   );
 };

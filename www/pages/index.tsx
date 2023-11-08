@@ -121,7 +121,7 @@ const Index = () => {
                 return (
                   <li key={bin.id}>
                     <Link
-                      href={`/bins/${bin}`}
+                      href={`/bins/${bin.id}`}
                       className="text-[#FF00BD] hover:text-[#FF90E3] text-sm md:text-xl font-mono mr-4 break-all transition-all"
                     >{`${bin.id}`}</Link>
                     <span className="font-mono opacity-70">
@@ -132,8 +132,8 @@ const Index = () => {
               })}
             </div>
             <p className="mt-4 text-sm w-fit border border-gray-700 p-2 rounded-md opacity-70">
-              Mockbin is free of sign-ups, there is no account. <br /> These bin
-              IDs are stored in browser storage.{" "}
+              Mockbin is free of sign-ups. These bin IDs are stored in your
+              browser storage.{" "}
             </p>
           </ul>
         ) : null}
