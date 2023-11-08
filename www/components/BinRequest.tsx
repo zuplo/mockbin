@@ -1,12 +1,10 @@
 import CopyButton from "@/components/CopyButton";
 import Tabs, { Tab } from "@/components/Tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RequestDetails } from "../utils/interfaces";
 
 type TestOperationResponseProps = {
   isLoading: boolean;
-  hasRequests: boolean;
-  binUrl: string;
   requestDetails: RequestDetails | undefined;
 };
 
@@ -43,8 +41,6 @@ const getRequestIsJson = (requestDetails: RequestDetails | undefined) => {
 const BinRequest = ({
   isLoading,
   requestDetails,
-  hasRequests,
-  binUrl,
 }: TestOperationResponseProps) => {
   const tabs: Tab[] = [
     {
@@ -61,28 +57,25 @@ const BinRequest = ({
     },
   ];
 
-  const requestIsJson = !isLoading ? getRequestIsJson(requestDetails) : true;
-  const [selectedTab, setSelectedTab] = useState(
-    requestIsJson ? "JSON" : "RAW",
-  );
+  const requestIsJson =
+    !isLoading && requestDetails ? getRequestIsJson(requestDetails) : false;
+  const [selectedTab, setSelectedTab] = useState("RAW");
 
-  const noRequestDataPlaceholder = isLoading ? (
-    <div className="px-4 w-full h-full flex items-center justify-center text-xs">
-      Loading...
-    </div>
-  ) : (
-    <div className="px-4 py-4 sm:py-0 w-full h-full flex items-center justify-center">
-      <span>
-        {hasRequests
-          ? "Click on a request to see its details here"
-          : "No requests made to your bin. Click Refresh once you've made some."}
-      </span>
-    </div>
-  );
+  useEffect(() => {
+    setSelectedTab(requestIsJson ? "JSON" : "RAW");
+  }, [requestDetails]);
 
   let requestUrl = null;
   if (requestDetails?.url) {
     requestUrl = `${requestDetails.url.pathname}${requestDetails.url.search}`;
+  }
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!requestDetails) {
+    return <p>Click on a request to see its details here</p>;
   }
 
   return (
@@ -90,9 +83,7 @@ const BinRequest = ({
       <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-lg">
         <div className="flex gap-x-1">
           <span>METHOD: </span>
-          <span className="font-mono font-bold px-1">
-            {requestDetails?.method}
-          </span>
+          <span className="font-mono px-1">{requestDetails?.method}</span>
         </div>
         <div className="flex gap-x-1">
           <span>TIME: </span>
@@ -107,7 +98,7 @@ const BinRequest = ({
           </span>
         </div>
       </div>
-      <div className="flex flex-col sm:flex-row text-xs px-4 pb-3 gap-x-4">
+      <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-lg">
         <div className="flex gap-x-1">
           <span>PATH: </span>
           <span className="break-all">{requestUrl}</span>
@@ -126,73 +117,65 @@ const BinRequest = ({
       </div>
       <div className="flex my-4 h-full">
         {selectedTab === "RAW" ? (
-          requestDetails ? (
-            <div className="flex relative w-full h-full">
-              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-lg pl-5">
-                {requestDetails.body ?? "No body was sent in the request"}
-              </code>
-              {requestDetails.body ? (
-                <FloatingCopyButton textToCopy={requestDetails.body} />
-              ) : null}
-            </div>
-          ) : (
-            noRequestDataPlaceholder
-          )
+          <div className="flex relative w-full h-full">
+            <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-lg pl-5">
+              {requestDetails.body ?? "No body was sent in the request"}
+            </code>
+            {requestDetails.body ? (
+              <FloatingCopyButton textToCopy={requestDetails.body} />
+            ) : null}
+          </div>
         ) : null}
         {selectedTab === "JSON" ? (
-          requestDetails ? (
-            <div className="flex relative w-full h-full">
-              <code className="flex items-center h-full w-fit overflow-x-auto break-words px-2 whitespace-pre text-xs">
-                {requestDetails.body
-                  ? requestIsJson
-                    ? // Formats JSON response with 2 spaces
-                      JSON.stringify(JSON.parse(requestDetails.body), null, 2)
-                    : "Request body is not JSON. Click 'RAW' to see request body"
-                  : "No body was sent in the request"}
+          <div className="flex relative w-full h-full">
+            {requestDetails.body === null ? (
+              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-lg pl-5">
+                No body was sent in the request
               </code>
-              {requestIsJson && requestDetails.body ? (
-                <FloatingCopyButton
-                  textToCopy={JSON.stringify(
-                    JSON.parse(requestDetails.body),
-                    null,
-                    2,
-                  )}
-                />
-              ) : null}
-            </div>
-          ) : (
-            noRequestDataPlaceholder
-          )
+            ) : (
+              <code className="flex items-center h-full w-fit overflow-x-auto break-words px-2 whitespace-pre text-xs">
+                {requestIsJson
+                  ? // Formats JSON response with 2 spaces
+                    JSON.stringify(JSON.parse(requestDetails.body), null, 2)
+                  : "Request body is not JSON. Click 'RAW' to see request body"}
+              </code>
+            )}
+            {requestIsJson && requestDetails.body ? (
+              <FloatingCopyButton
+                textToCopy={JSON.stringify(
+                  JSON.parse(requestDetails.body),
+                  null,
+                  2,
+                )}
+              />
+            ) : null}
+          </div>
         ) : null}
         {selectedTab === "HEADERS" ? (
-          requestDetails ? (
-            <table className="text-sm mx-4 border-collapse h-full table-auto">
-              <tr>
-                <th className="text-left border border-input-border px-2">
-                  HEADER
-                </th>
-                <th className="text-left border border-input-border px-2">
-                  VALUE
-                </th>
-              </tr>
-              {requestDetails.headers
-                ? Object.entries(requestDetails.headers).map(([key, value]) => {
-                    return (
-                      <tr className="font-mono" key={key}>
-                        <td className="text-left border border-input-border px-2">
-                          {key}
-                        </td>
-                        <td className="text-left whitespace-pre-line break-all border border-input-border px-2">
-                          {value}
-                        </td>
-                      </tr>
-                    );
-                  })
-                : null}
-            </table>
-          ) : (
-            noRequestDataPlaceholder
-          )
+          <table className="text-sm mx-4 border-collapse h-full table-auto">
+            <tr>
+              <th className="text-left border border-input-border px-2">
+                HEADER
+              </th>
+              <th className="text-left border border-input-border px-2">
+                VALUE
+              </th>
+            </tr>
+            {requestDetails.headers
+              ? Object.entries(requestDetails.headers).map(([key, value]) => {
+                  return (
+                    <tr className="font-mono" key={key}>
+                      <td className="text-left border border-input-border px-2">
+                        {key}
+                      </td>
+                      <td className="text-left whitespace-pre-line break-all border border-input-border px-2">
+                        {value}
+                      </td>
+                    </tr>
+                  );
+                })
+              : null}
+          </table>
         ) : null}
       </div>
     </div>

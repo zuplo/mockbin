@@ -160,7 +160,11 @@ const Bin = () => {
                         isActive
                           ? "bg-[#FF00BD] text-white"
                           : "hover:text-[#FF00BD]"
-                      } ${i === requests.data.length - 1 ? "" : "border-b"}`}
+                      } ${i === requests.data.length - 1 ? "rounded-b-md" : ""}
+                      ${i === 0 ? "rounded-t-md" : ""}
+                      `
+                    }
+                      
                     >
                       <div className="font-mono w-full justify-between flex">
                         <span className="font-bold">
@@ -179,7 +183,6 @@ const Bin = () => {
           <div className="col-span-7">
             <BinRequest
               isLoading={isLoading || isRefreshing}
-              hasRequests={requests.data.length > 0}
               requestDetails={currentRequest}
             />
           </div>
