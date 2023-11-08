@@ -102,7 +102,7 @@ const Index = () => {
 
   return (
     <Frame>
-      <div className="mt-10 mb-8 sm:mb-20 w-full  sm:w-2/3">
+      <div className="mt-4 sm:mt-10 mb-8 sm:mb-20 w-full  sm:w-2/3">
         <h1 className="mb-4 text-3xl">
           Welcome to <span className="font-bold">Mockbin by Zuplo</span>
         </h1>
