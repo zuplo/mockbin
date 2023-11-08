@@ -96,7 +96,7 @@ const HeaderRow = ({
         <input
           value={header.key}
           placeholder="Key"
-          className="text-black border-2 font-mono p-1 px-2 border-gray-300 rounded-md"
+          className="text-white bg-[#000019] border-2 font-mono p-1 px-2 border-gray-300 rounded-md"
           title={"Header key"}
           onChange={onChangeKey}
         />
@@ -107,7 +107,7 @@ const HeaderRow = ({
       <div className="w-full flex flex-col sm:pl-3 sm:pr-2 mt-4 sm:mt-0">
         <input
           value={header.value}
-          className="text-black border-2 font-mono p-1 px-2 border-gray-300 rounded-md"
+          className="text-white bg-[#000019] border-2 font-mono p-1 px-2 border-gray-300 rounded-md"
           onChange={onChangeValue}
           placeholder="Value"
         />
@@ -116,7 +116,7 @@ const HeaderRow = ({
         ) : null}
       </div>
       <button
-        className="p-1 my-1 px-1 -mr-2 enabled:hover:bg-gray-200 dark:enabled:hover:bg-gray-500 rounded disabled:cursor-not-allowed disabled:opacity-50"
+        className="p-1 my-1 px-1 -mr-2 enabled:hover:bg-gray-200 dark:enabled:hover:bg-gray-500 rounded-full transition-all disabled:cursor-not-allowed disabled:opacity-50"
         onClick={onClickDelete}
         disabled={!canBeDeleted}
         title="Delete header"
