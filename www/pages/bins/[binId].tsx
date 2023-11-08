@@ -105,7 +105,7 @@ const Bin = () => {
           <CopyButton textToCopy={binUrl} />
         </span>
       </div>
-      <div className="flex justify-between items-end mt-20 mb-5">
+      <div className="flex justify-between items-end mt-8 sm:mt-20 mb-5">
         <h1 className="font-bold text-3xl">Requests</h1>
         <button
           className="flex items-center justify-center border border-white rounded-md hover:border-[#FF00BD] hover:text-[#FF00BD] px-2 py-1"
@@ -162,11 +162,9 @@ const Bin = () => {
                           : "hover:text-[#FF00BD]"
                       } ${i === requests.data.length - 1 ? "rounded-b-md" : ""}
                       ${i === 0 ? "rounded-t-md" : ""}
-                      `
-                    }
-                      
+                      `}
                     >
-                      <div className="font-mono w-full justify-between flex">
+                      <div className="font-mono w-full justify-between sm:flex">
                         <span className="font-bold">
                           {request.method.toUpperCase()}
                         </span>{" "}
