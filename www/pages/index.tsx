@@ -102,20 +102,20 @@ const Index = () => {
 
   return (
     <Frame>
-      <div className="mt-10 mb-20 w-2/3">
-        <p className="mb-4 text-3xl">
+      <div className="mt-10 mb-8 sm:mb-20 w-full  sm:w-2/3">
+        <h1 className="mb-4 text-3xl">
           Welcome to <span className="font-bold">Mockbin by Zuplo</span>
-        </p>
+        </h1>
         <p className="text-gray-300 ">
           This is an open-source and fully-free tool that allows you to quickly
           mock an API endpoint, configure a fixed response and track requests to
           your endpoint.
         </p>
       </div>
-      <div className="my-10">
+      <div className="my-8 sm:my-10">
         {recentBins.length > 0 ? (
           <ul className="flex flex-col mb-4 list-disc list-inside">
-            <h1 className="text-3xl font-bold">Your recent bins</h1>
+            <h2 className="text-3xl font-bold">Your recent bins</h2>
             <div className="flex flex-col gap-y-2 mt-3">
               {recentBins.slice(0, 5).map((bin) => {
                 return (
@@ -147,19 +147,19 @@ const Index = () => {
           alignItems: "start",
         }}
       >
-        <h1 className="text-3xl font-bold">Create a new bin</h1>
-        <p className="">
+        <h2 className="text-3xl font-bold">Create a new bin</h2>
+        <p>
           Just specify the details of the response below and we’ll create you a
           new API endpoint in a jiffy.
         </p>
-        <div className="mt-8 w-full grid grid-cols-5 gap-y-4">
+        <div className="mt-8 w-full flex flex-col gap-y-2 sm:grid sm:grid-cols-5 sm:gap-y-4">
           <label className="mt-1 font-bold">Status</label>
           <input
             type="text"
             placeholder="Status Code"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="text-white bg-[#000019] border col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
+            className="text-white bg-[#000019] border col-span-2 font-mono p-1 px-2 sm:mr-4 border-gray-300 flex-grow rounded-md"
           />
           <div className="col-span-2"></div>
           <label className="mt-1 font-bold">Status Text</label>
@@ -168,7 +168,7 @@ const Index = () => {
             placeholder="Status Text"
             value={statusText}
             onChange={(e) => setStatusText(e.target.value)}
-            className="text-white bg-[#000019] border-2 col-span-2 font-mono p-1 px-2 mr-4 border-gray-300 flex-grow rounded-md"
+            className="text-white bg-[#000019] border-2 col-span-2 font-mono p-1 px-2 sm:mr-4 border-gray-300 flex-grow rounded-md"
           />
           <div className="col-span-2"></div>
           <label className="mt-1 font-bold">Headers</label>

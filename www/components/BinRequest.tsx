@@ -80,7 +80,7 @@ const BinRequest = ({
 
   return (
     <div className="sticky top-4 flex flex-col h-fit w-full border border-input-border rounded-md pt-4 mb-4">
-      <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-lg">
+      <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-md sm:text-lg">
         <div className="flex gap-x-1">
           <span>METHOD: </span>
           <span className="font-mono px-1">{requestDetails?.method}</span>
@@ -98,7 +98,7 @@ const BinRequest = ({
           </span>
         </div>
       </div>
-      <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-lg">
+      <div className="flex flex-col sm:flex-row px-4 pb-3 gap-x-4 text-md sm:text-lg">
         <div className="flex gap-x-1">
           <span>PATH: </span>
           <span className="break-all">{requestUrl}</span>
@@ -118,7 +118,7 @@ const BinRequest = ({
       <div className="flex my-4 h-full">
         {selectedTab === "RAW" ? (
           <div className="flex relative w-full h-full">
-            <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-lg pl-5">
+            <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-sm sm:text-lg pl-5">
               {requestDetails.body ?? "No body was sent in the request"}
             </code>
             {requestDetails.body ? (
@@ -129,11 +129,11 @@ const BinRequest = ({
         {selectedTab === "JSON" ? (
           <div className="flex relative w-full h-full">
             {requestDetails.body === null ? (
-              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-lg pl-5">
+              <code className="flex items-center h-full w-full overflow-x-auto break-words px-2 whitespace-pre text-sm sm:text-lg pl-5">
                 No body was sent in the request
               </code>
             ) : (
-              <code className="flex items-center h-full w-fit overflow-x-auto break-words px-2 whitespace-pre text-xs">
+              <code className="flex items-center h-full w-fit overflow-x-auto break-words px-2 whitespace-pre text-sm sm:text-lg">
                 {requestIsJson
                   ? // Formats JSON response with 2 spaces
                     JSON.stringify(JSON.parse(requestDetails.body), null, 2)
