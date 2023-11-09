@@ -7,6 +7,7 @@ import {
   getProblemFromStorageError,
   validateBinId,
 } from "./utils";
+import { logAnalytics } from "./analytics";
 
 const MAX_SIZE = 1048576;
 
@@ -40,6 +41,8 @@ export async function createMockResponse(
     id: binId,
     url: mockUrl.href,
   };
+
+  context.waitUntil(logAnalytics("bin_created", { binId }));
 
   return new Response(JSON.stringify(responseData, null, 2), {
     status: 201,
@@ -138,6 +141,8 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
     id: requestId,
     timestamp: response.lastModified.toISOString(),
   };
+
+  context.waitUntil(logAnalytics("bin_request_viewed", { binId, requestId }));
 
   return body;
 }
