@@ -103,7 +103,7 @@ const Index = () => {
   return (
     <Frame>
       <div className="mt-4 sm:mt-10 mb-8 sm:mb-20 w-full  sm:w-2/3">
-        <h1 className="mb-4 text-3xl">
+        <h1 className="text-3xl">
           Welcome to <span className="font-bold">Mockbin by Zuplo</span>
         </h1>
         <p className="text-gray-300 ">
@@ -112,17 +112,17 @@ const Index = () => {
           your endpoint.
         </p>
       </div>
-      <div className="my-8 sm:my-10">
+      <div className="my-2">
         {recentBins.length > 0 ? (
-          <ul className="flex flex-col mb-4 list-disc list-inside">
-            <h2 className="text-3xl font-bold">Your recent bins</h2>
-            <div className="flex flex-col gap-y-2 mt-3">
+          <ul className="flex flex-col ">
+            <h2 className="text-xl font-bold">Your recent bins</h2>
+            <div className="flex flex-col gap-y-2 list-disc list-inside">
               {recentBins.slice(0, 5).map((bin) => {
                 return (
                   <li key={bin.id}>
                     <Link
                       href={`/bins/${bin.id}`}
-                      className="text-[#FF00BD] hover:text-[#FF90E3] text-sm md:text-xl font-mono mr-4 break-all transition-all"
+                      className="text-[#FF00BD] hover:text-[#FF90E3] hover:bg-pink-500 hover:bg-opacity-50 rounded p-1 -ml-1 font-mono mr-4 break-all transition-all"
                     >{`${bin.id}`}</Link>
                     <span className="font-mono opacity-70">
                       {timeAgo(Number(new Date(bin.createdTime)))}
@@ -168,7 +168,7 @@ const Index = () => {
             placeholder="Status Text"
             value={statusText}
             onChange={(e) => setStatusText(e.target.value)}
-            className="text-white bg-[#000019] border-2 col-span-2 font-mono p-1 px-2 sm:mr-4 border-gray-300 flex-grow rounded-md"
+            className="text-white bg-[#000019] border col-span-2 font-mono p-1 px-2 sm:mr-4 border-gray-300 flex-grow rounded-md"
           />
           <div className="col-span-2"></div>
           <label className="mt-1 font-bold">Headers</label>
@@ -178,7 +178,7 @@ const Index = () => {
           <label className="mt-1 font-bold">Body</label>
           <textarea
             placeholder="{}"
-            className="text-white bg-[#000019] border-2 font-mono p-1 px-2 mt-1 border-gray-300 h-32 w-full col-span-4 rounded-md"
+            className="text-white bg-[#000019] border font-mono p-1 px-2 mt-1 border-gray-300 h-32 w-full col-span-4 rounded-md"
             value={responseBody}
             onChange={(e) => setResponseBody(e.target.value)}
           />

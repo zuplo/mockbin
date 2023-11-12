@@ -86,16 +86,19 @@ const Bin = () => {
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
     <Frame>
-      <div className="text-md mb-8 mt-2">
-        <Link className="text-[#FF00BD] hover:text-[#C0008F]" href="/">
+      <div className="text-md mb-8 mt-2 -ml-1">
+        <Link
+          className="text-[#FF00BD] hover:text-[#FF90E3] hover:bg-pink-500 hover:bg-opacity-50 rounded p-1"
+          href="/"
+        >
           Home
         </Link>{" "}
         &rsaquo; <span className="font-mono">{binId}</span>
       </div>
-      <div className="text-2xl">
-        🎉 Your bin is live at <br />{" "}
+      <div>
+        Your bin is live at <br />{" "}
         <a
-          className="text-[#FF00BD] hover:text-[#C0008F] break-all font-mono text-base lg:text-2xl"
+          className="text-[#FF00BD] hover:text-[#FF90E3] break-all font-mono text-base hover:bg-pink-500 hover:bg-opacity-50 rounded p-1 -ml-1"
           target="_blank"
           href={binUrl}
         >
