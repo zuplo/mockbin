@@ -102,7 +102,7 @@ const Index = () => {
 
   return (
     <Frame>
-      <div className="mt-4 sm:mt-10 mb-8 sm:mb-20 w-full  sm:w-2/3">
+      <div className="my-10">
         <h1 className="text-3xl">
           Welcome to <span className="font-bold">Mockbin by Zuplo</span>
         </h1>
@@ -112,7 +112,7 @@ const Index = () => {
           your endpoint.
         </p>
       </div>
-      <div className="my-2">
+      <div className="my-10">
         {recentBins.length > 0 ? (
           <ul className="flex flex-col ">
             <h2 className="text-xl font-bold">Your recent bins</h2>
