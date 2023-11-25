@@ -10,7 +10,7 @@ export default function Frame({ children }: { children: ReactNode }) {
         </div>
         <div className="flex-grow">{children}</div>
         <div className="flex flex-row py-3 w-full justify-between mt-4">
-          <a target="_blank" href="https://zuplo.com" className="text-xl">
+          <a target="_blank" href="https://zuplo.com/?c=mbf" className="text-xl">
             Made with ❤️ by{" "}
             <span className="underline font-bold text-[#FF00BD]">Zuplo</span>
           </a>
