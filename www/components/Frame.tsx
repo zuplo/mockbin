@@ -16,7 +16,7 @@ export default function Frame({ children }: { children: ReactNode }) {
           </a>
           <div className="sm:hidden text-xl ml-1">
             <a
-              href="https://discord.gg/s8QHDPerbE"
+              href="https://discord.zuplo.com"
               className="text-[#5865F2]"
               target="_blank"
             >
