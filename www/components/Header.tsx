@@ -15,7 +15,7 @@ const Header = () => {
         <a
           target="_blank"
           className="hidden sm:flex items-center gap-x-1 bg-[#5865F2] h-[31px] border border-[#464ec7] hover:bg-[#464ec7] p-2 py-[4px] rounded-[4px]"
-          href="https://discord.gg/s8QHDPerbE"
+          href="https://discord.zuplo.com"
         >
           <Image
             className="h-[16px] w-auto"
