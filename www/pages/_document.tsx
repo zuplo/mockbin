@@ -1,5 +1,4 @@
 import { Head, Html, Main, NextScript } from "next/document";
-import Script from "next/script";
 
 export default function Document() {
   return (
@@ -34,7 +33,8 @@ export default function Document() {
           content="https://cdn.zuplo.com/assets/8e93df64-1a75-4cfe-afb7-10a99def9e0c.png"
         />
         {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
-          <Script src={process.env.NEXT_PUBLIC_ANALYTICS_URL} />
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script src={process.env.NEXT_PUBLIC_ANALYTICS_URL}></script>
         ) : null}
       </Head>
       <body>
