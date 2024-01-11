@@ -8,6 +8,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BinRequest from "../../components/BinRequest";
 import { RequestDetails, RequestListResponse } from "../../utils/interfaces";
+import useInterval from "@/hooks/useInterval";
+
+const POLL_INTERVAL = 5000;
 
 const Bin = () => {
   const router = useRouter();
@@ -48,6 +51,32 @@ const Bin = () => {
     setRequests(data);
     setIsRefreshing(false);
   };
+
+  useInterval(async () => {
+    const controller = new AbortController();
+
+    const promises = [
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests`, {
+        signal: controller.signal,
+      }),
+      new Promise<void>((resolve) => setTimeout(resolve, POLL_INTERVAL)),
+    ];
+
+    // To prevent requests from stacking up if the request takes longer than the interval to complete,
+    // the request is cancelled if it's still running
+    const result = await Promise.race(promises).catch(() => {
+      // Fail silently in case of a network error
+    });
+
+    if (result instanceof Response && result.ok) {
+      const data = (await result.json()) as RequestListResponse;
+      setRequests(data);
+    } else {
+      controller.abort();
+    }
+
+    return () => controller.abort();
+  }, POLL_INTERVAL);
 
   const getRequestData = async (requestId: string) => {
     setIsLoading(true);
