@@ -64,7 +64,9 @@ const Bin = () => {
 
     // To prevent requests from stacking up if the request takes longer than the interval to complete,
     // the request is cancelled if it's still running
-    const result = await Promise.race(promises);
+    const result = await Promise.race(promises).catch(() => {
+      // Fail silently in case of a network error
+    });
 
     if (result instanceof Response && result.ok) {
       const data = (await result.json()) as RequestListResponse;
