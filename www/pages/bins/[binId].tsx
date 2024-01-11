@@ -53,11 +53,11 @@ const Bin = () => {
   };
 
   useInterval(async () => {
-    const { signal, abort } = new AbortController();
+    const controller = new AbortController();
 
     const promises = [
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests`, {
-        signal,
+        signal: controller.signal,
       }),
       new Promise<void>((resolve) => setTimeout(resolve, POLL_INTERVAL)),
     ];
@@ -72,10 +72,10 @@ const Bin = () => {
       const data = (await result.json()) as RequestListResponse;
       setRequests(data);
     } else {
-      abort();
+      controller.abort();
     }
 
-    return () => abort();
+    return () => controller.abort();
   }, POLL_INTERVAL);
 
   const getRequestData = async (requestId: string) => {
