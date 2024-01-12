@@ -1,4 +1,6 @@
-const ArrowIcon = () => (
+import cn from "classnames";
+
+const ArrowIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="20"
@@ -9,7 +11,7 @@ const ArrowIcon = () => (
     strokeWidth="1.5"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-chevron-right"
+    className={cn("lucide lucide-chevron-right", className)}
   >
     <path d="m9 18 6-6-6-6" />
   </svg>

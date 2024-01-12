@@ -138,16 +138,32 @@ const Bin = () => {
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
     <main>
-      <BinHeader binUrl={binUrl} onRefresh={() => getRequests()} />
+      <BinHeader
+        binUrl={binUrl}
+        onRefresh={() => getRequests()}
+        isNewBin={requests.data.length === 0}
+      />
       {requests.data.length === 0 ? (
-        <div className="flex items-center translate-y-[35vh] text-lg flex-col gap-8">
-          No requests made to your bin yet. Send a request to see it here.
-          <SelectOnClick>
-            <code className="text-md bg-slate-800 rounded border border-slate-700 p-4 flex items-center gap-2">
-              curl -X GET <span className="text-[#FF00BD]">{binUrl}</span>
-              <CopyButton textToCopy={`curl -X GET ${binUrl}`} />
+        <div className="flex items-center translate-y-[35vh] text-lg flex-col gap-6">
+          No requests made to your Bin yet. Send a request to see it here.
+          <div className="flex flex-col gap-2">
+            <code className="text-md bg-slate-800 rounded border border-slate-700 p-4 py-2 flex items-center gap-2">
+              <span className="text-[#FF00BD]">{binUrl}</span>
+              <div className="translate-x-1 translate-y-0.5">
+                <CopyButton textToCopy={binUrl} />
+              </div>
             </code>
-          </SelectOnClick>
+            <button
+              className="self-end bg-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-800"
+              onClick={() =>
+                navigator.clipboard.writeText(
+                  `curl -X POST -H "Content-Type: application/json" -d '{"message": "Hello World"}' ${binUrl}`,
+                )
+              }
+            >
+              Copy cURL
+            </button>
+          </div>
         </div>
       ) : (
         <div
