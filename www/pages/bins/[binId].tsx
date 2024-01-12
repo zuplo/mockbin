@@ -12,7 +12,6 @@ import { RequestDetails, RequestListResponse } from "../../utils/interfaces";
 import useInterval from "@/hooks/useInterval";
 import MethodIndicator from "@/components/MethodIndicator";
 import BinHeader from "@/components/BinHeader";
-import SelectOnClick from "@/components/SelectOnClick";
 import ArrowIcon from "@/components/ArrowIcon";
 
 const POLL_INTERVAL = 5000;
@@ -151,10 +150,15 @@ const Bin = () => {
           </SelectOnClick>
         </div>
       ) : (
-        <div className="flex border-t border-slate-800 text-sm h-[calc(100vh-61px)]">
-          <div className="flex-1  h-full overflow-auto">
+        <div
+          className={cn(
+            "grid border-t border-slate-800 text-sm h-[calc(100vh-60px)]",
+            currentRequestId ? "grid-cols-[1fr,8px,1fr]" : "grid-cols-[1fr]",
+          )}
+        >
+          <div className="h-full overflow-auto">
             <div className="grid grid-cols-[repeat(4,max-content)_1fr] grid-flow-col auto-cols-min bg-slate-900">
-              <Row className="hover:cursor-auto">
+              <Row className="hover:!cursor-auto">
                 <Column className="bg-slate-950/50 font-bold">Time</Column>
                 <Column className="bg-slate-950/50 font-bold">Method</Column>
                 <Column className="bg-slate-950/50 font-bold justify-end">
@@ -209,8 +213,8 @@ const Bin = () => {
           </div>
           {currentRequestId && (
             <>
-              <div className="fixed top-0 right-0 bottom-0 left-1/2 w-[1px] border-l border-slate-800" />
-              <aside className="flex-1 w-1/2 h-full overflow-auto">
+              <div className="border-l border-slate-800" />
+              <aside className="h-full overflow-auto">
                 <BinRequest
                   isLoading={isLoading || isRefreshing}
                   requestDetails={currentRequest}
