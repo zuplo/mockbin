@@ -13,6 +13,7 @@ import useInterval from "@/hooks/useInterval";
 import MethodIndicator from "@/components/MethodIndicator";
 import BinHeader from "@/components/BinHeader";
 import ArrowIcon from "@/components/ArrowIcon";
+import { useBinColumnsResize } from "@/utils/useBinColumnsResize";
 
 const POLL_INTERVAL = 5000;
 
@@ -113,6 +114,10 @@ const Bin = () => {
     setIsLoading(false);
   };
 
+  const { handleDividerMouseDown, leftColumnPercentage } = useBinColumnsResize(
+    Boolean(currentRequestId),
+  );
+
   if (easterEggActive) {
     return (
       <Frame>
@@ -167,10 +172,12 @@ const Bin = () => {
         </div>
       ) : (
         <div
-          className={cn(
-            "grid border-t border-slate-800 text-sm h-[calc(100vh-60px)]",
-            currentRequestId ? "grid-cols-[1fr,8px,1fr]" : "grid-cols-[1fr]",
-          )}
+          className="grid border-t border-slate-800 text-sm h-[calc(100vh-60px)]"
+          style={{
+            gridTemplateColumns: currentRequestId
+              ? `minmax(600px, ${leftColumnPercentage}%) 8px minmax(350px, 1fr)`
+              : "1fr",
+          }}
         >
           <div className="h-full overflow-auto">
             <div className="grid grid-cols-[repeat(4,max-content)_1fr] grid-flow-col auto-cols-min bg-slate-900">
@@ -229,7 +236,10 @@ const Bin = () => {
           </div>
           {currentRequestId && (
             <>
-              <div className="border-l border-slate-800" />
+              <div
+                className="border-l border-slate-800 cursor-col-resize"
+                onMouseDown={handleDividerMouseDown}
+              />
               <aside className="h-full overflow-auto">
                 <BinRequest
                   isLoading={isLoading || isRefreshing}
