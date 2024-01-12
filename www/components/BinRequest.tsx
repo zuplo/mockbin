@@ -1,6 +1,6 @@
 import CopyButton from "@/components/CopyButton";
 import Tabs, { Tab } from "@/components/Tabs";
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { RequestDetails } from "../utils/interfaces";
 import { getMethodTextColor } from "@/components/MethodIndicator";
 import CloseIcon from "@/components/CloseIcon";
@@ -63,7 +63,8 @@ const BinRequest = ({
     requestIsJson ? "JSON" : "RAW",
   );
 
-  useEffect(() => {
+  // useLayoutEffect is used here to prevent flickering of the wrong tab being selected
+  useLayoutEffect(() => {
     setSelectedTab(requestIsJson ? "JSON" : "RAW");
   }, [requestIsJson]);
 
