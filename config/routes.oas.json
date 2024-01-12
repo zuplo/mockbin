@@ -178,14 +178,14 @@
       },
       "get": {
         "summary": "Redirect to Docs",
-        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "description": "Redirects to the documentation.",
         "x-zuplo-route": {
           "corsPolicy": "none",
           "handler": {
             "export": "redirectHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "location": "https://mockbin.io/docs",
+              "location": "https://api.mockbin.io/docs",
               "status": 301
             }
           },
@@ -193,7 +193,8 @@
             "inbound": []
           }
         },
-        "operationId": "187c46ca-dd0e-4265-aaae-bcdde2b42ee5"
+        "operationId": "187c46ca-dd0e-4265-aaae-bcdde2b42ee5",
+        "x-internal": true
       }
     },
     "/(.*)": {
