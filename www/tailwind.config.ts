@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        zuplo: {
+          primary: "#ff00bd",
+        },
+      },
       fontFamily: {
         mono: ["Fira Code", "monospace"],
       },
