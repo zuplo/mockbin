@@ -32,6 +32,11 @@ export default function Document() {
           property="og:image"
           content="https://cdn.zuplo.com/assets/8e93df64-1a75-4cfe-afb7-10a99def9e0c.png"
         />
+        <link
+          href="https://fonts.googleapis.com/css?family=Fira+Code"
+          rel="stylesheet"
+          type="text/css"
+        />
         {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
           // eslint-disable-next-line @next/next/no-sync-scripts
           <script src={process.env.NEXT_PUBLIC_ANALYTICS_URL}></script>
