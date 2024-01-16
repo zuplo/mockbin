@@ -42,7 +42,7 @@ const HeadersList = ({ headers, onChange }: HeaderListProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-y-4 w-full">
+    <div className="flex flex-col gap-y-2 w-full">
       {headers.map((header, index) => (
         <HeaderRow
           header={header}
