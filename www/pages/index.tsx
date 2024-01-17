@@ -231,8 +231,8 @@ const Index = () => {
               ))}
             </ul>
           ) : (
-            <p className="text-gray-300">
-              You haven’t created any bins yet. Create one above to get started.
+            <p className="text-gray-300 px-4 py-2 text-sm italic">
+              No bins yet. All recent ones will show up here
             </p>
           )}
         </div>
