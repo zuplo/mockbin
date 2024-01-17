@@ -5,9 +5,38 @@ import { timeAgo } from "@/utils/helpers";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import cn from "classnames";
+import { useEffect, useState, type HTMLProps } from "react";
 import BinRequest from "../../components/BinRequest";
 import { RequestDetails, RequestListResponse } from "../../utils/interfaces";
+import useInterval from "@/hooks/useInterval";
+import MethodIndicator from "@/components/MethodIndicator";
+import BinHeader from "@/components/BinHeader";
+import ArrowIcon from "@/components/ArrowIcon";
+import { useBinColumnsResize } from "@/utils/useBinColumnsResize";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+
+const POLL_INTERVAL = 5000;
+
+const Row = ({ className, ...props }: HTMLProps<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "grid grid-cols-subgrid group col-span-full border-b border-slate-800 hover:bg-slate-800/50 hover:cursor-pointer",
+      className,
+    )}
+    {...props}
+  />
+);
+
+const Column = ({ className, ...props }: HTMLProps<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex items-center border-r last:border-r-0 border-slate-800 py-2 px-4",
+      className,
+    )}
+    {...props}
+  />
+);
 
 const Bin = () => {
   const router = useRouter();
@@ -49,10 +78,35 @@ const Bin = () => {
     setIsRefreshing(false);
   };
 
+  useInterval(async () => {
+    const controller = new AbortController();
+
+    const promises = [
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests`, {
+        signal: controller.signal,
+      }),
+      new Promise<void>((resolve) => setTimeout(resolve, POLL_INTERVAL)),
+    ];
+
+    // To prevent requests from stacking up if the request takes longer than the interval to complete,
+    // the request is cancelled if it's still running
+    const result = await Promise.race(promises).catch(() => {
+      // Fail silently in case of a network error
+    });
+
+    if (result instanceof Response && result.ok) {
+      const data = (await result.json()) as RequestListResponse;
+      setRequests(data);
+    } else {
+      controller.abort();
+    }
+
+    return () => controller.abort();
+  }, POLL_INTERVAL);
+
   const getRequestData = async (requestId: string) => {
     setIsLoading(true);
     setCurrentRequestId(requestId);
-    setCurrentRequest(undefined);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}/requests/${requestId}`,
     );
@@ -60,6 +114,11 @@ const Bin = () => {
     setCurrentRequest(data);
     setIsLoading(false);
   };
+
+  const { handleDividerMouseDown, leftColumnPercentage } = useBinColumnsResize(
+    Boolean(currentRequestId),
+  );
+  const [hasCopied, copy] = useCopyToClipboard();
 
   if (easterEggActive) {
     return (
@@ -70,7 +129,7 @@ const Bin = () => {
           </h1>
           <h2 className="text-3xl mb-8 text-center">
             But you can{" "}
-            <Link className="text-[#FF00BD] hover:text-[#C0008F]" href="/">
+            <Link className="text-zuplo-primary hover:text-[#C0008F]" href="/">
               create a new bin
             </Link>{" "}
             in seconds
@@ -85,65 +144,66 @@ const Bin = () => {
 
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
-    <Frame>
-      <div className="text-md mb-8 mt-2 -ml-1">
-        <Link
-          className="text-[#FF00BD] hover:text-[#FF90E3] hover:bg-pink-500 hover:bg-opacity-50 rounded p-1"
-          href="/"
-        >
-          Home
-        </Link>{" "}
-        &rsaquo; <span className="font-mono">{binId}</span>
-      </div>
-      <div>
-        Your bin is live at <br />{" "}
-        <a
-          className="text-[#FF00BD] hover:text-[#FF90E3] break-all font-mono text-base hover:bg-pink-500 hover:bg-opacity-50 rounded p-1 -ml-1"
-          target="_blank"
-          href={binUrl}
-        >
-          {binUrl}
-        </a>
-        <span className="align-middle">
-          <CopyButton textToCopy={binUrl} />
-        </span>
-      </div>
-      <div className="flex justify-between items-end mt-8 sm:mt-20 mb-5">
-        <h1 className="font-bold text-3xl">Requests</h1>
-        <button
-          className="flex items-center justify-center border border-white rounded-md hover:border-[#FF00BD] hover:text-[#FF00BD] px-2 py-1"
-          onClick={() => {
-            getRequests();
-          }}
-        >
-          <div className={`mr-2 ${isRefreshing ? "animate-spin" : ""}`}>
-            <svg
-              className="h-4 w-4 scale-x-[-1]"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </div>
-          Refresh
-        </button>
-      </div>
+    <main>
+      <BinHeader
+        binUrl={binUrl}
+        onRefresh={() => getRequests()}
+        isNewBin={requests.data.length === 0}
+      />
       {requests.data.length === 0 ? (
-        <div>
-          No requests made to your bin. Click Refresh once you&apos;ve made
-          some.
+        <div className="flex items-center translate-y-[35vh] text-lg flex-col gap-6">
+          No requests made to your Bin yet. Send a request to see it here.
+          <div className="flex flex-col gap-2">
+            <code className="text-md bg-slate-800 rounded border border-slate-700 p-4 py-2 flex items-center gap-2">
+              <span className="text-zuplo-primary">{binUrl}</span>
+              <div className="translate-x-1 translate-y-0.5">
+                <CopyButton textToCopy={binUrl} />
+              </div>
+            </code>
+            <button
+              className="self-end bg-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-800 relative"
+              onClick={() =>
+                copy(
+                  `curl -X POST -H "Content-Type: application/json" -d '{"message": "Hello World"}' ${binUrl}`,
+                )
+              }
+            >
+              <span className={cn(hasCopied && "invisible")}>Copy cURL</span>
+              <span
+                className={cn(
+                  "absolute inset-0 grid place-items-center",
+                  !hasCopied && "invisible",
+                )}
+              >
+                Copied!
+              </span>
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-10">
-          <div className="flex flex-col col-span-3 mr-4">
-            <ul className="border border-gray-700 rounded-md">
+        <div
+          className="grid border-t border-slate-800 text-sm h-[calc(100vh-60px)]"
+          style={{
+            gridTemplateColumns: currentRequestId
+              ? `minmax(600px, ${leftColumnPercentage}%) 8px minmax(350px, 1fr)`
+              : "1fr",
+          }}
+        >
+          <div className="h-full overflow-auto">
+            <div className="grid grid-cols-[repeat(4,max-content)_1fr] grid-flow-col auto-cols-min bg-slate-900">
+              <Row className="hover:!cursor-auto">
+                <Column className="bg-slate-950/50 font-bold">Time</Column>
+                <Column className="bg-slate-950/50 font-bold">Method</Column>
+                <Column className="bg-slate-950/50 font-bold justify-end">
+                  Size
+                </Column>
+                <Column className="bg-slate-950/50 font-bold justify-end">
+                  Ago
+                </Column>
+                <Column className="bg-slate-950/50">
+                  <span className="sr-only">Actions</span>
+                </Column>
+              </Row>
               {requests.data
                 .sort((a, b) => {
                   return (
@@ -151,45 +211,60 @@ const Bin = () => {
                     Number(new Date(a.timestamp))
                   );
                 })
-                .map((request, i) => {
-                  const isActive = currentRequestId === request.id;
-                  return (
-                    <li
-                      key={request.id}
-                      onClick={() => {
-                        getRequestData(request.id);
-                      }}
-                      className={`flex justify-between hover:cursor-pointer px-2 py-1 border-gray-700 transition-all ${
-                        isActive
-                          ? "bg-[#FF00BD] text-white"
-                          : "hover:text-[#FF00BD]"
-                      } ${i === requests.data.length - 1 ? "rounded-b-md" : ""}
-                      ${i === 0 ? "rounded-t-md" : ""}
-                      `}
-                    >
-                      <div className="font-mono w-full justify-between sm:flex">
-                        <span className="font-bold">
-                          {request.method.toUpperCase()}
-                        </span>{" "}
-                        <span className="opacity-80">
-                          {timeAgo(Number(new Date(request.timestamp)))}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              {requests.data.length === 0 ? "No requests yet" : null}
-            </ul>
+                .map((request) => (
+                  <Row
+                    key={request.id}
+                    onClick={() => {
+                      getRequestData(request.id);
+                    }}
+                    className={cn(
+                      "relative",
+                      currentRequestId === request.id &&
+                        "after:rounded after:shadow-[inset_0_0_0_2px_theme(colors.zuplo.primary)] after:opacity-70 after:content-[''] after:absolute after:inset-0",
+                    )}
+                  >
+                    <Column>
+                      {new Date(request.timestamp).toLocaleString()}
+                    </Column>
+                    <Column>
+                      <MethodIndicator method={request.method} />
+                    </Column>
+                    <Column className="justify-end">
+                      {request.size} bytes
+                    </Column>
+                    <Column className="justify-end">
+                      {timeAgo(Number(new Date(request.timestamp)))}
+                    </Column>
+                    <Column className="flex justify-end items-center text-white">
+                      <button className="group-hover:bg-slate-700 p-1 rounded">
+                        <ArrowIcon />
+                      </button>
+                    </Column>
+                  </Row>
+                ))}
+            </div>
           </div>
-          <div className="col-span-7">
-            <BinRequest
-              isLoading={isLoading || isRefreshing}
-              requestDetails={currentRequest}
-            />
-          </div>
+          {currentRequestId && (
+            <>
+              <div
+                className="border-l border-slate-800 cursor-col-resize"
+                onMouseDown={handleDividerMouseDown}
+              />
+              <aside className="h-full overflow-auto">
+                <BinRequest
+                  isLoading={isLoading || isRefreshing}
+                  requestDetails={currentRequest}
+                  onClose={() => {
+                    setCurrentRequest(undefined);
+                    setCurrentRequestId(undefined);
+                  }}
+                />
+              </aside>
+            </>
+          )}
         </div>
       )}
-    </Frame>
+    </main>
   );
 };
 

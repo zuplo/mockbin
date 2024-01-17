@@ -1,15 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import HeaderImage from "../public/mockbin-header.png";
+
 const Header = () => {
   return (
     <header className="flex flex-row w-full justify-between items-center">
       <Link href="/">
-        <Image
-          width={360}
-          height={132}
-          alt="mockbin logo"
-          src="/mockbin-header.png"
-        />
+        <Image width={360} height={132} alt="mockbin logo" src={HeaderImage} />
       </Link>
       <div className="flex gap-x-2 items-center">
         <a
@@ -40,7 +37,7 @@ const Header = () => {
           src="https://ghbtns.com/github-btn.html?user=zuplo&repo=mockbin&type=star&count=true&size=large"
           frameBorder="0"
           scrolling="0"
-          width="120"
+          width="75"
           height="30"
           title="GitHub"
         ></iframe>
