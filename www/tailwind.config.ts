@@ -8,6 +8,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        zuplo: {
+          primary: "#ff00bd",
+        },
+      },
+      fontFamily: {
+        mono: ["Fira Code", "monospace"],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

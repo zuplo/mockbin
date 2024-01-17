@@ -127,7 +127,7 @@ const Bin = () => {
           </h1>
           <h2 className="text-3xl mb-8 text-center">
             But you can{" "}
-            <Link className="text-[#FF00BD] hover:text-[#C0008F]" href="/">
+            <Link className="text-zuplo-primary hover:text-[#C0008F]" href="/">
               create a new bin
             </Link>{" "}
             in seconds
@@ -153,7 +153,7 @@ const Bin = () => {
           No requests made to your Bin yet. Send a request to see it here.
           <div className="flex flex-col gap-2">
             <code className="text-md bg-slate-800 rounded border border-slate-700 p-4 py-2 flex items-center gap-2">
-              <span className="text-[#FF00BD]">{binUrl}</span>
+              <span className="text-zuplo-primary">{binUrl}</span>
               <div className="translate-x-1 translate-y-0.5">
                 <CopyButton textToCopy={binUrl} />
               </div>
@@ -210,7 +210,7 @@ const Bin = () => {
                     className={cn(
                       "relative",
                       currentRequestId === request.id &&
-                        "after:rounded after:shadow-[inset_0_0_0_2px_#FF00BD] after:opacity-70 after:content-[''] after:absolute after:inset-0",
+                        "after:rounded after:shadow-[inset_0_0_0_2px_theme(colors.zuplo.primary)] after:opacity-70 after:content-[''] after:absolute after:inset-0",
                     )}
                   >
                     <Column>

@@ -3,14 +3,18 @@ import Header from "./Header";
 
 export default function Frame({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col bg-[#000019] items-center h-screen">
-      <div className="w-full h-full max-w-5xl px-4 flex flex-col text-white">
+    <div className="flex flex-col items-center h-screen">
+      <div className="w-full h-full max-w-6xl px-4 flex flex-col text-white">
         <div className="flex-none">
           <Header />
         </div>
         <div className="flex-grow">{children}</div>
-        <div className="flex flex-row py-3 w-full justify-between mt-4">
-          <a target="_blank" href="https://zuplo.com/?c=mbf" className="text-xl">
+        <div className="flex flex-row py-3 w-full justify-between sm:justify-center">
+          <a
+            target="_blank"
+            href="https://zuplo.com/?c=mbf"
+            className="text-md font-bold text-slate-300"
+          >
             Made with ❤️ by{" "}
             <span className="underline font-bold text-[#FF00BD]">Zuplo</span>
           </a>
