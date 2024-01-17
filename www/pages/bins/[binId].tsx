@@ -14,6 +14,7 @@ import MethodIndicator from "@/components/MethodIndicator";
 import BinHeader from "@/components/BinHeader";
 import ArrowIcon from "@/components/ArrowIcon";
 import { useBinColumnsResize } from "@/utils/useBinColumnsResize";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 
 const POLL_INTERVAL = 5000;
 
@@ -117,6 +118,7 @@ const Bin = () => {
   const { handleDividerMouseDown, leftColumnPercentage } = useBinColumnsResize(
     Boolean(currentRequestId),
   );
+  const [hasCopied, copy] = useCopyToClipboard();
 
   if (easterEggActive) {
     return (
@@ -159,14 +161,22 @@ const Bin = () => {
               </div>
             </code>
             <button
-              className="self-end bg-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-800"
+              className="self-end bg-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-800 relative"
               onClick={() =>
-                navigator.clipboard.writeText(
+                copy(
                   `curl -X POST -H "Content-Type: application/json" -d '{"message": "Hello World"}' ${binUrl}`,
                 )
               }
             >
-              Copy cURL
+              <span className={cn(hasCopied && "invisible")}>Copy cURL</span>
+              <span
+                className={cn(
+                  "absolute inset-0 grid place-items-center",
+                  !hasCopied && "invisible",
+                )}
+              >
+                Copied!
+              </span>
             </button>
           </div>
         </div>
