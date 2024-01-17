@@ -1,5 +1,4 @@
-import useInterval from "@/hooks/useInterval";
-import { useState } from "react";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 
 type CopyButtonProps = {
   classNames?: string;
@@ -36,30 +35,14 @@ const CheckIcon = ({ className }: { className: string }) => (
   </svg>
 );
 
-const COPY_SUCCESS_TIMEOUT_MS = 2000;
-const CopyButton = ({ classNames, textToCopy }: CopyButtonProps) => {
-  const [hasCopied, setHasCopied] = useState(false);
-  useInterval(
-    () => {
-      setHasCopied(false);
-    },
-    hasCopied ? COPY_SUCCESS_TIMEOUT_MS : null,
-  );
-  const onCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-    } catch (e) {
-      return;
-    }
-
-    setHasCopied(true);
-  };
+const CopyButton = ({ textToCopy }: CopyButtonProps) => {
+  const [hasCopied, copy] = useCopyToClipboard();
 
   return (
     <button
       type="button"
       className={`items-center rounded-md p-1 hover:bg-slate-800 transition-all`}
-      onClick={onCopy}
+      onClick={() => copy(textToCopy)}
     >
       {hasCopied ? (
         <CheckIcon className="h-4 w-4 text-green-500" />
