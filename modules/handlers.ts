@@ -1,4 +1,5 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { logAnalytics } from "./analytics";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
 import { BinResponse, RequestData, RequestDetails } from "./types";
 import {
@@ -7,7 +8,6 @@ import {
   getProblemFromStorageError,
   validateBinId,
 } from "./utils";
-import { logAnalytics } from "./analytics";
 
 const MAX_SIZE = 1048576;
 
@@ -149,6 +149,11 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
 
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   const url = new URL(request.url);
+  // If the url is the root of api.mockbin.io (not a bin) redirect to docs
+  if (url.hostname === "api.mockbin.com" && url.pathname === "/") {
+    return Response.redirect("https://api.mockbin.io/docs");
+  }
+
   const urlInfo = getBinFromUrl(url);
   if (!urlInfo) {
     return HttpProblems.badRequest(request, context, {

@@ -172,31 +172,6 @@
         "operationId": "460b0c3d-6267-4913-9e42-46f6882e2a42"
       }
     },
-    "/": {
-      "x-zuplo-path": {
-        "pathMode": "open-api"
-      },
-      "get": {
-        "summary": "Redirect to Docs",
-        "description": "Redirects to the documentation.",
-        "x-zuplo-route": {
-          "corsPolicy": "none",
-          "handler": {
-            "export": "redirectHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "location": "https://api.mockbin.io/docs",
-              "status": 301
-            }
-          },
-          "policies": {
-            "inbound": []
-          }
-        },
-        "operationId": "187c46ca-dd0e-4265-aaae-bcdde2b42ee5",
-        "x-internal": true
-      }
-    },
     "/(.*)": {
       "x-zuplo-path": {
         "pathMode": "url-pattern"
