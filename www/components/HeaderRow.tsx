@@ -8,6 +8,7 @@ import Input from "@/components/Input";
 import TrashIcon from "@/components/TrashIcon";
 import { CommonHeaders } from "@/utils/commonHeaders";
 import ArrowIcon from "@/components/ArrowIcon";
+import Highlight from "@/components/Highlight";
 
 interface HeaderRowProps {
   header: Header;
@@ -135,7 +136,7 @@ const HeaderRow = ({
                 key={`${item}-${index}`}
                 {...getItemProps({ item, index })}
               >
-                {item}
+                <Highlight highlight={inputValue} text={item} />
               </li>
             ))}
         </ul>
