@@ -17,24 +17,30 @@ const BinHeader = ({
   isNewBin: boolean;
 }) => (
   <header className="h-[60px] sticky top-0 flex bg-[#000019] items-center">
-    <Link href="/" className="flex gap-1 items-center px-4 group ease-in-out">
+    <Link
+      href="/"
+      className="flex gap-1 items-center px-4 group ease-in-out flex-shrink-0"
+    >
       <ArrowIcon className="rotate-180 text-[#FF00BD] group-hover:scale-125 transition-transform" />
       <Image alt="mockbin logo" height={50} src={HeaderImage} />
     </Link>
     <div
       className={cn(
-        "flex-grow px-4 py-2 flex items-center gap-2 text-sm",
+        "flex-grow min-w-0 px-4 py-2 flex items-center gap-2 text-sm",
         isNewBin && "invisible",
       )}
     >
-      Your Bin is live at
-      <code className="bg-slate-800 rounded border border-slate-700 bg px-2 py-1 text-[#FF00BD]">
+      <span className="whitespace-nowrap">Live at</span>
+      <code
+        className="bg-slate-800 rounded border border-slate-700 bg px-2 py-1 text-[#FF00BD] truncate"
+        title={binUrl}
+      >
         {binUrl}
       </code>
       <CopyButton textToCopy={binUrl} />
     </div>
     <div className="flex gap-4 px-4 items-center">
-      <Button as="a" tabIndex={0} href="/">
+      <Button as="a" tabIndex={0} className="whitespace-nowrap" href="/">
         Create Bin
       </Button>
       <button
