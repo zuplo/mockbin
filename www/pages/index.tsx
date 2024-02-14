@@ -237,6 +237,16 @@ const Index = () => {
           )}
         </div>
       </div>
+      <div className="mt-2 text-end duration-200 opacity-50 hover:opacity-100">
+        &raquo;{" "}
+        <a href="https://ratemyopenapi.com" target="_blank">
+          <span className="font-bold">
+            rate<span className="text-gray-500">my</span>openapi
+          </span>{" "}
+          – Upload your OpenAPI. We rate it.{" "}
+          <span className="text-sm italic">(shameless plug)</span>
+        </a>
+      </div>
     </Frame>
   );
 };

@@ -6,6 +6,7 @@ import RefreshIcon from "@/components/RefreshIcon";
 import ArrowIcon from "@/components/ArrowIcon";
 import cn from "classnames";
 import Button from "@/components/Button";
+import RMOLink from "@/components/RMOLink";
 
 const BinHeader = ({
   binUrl,
@@ -41,6 +42,7 @@ const BinHeader = ({
     </div>
     <div className="flex gap-4 px-4 items-center">
       <Button as="a" tabIndex={0} className="whitespace-nowrap" href="/">
+      <RMOLink />
         Create Bin
       </Button>
       <button
