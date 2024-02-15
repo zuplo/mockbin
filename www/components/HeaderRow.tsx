@@ -109,7 +109,7 @@ const HeaderRow = ({
   });
 
   return (
-    <div className="flex align-top items-start gap-2 flex-wrap sm:flex-nowrap">
+    <div className="flex items-start gap-x-2 flex-wrap sm:flex-nowrap">
       <div className="w-full flex flex-col relative">
         <Input placeholder="Key" title="Header key" {...getInputProps()} />
         <button
@@ -144,7 +144,7 @@ const HeaderRow = ({
           <p className="mt-2 text-sm text-red-600">&nbsp;{keyError}</p>
         ) : null}
       </div>
-      <div className="w-full flex flex-col mt-4 sm:mt-0">
+      <div className="w-full flex flex-col mt-2 sm:mt-0">
         <Input
           value={header.value}
           onChange={onChangeValue}

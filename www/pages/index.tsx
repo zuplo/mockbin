@@ -152,12 +152,13 @@ const Index = () => {
             Just specify the details of the response below and we’ll create you
             a new API endpoint in a jiffy.
           </p>
-          <div className="w-full gap-2 grid grid-cols-[75px_repeat(2,140px)_1fr]">
+          <div className="w-full gap-2 grid grid-cols-[repeat(5,1fr)] sm:grid-cols-[75px_repeat(3,1fr)_minmax(1fr,100px)]">
             <label className="mt-1 font-bold">Status</label>
             <Input
               type="text"
               placeholder="Status Code"
               value={status}
+              className="col-span-2 sm:col-span-3"
               onChange={(e) => setStatus(e.target.value)}
             />
             <Input
@@ -165,10 +166,10 @@ const Index = () => {
               placeholder="Status Text"
               value={statusText}
               onChange={(e) => setStatusText(e.target.value)}
-              className="col-span-2"
+              className="col-span-2 sm:col-span-1"
             />
             <label className="mt-1 font-bold">Headers</label>
-            <div className="col-span-3">
+            <div className="col-span-4">
               <HeadersList headers={headers} onChange={setHeaders} />
             </div>
             <label className="mt-1 font-bold">Body</label>
@@ -176,7 +177,7 @@ const Index = () => {
               textarea
               placeholder="{}"
               value={responseBody}
-              className="w-full col-span-3 h-32"
+              className="w-full col-span-4 h-32"
               onChange={(e) => setResponseBody(e.target.value)}
             />
           </div>
