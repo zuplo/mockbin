@@ -7,8 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import cn from "classnames";
 import { useEffect, useState, type HTMLProps } from "react";
-import BinRequest from "../../components/BinRequest";
-import { RequestDetails, RequestListResponse } from "../../utils/interfaces";
+import BinRequest from "@/components/BinRequest";
+import { RequestDetails, RequestListResponse } from "@/utils/interfaces";
 import useInterval from "@/hooks/useInterval";
 import MethodIndicator from "@/components/MethodIndicator";
 import BinHeader from "@/components/BinHeader";
@@ -182,7 +182,7 @@ const Bin = () => {
         </div>
       ) : (
         <div
-          className="grid border-t border-slate-800 text-sm h-[calc(100vh-60px)]"
+          className="flex flex-col md:grid border-t border-slate-800 text-sm h-[calc(100vh-60px)]"
           style={{
             gridTemplateColumns: currentRequestId
               ? `minmax(600px, ${leftColumnPercentage}%) 8px minmax(350px, 1fr)`
