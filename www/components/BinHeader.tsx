@@ -6,6 +6,7 @@ import RefreshIcon from "@/components/RefreshIcon";
 import ArrowIcon from "@/components/ArrowIcon";
 import cn from "classnames";
 import Button from "@/components/Button";
+import RMOLink from "@/components/RMOLink";
 
 const BinHeader = ({
   binUrl,
@@ -30,7 +31,7 @@ const BinHeader = ({
         isNewBin && "invisible",
       )}
     >
-      <span className="whitespace-nowrap">Live at</span>
+      <span className="whitespace-nowrap hidden md:block">Live at</span>
       <code
         className="bg-slate-800 rounded border border-slate-700 bg px-2 py-1 text-[#FF00BD] truncate"
         title={binUrl}
@@ -40,6 +41,7 @@ const BinHeader = ({
       <CopyButton textToCopy={binUrl} />
     </div>
     <div className="flex gap-4 px-4 items-center">
+      <RMOLink />
       <Button as="a" tabIndex={0} className="whitespace-nowrap" href="/">
         Create Bin
       </Button>

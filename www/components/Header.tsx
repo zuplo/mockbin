@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import HeaderImage from "../public/mockbin-header.png";
+import RMOLink from "@/components/RMOLink";
 
 const Header = () => {
   return (
@@ -9,6 +10,7 @@ const Header = () => {
         <Image width={360} height={132} alt="mockbin logo" src={HeaderImage} />
       </Link>
       <div className="flex gap-x-2 items-center">
+        <RMOLink />
         <a
           target="_blank"
           className="hidden sm:flex items-center gap-x-1 bg-[#5865F2] h-[31px] border border-[#464ec7] hover:bg-[#464ec7] p-2 py-[4px] rounded-[4px]"
