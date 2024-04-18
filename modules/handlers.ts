@@ -1,5 +1,6 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { logAnalytics } from "./analytics";
+import shortId from "./short-id";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
 import { BinResponse, RequestData, RequestDetails } from "./types";
 import {
@@ -16,7 +17,7 @@ export async function createMockResponse(
   context: ZuploContext,
 ) {
   const url = new URL(request.url);
-  const binId = crypto.randomUUID().replaceAll("-", "");
+  const binId: string = shortId.generate();
 
   const storage = storageClient(context.log);
 
