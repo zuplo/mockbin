@@ -197,7 +197,7 @@ const Index = () => {
         <div
           className={cn(
             "bg-slate-800/80 inset-0 overflow-y-auto max-h-[300px] border-gray-700 border-t",
-            "lg:absolute lg:min-h-full lg:max-h-fit lg:w-[40%] lg:left-auto lg:border-t-0 lg:border-l",
+            "lg:absolute lg:min-h-full lg:max-h-full lg:w-[40%] lg:left-auto lg:border-t-0 lg:border-l",
           )}
         >
           <h2 className="text-xl font-bold mb-2 border-b border-slate-700 py-3 px-4">
