@@ -34,9 +34,7 @@
                   "response": {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                      "status"
-                    ],
+                    "required": ["status"],
                     "properties": {
                       "status": {
                         "type": "number"
@@ -67,10 +65,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "request-validation-inbound",
-              "rate-limit-inbound"
-            ]
+            "inbound": ["request-validation-inbound", "rate-limit-inbound"]
           }
         },
         "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
@@ -91,9 +86,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "rate-limit-inbound"
-            ]
+            "inbound": ["rate-limit-inbound"]
           }
         },
         "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
@@ -114,9 +107,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "rate-limit-inbound"
-            ]
+            "inbound": ["rate-limit-inbound"]
           }
         },
         "responses": {
@@ -164,9 +155,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "rate-limit-inbound"
-            ]
+            "inbound": ["rate-limit-inbound"]
           }
         },
         "responses": {
@@ -205,11 +194,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "caching-inbound",
-              "rate-limit-inbound",
-              "log-request"
-            ]
+            "inbound": ["caching-inbound", "rate-limit-inbound", "log-request"]
           }
         },
         "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
