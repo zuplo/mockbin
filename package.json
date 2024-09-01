@@ -8,7 +8,7 @@
     "test": "zup test"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.441.0",
+    "@aws-sdk/client-s3": "^3.637.0",
     "zuplo": "latest"
   },
   "devDependencies": {
