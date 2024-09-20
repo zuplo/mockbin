@@ -1,0 +1,31 @@
+name: API Checks
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CHECKLY_API_KEY: ${{ secrets.CHECKLY_API_KEY }}
+  CHECKLY_ACCOUNT_ID: ${{ vars.CHECKLY_ACCOUNT_ID }}
+  ENVIRONMENT_URL: https://0ad703f2f45143aea75b9a469dc41338.api.mockbin.io
+  CHECKLY_TEST_ENVIRONMENT: production
+  GITHUB_NPM_TOKEN: ${{ secrets.GH_NPM_PACKAGE_READ_TOKEN }}
+
+jobs:
+  checkly:
+    name: Deploy Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Deploy checks
+        id: deploy-checks
+        run: npx checkly deploy --force

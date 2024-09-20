@@ -12,6 +12,8 @@
     "zuplo": "latest"
   },
   "devDependencies": {
+    "@zuplo/checkly": "^1.2.0",
+    "checkly": "^4.9.0",
     "prettier": "^3.0.3"
   }
 }
