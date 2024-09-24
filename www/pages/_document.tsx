@@ -1,4 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document";
+import Script from "next/script";
 
 export default function Document() {
   return (
@@ -40,6 +41,26 @@ export default function Document() {
         {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
           // eslint-disable-next-line @next/next/no-sync-scripts
           <script src={process.env.NEXT_PUBLIC_ANALYTICS_URL}></script>
+        ) : null}
+        {process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ? (
+          <Script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=AW-11213523037"
+          />
+        ) : null}
+        {process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ? (
+          <Script
+            id="google-analytics"
+            dangerouslySetInnerHTML={{
+              __html: `
+              window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-11213523037');
+            `,
+            }}
+          />
         ) : null}
       </Head>
       <body>
