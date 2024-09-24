@@ -42,13 +42,13 @@ export default function Document() {
           // eslint-disable-next-line @next/next/no-sync-scripts
           <script src={process.env.NEXT_PUBLIC_ANALYTICS_URL}></script>
         ) : null}
-        {process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ? (
+        {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
           <Script
             async
             src="https://www.googletagmanager.com/gtag/js?id=AW-11213523037"
           />
         ) : null}
-        {process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ? (
+        {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
           <Script
             id="google-analytics"
             dangerouslySetInnerHTML={{
