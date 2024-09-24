@@ -43,13 +43,14 @@ export default function Document() {
           <script src={process.env.NEXT_PUBLIC_ANALYTICS_URL}></script>
         ) : null}
         {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
-          <Script
+          // eslint-disable-next-line @next/next/next-script-for-ga
+          <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=AW-11213523037"
           />
         ) : null}
         {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
-          <Script
+          <script
             id="google-analytics"
             dangerouslySetInnerHTML={{
               __html: `
