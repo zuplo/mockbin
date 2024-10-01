@@ -86,7 +86,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["rate-limit-inbound"]
+            "inbound": ["block-bad-bins", "rate-limit-inbound"]
           }
         },
         "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
@@ -107,7 +107,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["rate-limit-inbound"]
+            "inbound": ["block-bad-bins", "rate-limit-inbound"]
           }
         },
         "responses": {
@@ -147,7 +147,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["rate-limit-inbound"]
+            "inbound": ["block-bad-bins", "rate-limit-inbound"]
           }
         },
         "responses": {
@@ -186,7 +186,12 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["caching-inbound", "rate-limit-inbound", "log-request"]
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
           }
         },
         "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"

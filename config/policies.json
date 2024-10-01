@@ -44,6 +44,14 @@
       },
       "name": "log-request",
       "policyType": "custom-code-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/blocked)"
+      },
+      "name": "block-bad-bins",
+      "policyType": "custom-code-inbound"
     }
   ]
 }
