@@ -18,4 +18,6 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
       detail: "This bin is blocked due to abuse.",
     });
   }
+
+  return request;
 }
