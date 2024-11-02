@@ -15,7 +15,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
   const { binId, pathname } = urlInfo;
 
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
+    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
   }
 
   const headers: Record<string, string> = {};

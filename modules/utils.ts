@@ -45,7 +45,7 @@ export function getInvokeBinUrl(url: URL, binId: string) {
   return mockUrl;
 }
 
-const binRegEx = /^[0-9a-fA-F]{32}$/;
+const binRegEx = /^[0-9a-fA-F]{32}(_oas)?$/;
 
 export function validateBinId(binId: string) {
   return binRegEx.test(binId);

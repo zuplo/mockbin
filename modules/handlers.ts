@@ -1,5 +1,6 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { logAnalytics } from "./analytics";
+import { MockServer } from "./mock-server";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
 import { BinResponse, RequestData, RequestDetails } from "./types";
 import {
@@ -16,20 +17,47 @@ export async function createMockResponse(
   context: ZuploContext,
 ) {
   const url = new URL(request.url);
-  const binId = crypto.randomUUID().replaceAll("-", "");
+  let binId = crypto.randomUUID().replaceAll("-", "");
 
   const storage = storageClient(context.log);
 
-  const body = await request.text();
-  const size = new TextEncoder().encode(JSON.stringify(body)).length;
-  if (size > MAX_SIZE) {
-    return HttpProblems.badRequest(request, context, {
-      detail: `Mock size cannot be larger than ${MAX_SIZE} bytes`,
-    });
+  const contentType = request.headers.get("content-type");
+
+  context.log.info({ contentType });
+
+  let body: string;
+
+  // standard mock
+  if (contentType.includes("application/json")) {
+    body = await request.text();
+    const size = new TextEncoder().encode(JSON.stringify(body)).length;
+    if (size > MAX_SIZE) {
+      return HttpProblems.badRequest(request, context, {
+        detail: `Mock size cannot be larger than ${MAX_SIZE} bytes`,
+      });
+    }
+  }
+  // open api mock
+  else if (contentType.indexOf('multipart/form-data') === 0) {
+
+    binId += "_oas";
+    const formData = await request.formData();
+    body = await readFirstFileInFormData(formData, context);
+
+    if (body === undefined) {
+      return HttpProblems.badRequest(request, context, { detail: "No file attachment found" });
+    }
+
+    // TODO - check for YAML and convert, keep original
+  }
+  // bad content type
+  else {
+    return HttpProblems.badRequest(request, context, { detail: `Invalid content-type '${contentType}'` });
   }
 
   try {
     await storage.uploadObject(`${binId}.json`, body);
+    context.log.info({binId, body});
   } catch (err) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
@@ -42,12 +70,24 @@ export async function createMockResponse(
     url: mockUrl.href,
   };
 
+  
   context.waitUntil(logAnalytics("bin_created", { binId }));
 
   return new Response(JSON.stringify(responseData, null, 2), {
     status: 201,
     statusText: "Created",
   });
+}
+
+async function readFirstFileInFormData(formData: FormData, context: ZuploContext) {
+  let fileContents;
+  for (const [name, value] of formData.entries()) {
+    // Check if the value is a file (Blob) and not a regular string field
+    if (value instanceof File) {
+      fileContents = await value.text(); // Read file contents as a string
+      return fileContents; // Exit loop after finding the first file
+    }
+  }
 }
 
 export async function getMockResponse(
@@ -57,7 +97,7 @@ export async function getMockResponse(
   const url = new URL(request.url);
   const { binId } = request.params;
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
+    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
   }
 
   const storage = storageClient(context.log);
@@ -81,7 +121,7 @@ export async function listRequests(
   const url = new URL(request.url);
   const { binId } = request.params;
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
+    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
   }
 
   const storage = storageClient(context.log);
@@ -117,7 +157,7 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   const { binId, requestId } = request.params;
 
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
+    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
   }
 
   const storage = storageClient(context.log);
@@ -155,6 +195,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   }
 
   const urlInfo = getBinFromUrl(url);
+
   if (!urlInfo) {
     return HttpProblems.badRequest(request, context, {
       detail: "No binId specified in request",
@@ -163,7 +204,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   const { binId } = urlInfo;
 
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
+    return HttpProblems.badRequest(request, context, { detail: 'Invalid Bin' });
   }
 
   if (!binId) {
@@ -187,10 +228,16 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   try {
     binResponse = JSON.parse(binResult.body);
   } catch (err) {
+    context.log.error({err});
     return HttpProblems.internalServerError(request, context, {
       detail:
         "Invalid bin found in storage. The bin is corrupt, create a new mock and try again.",
     });
+  }
+
+  if (binId.indexOf("_oas") > 0) {
+    const mockServer = new MockServer(binResponse);
+    return mockServer.handleRequest(removeBinPath(request));
   }
 
   const headers = new Headers(binResponse.response?.headers);
@@ -204,4 +251,29 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
     statusText: binResponse.response?.statusText,
   });
   return response;
+}
+
+function removeBinPath(request) {
+    const url = new URL(request.url);
+
+    // Split the pathname into parts
+    const pathParts = url.pathname.split('/').filter(part => part); // filter removes empty parts
+
+    // Remove the first part from the path
+    if (pathParts.length > 0) {
+        pathParts.shift(); // Remove the first part
+    }
+
+    // Join the remaining parts back into a path
+    url.pathname = '/' + pathParts.join('/');
+
+    // Clone the request with the modified URL
+    const modifiedRequest = new Request(url.toString(), {
+        method: request.method,
+        headers: request.headers,
+        body: request.body,
+        redirect: request.redirect,
+    });
+
+    return modifiedRequest;
 }
