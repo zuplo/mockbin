@@ -301,7 +301,7 @@ describe("MockServer Tests for Pizza API", () => {
       const request = new Request(url, {
         method: "GET",
         headers: {
-          Accept: "application/xml",
+          accept: "application/xml",
         },
       });
 
@@ -326,7 +326,7 @@ describe("MockServer Tests for Pizza API", () => {
       const response = await mockServer.handleRequest(request);
       assert.strictEqual(response.status, 200);
       const contentType = response.headers.get("Content-Type");
-      assert.ok(contentType);
+      assert.strictEqual(contentType, "application/json");
       const responseBody = await response.text();
       assert.ok(responseBody);
       // Further assertions can be made based on the default content type and response
@@ -335,21 +335,6 @@ describe("MockServer Tests for Pizza API", () => {
 
   // Error Tests
   describe("Error Tests", () => {
-    test("Should return 500 when no detail to mock", async () => {
-      const url = `http://localhost/v1/todos`;
-      const request = new Request(url, {
-        method: "GET",
-      });
-
-      const response = await mockServer.handleRequest(request);
-      assert.strictEqual(response.status, 500);
-      const responseBody = (await response.json()) as any;
-      assert.strictEqual(
-        responseBody.detail,
-        "Unable to Mock. No mockable information found for this path.",
-      );
-    });
-
     test("Should return 500 with no mockable information", async () => {
       const request = new Request("http://localhost/no-mock-available", {
         method: "GET",

@@ -139,14 +139,27 @@ const Index = () => {
         },
       );
 
+      setIsCreating(false);
+
       if (response.status !== 201) {
+        try {
+          // try to read the problem details
+          const problem = await response.json();
+          if (!problem.detail) {
+            throw new Error("Not recognized format");
+          }
+          alert(problem.detail);
+          return;
+        } catch (err) {
+          // nothing to do here, fall to other error handling
+        }
+
         alert(`Error ${response.status}\n\n ${await response.text()}`);
-        setIsCreating(false);
+
         return;
       }
 
       const result: { id: string; url: string } = await response.json();
-      setIsCreating(false);
       router.push(`/bins/${result.id}`);
       updateRecentBins(result, recentBins);
     } catch (error: any) {
@@ -244,7 +257,10 @@ const Index = () => {
             </div>
             <div>
               Upload an OpenAPI v3.1 document and we&apos;ll use the schemas and
-              examples to mock it for you, in seconds!
+              examples to mock it for you, in seconds! This new feature is in{" "}
+              <strong>beta</strong> right now, join our{" "}
+              <a href="https://discord.gg/zudoku">Discord</a> to give us
+              feedback or make a github issue.
             </div>
             <input type="file" onChange={handleFileChange} />
             <div className="self-end">
