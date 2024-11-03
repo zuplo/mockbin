@@ -1,6 +1,6 @@
 import { MockServer } from "../modules/mock-server"; // Adjust the path as needed
 import { describe, test, assert } from "vitest";
-import { json } from "./pizza.oas";
+import json from "./pizza.oas.json";
 
 // OpenAPI document
 const mockServer = new MockServer(json);
