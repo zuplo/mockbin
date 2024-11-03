@@ -18,7 +18,10 @@
         "export": "CachingInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "expirationSecondsTtl": 60
+          "expirationSecondsTtl": 60,
+          "headers": [
+            "accept"
+          ]
         }
       },
       "name": "caching-inbound",
