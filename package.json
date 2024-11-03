@@ -5,10 +5,11 @@
   "copyright": "",
   "scripts": {
     "dev": "zup dev",
-    "test": "zup test"
+    "test": "vitest"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.654.0",
+    "vitest": "^2.1.4",
     "zuplo": "^1.20240930.804"
   },
   "devDependencies": {
