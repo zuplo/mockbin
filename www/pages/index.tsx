@@ -2,7 +2,7 @@ import Frame from "@/components/Frame";
 import { timeAgo } from "@/utils/helpers";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import HeadersList, { Header } from "../components/HeadersList";
 import cn from "classnames";
@@ -48,6 +48,7 @@ const Index = () => {
   );
   const [recentBins, setRecentBins] = useState<RecentBin[]>([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -105,21 +106,51 @@ const Index = () => {
       const result: { id: string; url: string } = await response.json();
       setIsCreating(false);
       router.push(`/bins/${result.id}`);
-      const createdTime = new Date().toISOString();
-      const recentBinEntry = {
-        id: result.id,
-        createdTime,
-        url: result.url,
-      } satisfies RecentBin;
-      const newRecentBins = [recentBinEntry, ...recentBins];
-      if (typeof window !== "undefined") {
-        localStorage.setItem(RECENT_BIN_KEY, JSON.stringify(newRecentBins));
-      }
+      updateRecentBins(result, recentBins);
     } catch (err: any) {
       alert(`Error - ${err.message}`);
       setIsCreating(false);
       return;
     }
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0] || null;
+    setFile(selectedFile);
+  };
+
+  const handleOpenApiSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setIsCreating(true);
+      const response = await fetch(
+        "https://mockbin-main-d0c1f43.d2.zuplo.dev/v1/openapi/bins",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (response.status !== 201) {
+        alert(`Error ${response.status}\n\n ${await response.text()}`);
+        return;
+      }
+
+      const result: { id: string; url: string } = await response.json();
+      setIsCreating(false);
+      router.push(`/bins/${result.id}`);
+      updateRecentBins(result, recentBins);
+    } catch (error) {}
+
+    setIsCreating(false);
   };
 
   return (
@@ -140,60 +171,92 @@ const Index = () => {
           "flex-col lg:flex-row",
         )}
       >
-        <form
-          className={cn(
-            "py-4 px-6 text-sm flex flex-col gap-6 items-start rounded-r-none",
-            "lg:w-[60%]",
-          )}
-          onSubmit={handleSubmit}
-        >
-          <h2 className="text-3xl font-bold w-full">Create a new Bin</h2>
-          <p>
-            Just specify the details of the response below and we’ll create you
-            a new API endpoint in a jiffy.
-          </p>
-          <div className="w-full gap-2 grid grid-cols-[repeat(5,1fr)] sm:grid-cols-[75px_repeat(3,1fr)_minmax(1fr,100px)]">
-            <label className="mt-1 font-bold">Status</label>
-            <Input
-              type="text"
-              placeholder="Status Code"
-              value={status}
-              className="col-span-2 sm:col-span-3"
-              onChange={(e) => setStatus(e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="Status Text"
-              value={statusText}
-              onChange={(e) => setStatusText(e.target.value)}
-              className="col-span-2 sm:col-span-1"
-            />
-            <label className="mt-1 font-bold">Headers</label>
-            <div className="col-span-4">
-              <HeadersList headers={headers} onChange={setHeaders} />
+        <div>
+          <form
+            className={cn(
+              "py-4 px-6 text-sm flex flex-col gap-6 items-start rounded-r-none",
+              "lg:w-[60%]",
+            )}
+            onSubmit={handleSubmit}
+          >
+            <h2 className="text-3xl font-bold w-full">Create a new Bin</h2>
+            <p>
+              Just specify the details of the response below and we’ll create
+              you a new API endpoint in a jiffy.
+            </p>
+            <div className="w-full gap-2 grid grid-cols-[repeat(5,1fr)] sm:grid-cols-[75px_repeat(3,1fr)_minmax(1fr,100px)]">
+              <label className="mt-1 font-bold">Status</label>
+              <Input
+                type="text"
+                placeholder="Status Code"
+                value={status}
+                className="col-span-2 sm:col-span-3"
+                onChange={(e) => setStatus(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Status Text"
+                value={statusText}
+                onChange={(e) => setStatusText(e.target.value)}
+                className="col-span-2 sm:col-span-1"
+              />
+              <label className="mt-1 font-bold">Headers</label>
+              <div className="col-span-4">
+                <HeadersList headers={headers} onChange={setHeaders} />
+              </div>
+              <label className="mt-1 font-bold">Body</label>
+              <Input
+                textarea
+                placeholder="{}"
+                value={responseBody}
+                className="w-full col-span-4 h-32"
+                onChange={(e) => setResponseBody(e.target.value)}
+              />
             </div>
-            <label className="mt-1 font-bold">Body</label>
-            <Input
-              textarea
-              placeholder="{}"
-              value={responseBody}
-              className="w-full col-span-4 h-32"
-              onChange={(e) => setResponseBody(e.target.value)}
-            />
-          </div>
-          <div className="self-end">
-            <Button disabled={isCreating} type="submit">
-              {isCreating ? "Creating" : "Create Bin"}
-            </Button>
-          </div>
-          <div className="col-span-4">
+            <div className="self-end">
+              <Button disabled={isCreating} type="submit">
+                {isCreating ? "Creating" : "Create Bin"}
+              </Button>
+            </div>
+          </form>
+          <form
+            className={cn(
+              "py-4 px-6 text-sm flex flex-col gap-6 items-start rounded-r-none",
+              "lg:w-[60%]",
+            )}
+            onSubmit={handleOpenApiSubmit}
+          >
+            <div className="flex items-center relative">
+              <h2 className="text-3xl font-bold w-full">
+                Create an OpenAPI Bin
+              </h2>
+              <div className="absolute left-full ml-2">
+                <div className="relative">
+                  <div className="bg-pink-500 text-white text-xs font-bold uppercase px-2 py-1 transform rotate-12 -translate-y-1/2 animate-pulse">
+                    NEW
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              Upload an OpenAPI v3.1 document and we&apos;ll use the schemas and
+              examples to mock it for you, in seconds!
+            </div>
+            <input type="file" onChange={handleFileChange} />
+            <div className="self-end">
+              <Button disabled={isCreating}>
+                {isCreating ? "Creating" : "Create OpenAPI Bin"}
+              </Button>
+            </div>
+          </form>
+          <div className="p-6">
             <span className="flex items-center gap-2 text-xs text-slate-500">
               <InfoIcon />
               Mockbin is free of sign-ups. The bin IDs are only stored in your
               browser storage.
             </span>
           </div>
-        </form>
+        </div>
         <div
           className={cn(
             "bg-slate-800/80 inset-0 overflow-y-auto max-h-[300px] border-gray-700 border-t",
@@ -238,18 +301,23 @@ const Index = () => {
           )}
         </div>
       </div>
-      <div className="mt-2 text-end duration-200 opacity-50 hover:opacity-100">
-        &raquo;{" "}
-        <a href="https://ratemyopenapi.com" target="_blank">
-          <span className="font-bold">
-            rate<span className="text-gray-500">my</span>openapi
-          </span>{" "}
-          – Upload your OpenAPI. We rate it.{" "}
-          <span className="text-sm italic">(shameless plug)</span>
-        </a>
-      </div>
     </Frame>
   );
 };
 
 export default Index;
+function updateRecentBins(
+  result: { id: string; url: string },
+  recentBins: RecentBin[],
+) {
+  const createdTime = new Date().toISOString();
+  const recentBinEntry = {
+    id: result.id,
+    createdTime,
+    url: result.url,
+  } satisfies RecentBin;
+  const newRecentBins = [recentBinEntry, ...recentBins];
+  if (typeof window !== "undefined") {
+    localStorage.setItem(RECENT_BIN_KEY, JSON.stringify(newRecentBins));
+  }
+}

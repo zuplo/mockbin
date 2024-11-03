@@ -15,6 +15,7 @@ import BinHeader from "@/components/BinHeader";
 import ArrowIcon from "@/components/ArrowIcon";
 import { useBinColumnsResize } from "@/utils/useBinColumnsResize";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import DocsButton from "@/components/DocsButton";
 
 const POLL_INTERVAL = 5000;
 
@@ -142,10 +143,12 @@ const Bin = () => {
 
   if (!requests) return <FullScreenLoading />;
 
+  const docsUrl = `https://zudoku.dev/demo?api-url=${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}`;
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   return (
     <main>
       <BinHeader
+        docsUrl={docsUrl}
         binUrl={binUrl}
         onRefresh={() => getRequests()}
         isNewBin={requests.data.length === 0}
@@ -178,6 +181,7 @@ const Bin = () => {
                 Copied!
               </span>
             </button>
+            <DocsButton docsUrl={docsUrl} />
           </div>
         </div>
       ) : (
