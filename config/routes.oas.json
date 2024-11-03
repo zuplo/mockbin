@@ -76,7 +76,7 @@
         "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
       }
     },
-    "/v1/bins/openapi": {
+    "/v1/openapi/bins": {
       "x-zuplo-path": {
         "pathMode": "open-api"
       },
