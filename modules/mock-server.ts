@@ -1,3 +1,5 @@
+import { OpenAPIV3 } from "openapi-types";
+
 export class MockServer {
   private openApiDoc: any;
 
@@ -76,26 +78,27 @@ export class MockServer {
   private matchOperation(request: Request): any {
     const url = new URL(request.url);
     const requestPath = url.pathname;
-    const requestMethod = request.method.toLowerCase();
+    const requestMethod = request.method.toLowerCase() as OpenAPIV3.HttpMethods;
 
     for (const [pathPattern, pathItem] of Object.entries(
       this.openApiDoc.paths,
     )) {
+      const typedPathItem = pathItem as OpenAPIV3.PathItemObject;
       const pathRegex = this.pathPatternToRegex(pathPattern);
       const match = requestPath.match(pathRegex);
 
-      if (match) {
-        const operation = pathItem[requestMethod];
-        if (operation) {
-          const pathParams = this.extractPathParams(pathPattern, requestPath);
-          return {
-            operation,
-            pathParams,
-          };
-        }
+      if (match && typedPathItem[requestMethod]) {
+        const operation = typedPathItem[
+          requestMethod
+        ] as OpenAPIV3.OperationObject;
+        const pathParams = this.extractPathParams(pathPattern, requestPath);
+        return {
+          operation,
+          pathParams,
+        };
       }
     }
-    return null;
+    // Handle no match found...
   }
 
   private pathPatternToRegex(pathPattern: string): RegExp {
@@ -238,14 +241,26 @@ export class MockServer {
       }
 
       if (requestBodyText) {
-        // Get the schema from the OpenAPI document
-        const mediaType = requestBody.content[contentType];
+        let mediaType = contentType
+          ? requestBody.content[contentType]
+          : undefined;
 
-        if (mediaType && mediaType.schema) {
+        if (!mediaType) {
+          const contentTypes = Object.keys(requestBody.content);
+          if (contentTypes.length === 1) {
+            contentType = contentTypes[0];
+            mediaType = requestBody.content[contentType];
+          } else {
+            errors.push("Missing or unsupported content type");
+            return errors;
+          }
+        }
+
+        if (mediaType.schema) {
           let requestBodyData: any = requestBodyText;
           const schema = this.resolveRef(mediaType.schema);
 
-          if (contentType.includes("application/json")) {
+          if (contentType?.includes("application/json")) {
             try {
               requestBodyData = JSON.parse(requestBodyText);
             } catch (e) {
@@ -254,7 +269,6 @@ export class MockServer {
             }
           }
 
-          // Validate the request body against the schema
           const validationErrors = this.validateSchema(requestBodyData, schema);
           errors.push(...validationErrors);
         }
