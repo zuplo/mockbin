@@ -50,3 +50,47 @@ const binRegEx = /^[0-9a-fA-F]{32}(_oas)?$/;
 export function validateBinId(binId: string) {
   return binRegEx.test(binId);
 }
+
+export function validateOpenApiDocument(jsonString: string): void {
+
+  // TODO - support YAML
+  let document: any;
+
+  // Attempt to parse the JSON string
+  try {
+    document = JSON.parse(jsonString);
+  } catch (error) {
+    throw new Error(`Invalid document - not JSON (YAML support coming soon - convert using https://jsonformatter.org/yaml-to-json for now`);
+  }
+
+  // Check if the document is an object
+  if (typeof document !== "object" || document === null) {
+    throw new Error("The JSON must represent an object.");
+  }
+
+  // Check for the 'openapi' field and its version
+  if (typeof document.openapi !== "string" || !document.openapi.startsWith("3.")) {
+    throw new Error("The document is not an OpenAPI 3.x specification.");
+  }
+
+  // Check for the 'info' field
+  if (typeof document.info !== "object" || document.info === null) {
+    throw new Error("The 'info' field is missing or invalid.");
+  }
+
+  // Check for the 'paths' field
+  if (typeof document.paths !== "object" || document.paths === null) {
+    throw new Error("The 'paths' field is missing or invalid.");
+  }
+
+  // Optionally, add more checks for other required fields if necessary
+  // ...
+
+  // If all checks pass
+  console.log("The OpenAPI document appears to be valid.");
+}
+
+export function isOasBin(binId: string) {
+  return binId.indexOf("_oas") > 0;
+}
+

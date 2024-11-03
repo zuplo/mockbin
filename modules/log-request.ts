@@ -31,7 +31,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
 
   const storage = storageClient(context.log);
 
-  const body = request.body ? await request.text() : null;
+  const body = request.body ? await (request.clone()).text() : null;
   const size = body ? new TextEncoder().encode(JSON.stringify(body)).length : 0;
   const req: RequestData = {
     method: request.method,
