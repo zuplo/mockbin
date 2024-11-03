@@ -23,7 +23,7 @@ describe("MockServer Tests for Pizza API", () => {
       assert.strictEqual(response.status, 400);
       const responseBody = await response.json();
       assert.deepStrictEqual(responseBody, {
-        type: "about:blank",
+        type: "https://httpproblems.com/http-status/400",
         title: "Bad Request",
         status: 400,
         detail: "Invalid parameters",

@@ -647,7 +647,7 @@ export class MockServer {
     return null;
   }
 
-  private getExampleByFormat(format: string): any {
+  private getExampleByFormat(format: string): unknown {
     switch (format) {
       case "date-time":
         return new Date().toISOString();
@@ -670,8 +670,8 @@ export class MockServer {
     detail: string,
     errors?: string[],
   ): Response {
-    const problemDetails: any = {
-      type: "about:blank",
+    const problemDetails: ProblemDetails = {
+      type: `https://httpproblems.com/http-status/${status}`,
       title,
       status,
       detail,
@@ -684,4 +684,12 @@ export class MockServer {
       headers: { "Content-Type": "application/problem+json" },
     });
   }
+}
+
+interface ProblemDetails {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  errors?: string[];
 }
