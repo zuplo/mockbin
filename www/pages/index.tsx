@@ -141,6 +141,7 @@ const Index = () => {
 
       if (response.status !== 201) {
         alert(`Error ${response.status}\n\n ${await response.text()}`);
+        setIsCreating(false);
         return;
       }
 
@@ -148,7 +149,10 @@ const Index = () => {
       setIsCreating(false);
       router.push(`/bins/${result.id}`);
       updateRecentBins(result, recentBins);
-    } catch (error) {}
+    } catch (error: any) {
+      alert(`Error - ${error.message}`);
+      setIsCreating(false);
+    }
 
     setIsCreating(false);
   };
