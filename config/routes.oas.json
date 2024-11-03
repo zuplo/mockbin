@@ -115,6 +115,9 @@
             "inbound": [
               "block-bad-bins",
               "rate-limit-inbound"
+            ],
+            "outbound": [
+              "custom-code-outbound"
             ]
           }
         },

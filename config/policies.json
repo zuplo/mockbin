@@ -52,6 +52,14 @@
       },
       "name": "block-bad-bins",
       "policyType": "custom-code-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/add-server-to-openapi)"
+      },
+      "name": "custom-code-outbound",
+      "policyType": "custom-code-outbound"
     }
   ]
 }

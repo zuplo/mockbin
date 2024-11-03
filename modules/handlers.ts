@@ -7,10 +7,12 @@ import {
   getBinFromUrl,
   getInvokeBinUrl,
   getProblemFromStorageError,
+  isOasBin,
   validateBinId,
+validateOpenApiDocument,
 } from "./utils";
 
-const MAX_SIZE = 1048576;
+const MAX_SIZE = 1_048_576;
 
 export async function createMockResponse(
   request: ZuploRequest,
@@ -49,6 +51,15 @@ export async function createMockResponse(
     }
 
     // TODO - check for YAML and convert, keep original
+
+    try {
+      validateOpenApiDocument(body);
+    }
+    catch (err: any) {
+      return HttpProblems.badRequest(request, context, {
+        detail: err.message
+      });
+    }
   }
   // bad content type
   else {
@@ -57,7 +68,7 @@ export async function createMockResponse(
 
   try {
     await storage.uploadObject(`${binId}.json`, body);
-    context.log.info({binId, body});
+    context.log.info({ binId, body });
   } catch (err) {
     context.log.error(err);
     return getProblemFromStorageError(err, request, context);
@@ -70,7 +81,7 @@ export async function createMockResponse(
     url: mockUrl.href,
   };
 
-  context.log.debug({ message: "bin_created",  binId });
+  context.log.debug({ message: "bin_created", binId });
   context.waitUntil(logAnalytics("bin_created", { binId }));
 
   return new Response(JSON.stringify(responseData, null, 2), {
@@ -228,14 +239,14 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   try {
     binResponse = JSON.parse(binResult.body);
   } catch (err) {
-    context.log.error({err});
+    context.log.error({ err });
     return HttpProblems.internalServerError(request, context, {
       detail:
         "Invalid bin found in storage. The bin is corrupt, create a new mock and try again.",
     });
   }
 
-  if (binId.indexOf("_oas") > 0) {
+  if (isOasBin(binId)) {
     const mockServer = new MockServer(binResponse);
     return mockServer.handleRequest(removeBinPath(request));
   }
@@ -254,26 +265,27 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
 }
 
 function removeBinPath(request) {
-    const url = new URL(request.url);
+  const url = new URL(request.url);
 
-    // Split the pathname into parts
-    const pathParts = url.pathname.split('/').filter(part => part); // filter removes empty parts
+  // Split the pathname into parts
+  const pathParts = url.pathname.split('/').filter(part => part); // filter removes empty parts
 
-    // Remove the first part from the path
-    if (pathParts.length > 0) {
-        pathParts.shift(); // Remove the first part
-    }
+  // Remove the first part from the path
+  if (pathParts.length > 0) {
+    pathParts.shift(); // Remove the first part
+  }
 
-    // Join the remaining parts back into a path
-    url.pathname = '/' + pathParts.join('/');
+  // Join the remaining parts back into a path
+  url.pathname = '/' + pathParts.join('/');
 
-    // Clone the request with the modified URL
-    const modifiedRequest = new Request(url.toString(), {
-        method: request.method,
-        headers: request.headers,
-        body: request.body,
-        redirect: request.redirect,
-    });
+  // Clone the request with the modified URL
+  const modifiedRequest = new Request(url.toString(), {
+    method: request.method,
+    headers: request.headers,
+    body: request.body,
+    redirect: request.redirect,
+  });
 
-    return modifiedRequest;
+  return modifiedRequest;
 }
+
