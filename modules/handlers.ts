@@ -70,7 +70,7 @@ export async function createMockResponse(
     url: mockUrl.href,
   };
 
-  
+  context.log.debug({ message: "bin_created",  binId });
   context.waitUntil(logAnalytics("bin_created", { binId }));
 
   return new Response(JSON.stringify(responseData, null, 2), {
