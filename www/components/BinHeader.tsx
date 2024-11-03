@@ -10,11 +10,13 @@ import RMOLink from "@/components/RMOLink";
 import DocsButton from "./DocsButton";
 
 const BinHeader = ({
+  isOas,
   docsUrl,
   binUrl,
   onRefresh,
   isNewBin,
 }: {
+  isOas: boolean;
   docsUrl: string;
   binUrl: string;
   onRefresh: () => void;
@@ -42,7 +44,7 @@ const BinHeader = ({
         {binUrl}
       </code>
       <CopyButton textToCopy={binUrl} />
-      <DocsButton docsUrl={docsUrl} />
+      {isOas && <DocsButton docsUrl={docsUrl} />}
     </div>
     <div className="flex gap-4 px-4 items-center">
       <RMOLink />

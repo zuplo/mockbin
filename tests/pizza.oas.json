@@ -42,11 +42,8 @@
                 },
                 "examples": {
                   "orderResponseExample": {
-                    "summary": "Order Response Example",
-                    "value": {
-                      "orderId": "abc123",
-                      "estimatedDeliveryTime": "45 minutes"
-                    }
+                    "orderId": "abc123",
+                    "estimatedDeliveryTime": "45 minutes"
                   }
                 }
               }
