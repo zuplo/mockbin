@@ -132,7 +132,7 @@ const Index = () => {
     try {
       setIsCreating(true);
       const response = await fetch(
-        "https://mockbin-main-d0c1f43.d2.zuplo.dev/v1/openapi/bins",
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/openapi/bins`,
         {
           method: "POST",
           body: formData,
