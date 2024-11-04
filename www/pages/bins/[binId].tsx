@@ -150,6 +150,7 @@ const Bin = () => {
   return (
     <main>
       <BinHeader
+        isOas={isOas}
         docsUrl={docsUrl}
         binUrl={binUrl}
         onRefresh={() => getRequests()}
