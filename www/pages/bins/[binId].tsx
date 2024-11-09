@@ -160,8 +160,8 @@ const Bin = () => {
         <div className="flex items-center translate-y-[35vh] text-lg flex-col gap-6">
           <p>Your mockbin has been created at the URL below.</p>
           <p>
-            We'll keep a track of requests made to the mockbin and show them
-            here.
+            We&apos;ll keep a track of requests made to the mockbin and show
+            them here.
           </p>
 
           {isOas && (
