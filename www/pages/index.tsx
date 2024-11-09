@@ -115,8 +115,8 @@ const Index = () => {
     }
   };
 
-  const handleFileChange = (file: File) => {
-    const selectedFile = file || null;
+  const handleFileChange = (file: File | null) => {
+    const selectedFile = file;
     setFile(selectedFile);
   };
 
