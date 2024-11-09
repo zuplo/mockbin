@@ -1,1 +1,3 @@
-export type * from "../../../node_modules/yaml/dist/index.d.ts";
+import * as yaml from "../../../node_modules/yaml/dist/index.d";
+
+export default yaml;

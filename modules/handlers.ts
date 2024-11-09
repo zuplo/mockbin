@@ -9,88 +9,150 @@ import {
   getProblemFromStorageError,
   isOasBin,
   validateBinId,
-validateOpenApiDocument,
+  validateOpenApiDocument,
 } from "./utils";
+import { default as yaml } from "./third-party/yaml/index";
 
 const MAX_SIZE = 1_048_576;
 
-export async function createMockResponse(
-  request: ZuploRequest,
-  context: ZuploContext,
-) {
+export async function createMockResponse(request, context) {
   const url = new URL(request.url);
   let binId = crypto.randomUUID().replaceAll("-", "");
-
   const storage = storageClient(context.log);
-
-  const contentType = request.headers.get("content-type");
-
-  context.log.info({ contentType });
-
-  let body: string;
-
-  // standard mock
-  if (contentType.includes("application/json")) {
-    body = await request.text();
-    const size = new TextEncoder().encode(JSON.stringify(body)).length;
-    if (size > MAX_SIZE) {
-      return HttpProblems.badRequest(request, context, {
-        detail: `Mock size cannot be larger than ${MAX_SIZE} bytes`,
-      });
-    }
-  }
-  // open api mock
-  else if (contentType.indexOf('multipart/form-data') === 0) {
-
-    binId += "_oas";
-    const formData = await request.formData();
-    body = await readFirstFileInFormData(formData, context);
-
-    if (body === undefined) {
-      return HttpProblems.badRequest(request, context, { detail: "No file attachment found" });
-    }
-
-    // TODO - check for YAML and convert, keep original
-
-    try {
-      validateOpenApiDocument(body);
-    }
-    catch (err: any) {
-      return HttpProblems.badRequest(request, context, {
-        detail: err.message
-      });
-    }
-  }
-  // bad content type
-  else {
-    return HttpProblems.badRequest(request, context, { detail: `Invalid content-type '${contentType}'` });
-  }
+  const contentType = request.headers.get("content-type") ?? "";
 
   try {
-    await storage.uploadObject(`${binId}.json`, body);
-    context.log.info({ binId, body });
+    let responseData;
+
+    if (contentType.includes("application/json")) {
+      // Handle standard mock
+      responseData = await handleStandardMock(
+        request,
+        context,
+        binId,
+        storage,
+        url,
+      );
+    } else if (contentType.startsWith("multipart/form-data")) {
+      // Handle OpenAPI mock
+      binId += "_oas";
+      responseData = await handleOpenApiMock(
+        request,
+        context,
+        binId,
+        storage,
+        url,
+      );
+    } else {
+      return HttpProblems.badRequest(request, context, {
+        detail: `Invalid content-type '${contentType}'`,
+      });
+    }
+
+    context.log.debug({ message: "bin_created", binId });
+    context.waitUntil(logAnalytics("bin_created", { binId }));
+
+    return new Response(JSON.stringify(responseData, null, 2), {
+      status: 201,
+      statusText: "Created",
+    });
   } catch (err) {
     context.log.error(err);
-    return getProblemFromStorageError(err, request, context);
+    return HttpProblems.internalServerError(request, context, {
+      detail: err.message,
+    });
   }
+}
+
+async function handleStandardMock(request, context, binId, storage, url) {
+  const body = await request.text();
+  const size = new TextEncoder().encode(body).length;
+  if (size > MAX_SIZE) {
+    throw new Error(`Mock size cannot be larger than ${MAX_SIZE} bytes`);
+  }
+
+  await storage.uploadObject(`${binId}.json`, body);
+  context.log.info({ binId });
 
   const mockUrl = getInvokeBinUrl(url, binId);
 
-  const responseData = {
+  return {
     id: binId,
     url: mockUrl.href,
   };
-
-  context.log.debug({ message: "bin_created", binId });
-  context.waitUntil(logAnalytics("bin_created", { binId }));
-
-  return new Response(JSON.stringify(responseData, null, 2), {
-    status: 201,
-    statusText: "Created",
-  });
 }
 
-async function readFirstFileInFormData(formData: FormData, context: ZuploContext) {
+async function handleOpenApiMock(request, context, binId, storage, url) {
+  const formData = await request.formData();
+  const body = await readFirstFileInFormData(formData, context);
+
+  if (body === undefined) {
+    throw new Error("No file attachment found");
+  }
+
+  let isYaml = false;
+  let parsedContent;
+
+  // Attempt to parse the content as YAML or JSON
+  try {
+    parsedContent = yaml.parse(body);
+    isYaml = true;
+  } catch (yamlError) {
+    // Not YAML, try JSON
+    context.log.debug({ message: "Yaml.parse failed", yamlError });
+    try {
+      parsedContent = JSON.parse(body);
+    } catch (jsonError) {
+      throw new Error(
+        "Invalid OpenAPI file format. The file must be valid JSON or YAML.",
+      );
+    }
+  }
+
+  // Validate OpenAPI Document using the parsed content
+  try {
+    validateOpenApiDocument(parsedContent);
+  } catch (validationError) {
+    throw new Error(`OpenAPI validation error: ${validationError.message}`);
+  }
+
+  let originalYamlUrl: string | undefined;
+  if (isYaml) {
+    // Save the original YAML file
+    const yamlBinId = `${binId}_YAML_original`;
+    await storage.uploadObject(`${yamlBinId}.yaml`, body);
+    const yamlUrl = getInvokeBinUrl(url, yamlBinId);
+    originalYamlUrl = yamlUrl.href;
+
+    // Add x-mockbin-original-url to the parsed content
+    parsedContent["x-mockbin-original-url"] = originalYamlUrl;
+  }
+
+  // Convert the parsed content to a JSON string
+  const jsonBody = JSON.stringify(parsedContent, null, 2);
+
+  // Check the size of the JSON body
+  const size = new TextEncoder().encode(jsonBody).length;
+  if (size > MAX_SIZE) {
+    throw new Error(`Mock size cannot be larger than ${MAX_SIZE} bytes`);
+  }
+
+  // Save the JSON file
+  await storage.uploadObject(`${binId}.json`, jsonBody);
+  context.log.info({ binId });
+
+  const mockUrl = getInvokeBinUrl(url, binId);
+
+  return {
+    id: binId,
+    url: mockUrl.href,
+  };
+}
+
+async function readFirstFileInFormData(
+  formData: FormData,
+  context: ZuploContext,
+) {
   let fileContents;
   for (const [name, value] of formData.entries()) {
     // Check if the value is a file (Blob) and not a regular string field
@@ -108,7 +170,9 @@ export async function getMockResponse(
   const url = new URL(request.url);
   const { binId } = request.params;
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
+    return HttpProblems.badRequest(request, context, {
+      detail: "Invalid binId",
+    });
   }
 
   const storage = storageClient(context.log);
@@ -132,7 +196,9 @@ export async function listRequests(
   const url = new URL(request.url);
   const { binId } = request.params;
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
+    return HttpProblems.badRequest(request, context, {
+      detail: "Invalid binId",
+    });
   }
 
   const storage = storageClient(context.log);
@@ -168,7 +234,9 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
   const { binId, requestId } = request.params;
 
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
+    return HttpProblems.badRequest(request, context, {
+      detail: "Invalid binId",
+    });
   }
 
   const storage = storageClient(context.log);
@@ -215,7 +283,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   const { binId } = urlInfo;
 
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context, { detail: 'Invalid Bin' });
+    return HttpProblems.badRequest(request, context, { detail: "Invalid Bin" });
   }
 
   if (!binId) {
@@ -268,7 +336,7 @@ function removeBinPath(request) {
   const url = new URL(request.url);
 
   // Split the pathname into parts
-  const pathParts = url.pathname.split('/').filter(part => part); // filter removes empty parts
+  const pathParts = url.pathname.split("/").filter((part) => part); // filter removes empty parts
 
   // Remove the first part from the path
   if (pathParts.length > 0) {
@@ -276,7 +344,7 @@ function removeBinPath(request) {
   }
 
   // Join the remaining parts back into a path
-  url.pathname = '/' + pathParts.join('/');
+  url.pathname = "/" + pathParts.join("/");
 
   // Clone the request with the modified URL
   const modifiedRequest = new Request(url.toString(), {
@@ -288,4 +356,3 @@ function removeBinPath(request) {
 
   return modifiedRequest;
 }
-

@@ -51,25 +51,17 @@ export function validateBinId(binId: string) {
   return binRegEx.test(binId);
 }
 
-export function validateOpenApiDocument(jsonString: string): void {
-
-  // TODO - support YAML
-  let document: any;
-
-  // Attempt to parse the JSON string
-  try {
-    document = JSON.parse(jsonString);
-  } catch (error) {
-    throw new Error(`Invalid document - not JSON (YAML support coming soon - convert using https://jsonformatter.org/yaml-to-json for now`);
-  }
-
+export function validateOpenApiDocument(document: any): void {
   // Check if the document is an object
   if (typeof document !== "object" || document === null) {
     throw new Error("The JSON must represent an object.");
   }
 
   // Check for the 'openapi' field and its version
-  if (typeof document.openapi !== "string" || !document.openapi.startsWith("3.")) {
+  if (
+    typeof document.openapi !== "string" ||
+    !document.openapi.startsWith("3.")
+  ) {
     throw new Error("The document is not an OpenAPI 3.x specification.");
   }
 
@@ -93,4 +85,3 @@ export function validateOpenApiDocument(jsonString: string): void {
 export function isOasBin(binId: string) {
   return binId.indexOf("_oas") > 0;
 }
-

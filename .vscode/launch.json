@@ -5,69 +5,33 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug: Attach to Running Zup",
-      "processId": "${command:PickProcess}",
-      "request": "attach",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node"
-    },
-    {
       "type": "node",
       "request": "launch",
-      "name": "Dev",
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "smartStep": true,
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "dev"],
-      "skipFiles": ["<node_internals>/**"],
+      "name": "Launch Zuplo",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "@zuplo/cli",
+        "dev",
+        "--debug-port",
+        "9229",
+        "--port",
+        "9000"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true,
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/dist/**",
-        "!**/node_modules/**"
-      ]
+      "internalConsoleOptions": "neverOpen"
     },
     {
+      "name": "Zuplo Gateway",
       "type": "node",
-      "request": "launch",
-      "name": "Start",
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "smartStep": true,
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "serve"],
-      "skipFiles": ["<node_internals>/**"],
-      "console": "integratedTerminal"
-    },
+      "request": "attach",
+      "restart": true,
+      "port": 9229
+    }
+  ],
+  "compounds": [
     {
-      "type": "node",
-      "request": "launch",
-      "name": "Build: Workers",
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "smartStep": true,
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "build"],
-      "skipFiles": ["<node_internals>/**"],
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run: Tests",
-      "env": {
-        "NODE_ENV": "development",
-        "LOG_LEVEL": "info"
-      },
-      "smartStep": true,
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "test"],
-      "skipFiles": ["<node_internals>/**"],
-      "console": "integratedTerminal"
+      "name": "Launch & Attach Zuplo",
+      "configurations": ["Launch Zuplo", "Zuplo Gateway"]
     }
   ]
 }
