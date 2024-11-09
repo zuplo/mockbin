@@ -15,7 +15,7 @@ import BinHeader from "@/components/BinHeader";
 import ArrowIcon from "@/components/ArrowIcon";
 import { useBinColumnsResize } from "@/utils/useBinColumnsResize";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
-import DocsButton from "@/components/DocsButton";
+import { Book } from "lucide-react";
 
 const POLL_INTERVAL = 5000;
 
@@ -158,7 +158,43 @@ const Bin = () => {
       />
       {requests.data.length === 0 ? (
         <div className="flex items-center translate-y-[35vh] text-lg flex-col gap-6">
-          No requests made to your Bin yet. Send a request to see it here.
+          <p>Your mockbin has been created at the URL below.</p>
+          <p>
+            We'll keep a track of requests made to the mockbin and show them
+            here.
+          </p>
+
+          {isOas && (
+            <p>
+              We have generated{" "}
+              <a
+                href={docsUrl}
+                target="_blank"
+                className="text-pink-500 hover:underline"
+              >
+                API documentation
+              </a>{" "}
+              for you using{" "}
+              <a
+                href="https://zudoku.dev"
+                target="_blank"
+                className="text-pink-500 hover:underline"
+              >
+                Zudoku
+              </a>
+              :{" "}
+              <a
+                href={docsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-1 text-white bg-pink-500 hover:bg-pink-700 px-2 py-1 rounded ml-2"
+              >
+                <Book className="h-4 w-4" />
+                <span>Open Docs</span>
+              </a>
+            </p>
+          )}
+
           <div className="flex flex-col gap-2">
             <code className="text-md bg-slate-800 rounded border border-slate-700 p-4 py-2 flex items-center gap-2">
               <span className="text-zuplo-primary">{binUrl}</span>
@@ -184,7 +220,6 @@ const Bin = () => {
                 Copied!
               </span>
             </button>
-            {isOas && <DocsButton docsUrl={docsUrl} />}
           </div>
         </div>
       ) : (

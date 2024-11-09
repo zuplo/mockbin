@@ -9,6 +9,7 @@ import cn from "classnames";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InfoIcon from "@/components/InfoIcon";
+import FileInput from "@/components/FileInput";
 
 const RECENT_BIN_KEY = "LAST_BINS";
 type RecentBin = {
@@ -114,8 +115,8 @@ const Index = () => {
     }
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0] || null;
+  const handleFileChange = (file: File) => {
+    const selectedFile = file || null;
     setFile(selectedFile);
   };
 
@@ -262,7 +263,7 @@ const Index = () => {
               <a href="https://discord.gg/zudoku">Discord</a> to give us
               feedback or make a github issue.
             </div>
-            <input type="file" onChange={handleFileChange} />
+            <FileInput onChange={handleFileChange} />
             <div className="self-end">
               <Button disabled={isCreating}>
                 {isCreating ? "Creating" : "Create OpenAPI Bin"}

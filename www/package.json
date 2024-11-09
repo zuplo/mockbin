@@ -11,6 +11,7 @@
   "dependencies": {
     "classnames": "^2.3.2",
     "downshift": "8.3.1",
+    "lucide-react": "^0.456.0",
     "match-sorter": "6.3.3",
     "next": "14.1.1",
     "posthog-js": "^1.88.1",
