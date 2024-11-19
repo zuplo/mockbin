@@ -7,12 +7,17 @@ import ArrowIcon from "@/components/ArrowIcon";
 import cn from "classnames";
 import Button from "@/components/Button";
 import RMOLink from "@/components/RMOLink";
+import DocsButton from "./DocsButton";
 
 const BinHeader = ({
+  isOas,
+  docsUrl,
   binUrl,
   onRefresh,
   isNewBin,
 }: {
+  isOas: boolean;
+  docsUrl: string;
   binUrl: string;
   onRefresh: () => void;
   isNewBin: boolean;
@@ -39,6 +44,7 @@ const BinHeader = ({
         {binUrl}
       </code>
       <CopyButton textToCopy={binUrl} />
+      {isOas && <DocsButton docsUrl={docsUrl} />}
     </div>
     <div className="flex gap-4 px-4 items-center">
       <RMOLink />

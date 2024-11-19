@@ -34,7 +34,9 @@
                   "response": {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": ["status"],
+                    "required": [
+                      "status"
+                    ],
                     "properties": {
                       "status": {
                         "type": "number"
@@ -65,10 +67,34 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["request-validation-inbound", "rate-limit-inbound"]
+            "inbound": [
+              "request-validation-inbound",
+              "rate-limit-inbound"
+            ]
           }
         },
         "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
+      }
+    },
+    "/v1/openapi/bins": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "post": {
+        "summary": "Create OpenAPI bin",
+        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "createMockResponse",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "6e4b7ac5-f1e4-48b4-82b5-336d48aaef24"
       }
     },
     "/v1/bins/{binId}": {
@@ -86,7 +112,13 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["block-bad-bins", "rate-limit-inbound"]
+            "inbound": [
+              "block-bad-bins",
+              "rate-limit-inbound"
+            ],
+            "outbound": [
+              "custom-code-outbound"
+            ]
           }
         },
         "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
@@ -107,7 +139,10 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["block-bad-bins", "rate-limit-inbound"]
+            "inbound": [
+              "block-bad-bins",
+              "rate-limit-inbound"
+            ]
           }
         },
         "responses": {
@@ -129,7 +164,7 @@
             }
           }
         },
-        "operationId": "460b0c3d-6267-4913-9e42-46f6882e2a42"
+        "operationId": "5fbfb141-50e3-4803-8553-084825e7ce81"
       }
     },
     "/v1/bins/{binId}/requests/{requestId}": {
@@ -147,7 +182,10 @@
             "options": {}
           },
           "policies": {
-            "inbound": ["block-bad-bins", "rate-limit-inbound"]
+            "inbound": [
+              "block-bad-bins",
+              "rate-limit-inbound"
+            ]
           }
         },
         "responses": {

@@ -15,7 +15,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
   const { binId, pathname } = urlInfo;
 
   if (!validateBinId(binId)) {
-    return HttpProblems.badRequest(request, context);
+    return HttpProblems.badRequest(request, context, { detail: "Invalid binId" });
   }
 
   const headers: Record<string, string> = {};
@@ -31,7 +31,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
 
   const storage = storageClient(context.log);
 
-  const body = request.body ? await request.text() : null;
+  const body = request.body ? await (request.clone()).text() : null;
   const size = body ? new TextEncoder().encode(JSON.stringify(body)).length : 0;
   const req: RequestData = {
     method: request.method,

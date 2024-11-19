@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
 import HeaderImage from "../public/mockbin-header.png";
@@ -10,6 +11,12 @@ const Header = () => {
         <Image width={360} height={132} alt="mockbin logo" src={HeaderImage} />
       </Link>
       <div className="flex gap-x-2 items-center">
+        <a href="https://github.com/zuplo/mockbin" target="_blank">
+          <img
+            alt="GitHub Repo stars"
+            src="https://img.shields.io/github/stars/zuplo/mockbin?link=https%3A%2F%2Fgithub.com%2Fzuplo%2Fmockbin"
+          />
+        </a>
         <RMOLink />
         <a
           target="_blank"
@@ -25,24 +32,6 @@ const Header = () => {
           />
           <p className="text-white text-sm font-semibold">Discord</p>
         </a>
-        <iframe
-          className="sm:hidden"
-          src="https://ghbtns.com/github-btn.html?user=zuplo&repo=mockbin&type=star&count=true"
-          frameBorder="0"
-          scrolling="0"
-          width="85"
-          height="20"
-          title="GitHub"
-        ></iframe>
-        <iframe
-          className="hidden sm:block"
-          src="https://ghbtns.com/github-btn.html?user=zuplo&repo=mockbin&type=star&count=true&size=large"
-          frameBorder="0"
-          scrolling="0"
-          width="75"
-          height="30"
-          title="GitHub"
-        ></iframe>
       </div>
     </header>
   );

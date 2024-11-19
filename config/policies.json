@@ -18,7 +18,10 @@
         "export": "CachingInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "expirationSecondsTtl": 60
+          "expirationSecondsTtl": 60,
+          "headers": [
+            "accept"
+          ]
         }
       },
       "name": "caching-inbound",
@@ -52,6 +55,14 @@
       },
       "name": "block-bad-bins",
       "policyType": "custom-code-inbound"
+    },
+    {
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/add-server-to-openapi)"
+      },
+      "name": "custom-code-outbound",
+      "policyType": "custom-code-outbound"
     }
   ]
 }
