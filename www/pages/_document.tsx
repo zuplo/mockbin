@@ -33,6 +33,8 @@ export default function Document() {
           property="og:image"
           content="https://cdn.zuplo.com/assets/8e93df64-1a75-4cfe-afb7-10a99def9e0c.png"
         />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="zuplo-banner.js"></script>
         <link
           href="https://fonts.googleapis.com/css?family=Fira+Code"
           rel="stylesheet"
@@ -65,6 +67,9 @@ export default function Document() {
         ) : null}
       </Head>
       <body>
+        <div className="w-full px-14 bg-white mb-5">
+          <zuplo-banner mode="light"></zuplo-banner>
+        </div>
         <Main />
         <NextScript />
       </body>
