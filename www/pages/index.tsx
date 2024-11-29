@@ -173,14 +173,13 @@ const Index = () => {
 
   return (
     <Frame>
-      <div className="my-8 flex flex-col gap-4">
-        <h1 className="text-3xl">
-          Welcome to <span className="font-bold">Mockbin by Zuplo</span>
-        </h1>
+      <div className="my-8 flex flex-col gap-4 max-w-3xl pt-10">
+        <h1 className="text-4xl font-bold">Welcome to Mockbin.io</h1>
         <p className="text-gray-300">
-          This is an open-source and fully-free tool that allows you to quickly
-          mock an API endpoint, configure a fixed response and track requests to
-          your endpoint.
+          Mockbin.io is an open-source and fully-free tool that allows you to
+          quickly mock an API endpoint, configure a fixed response and track
+          requests to your endpoint. You can also upload your OpenAPI document
+          and we&apos;ll do our best to mock it using your schemas and examples.
         </p>
       </div>
       <div

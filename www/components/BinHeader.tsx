@@ -1,12 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import HeaderImage from "@/public/mockbin-header-small.png";
+import HeaderImage from "@/public/mockbin-white.svg";
 import CopyButton from "@/components/CopyButton";
 import RefreshIcon from "@/components/RefreshIcon";
 import ArrowIcon from "@/components/ArrowIcon";
 import cn from "classnames";
 import Button from "@/components/Button";
-import RMOLink from "@/components/RMOLink";
 import DocsButton from "./DocsButton";
 
 const BinHeader = ({
@@ -28,7 +27,7 @@ const BinHeader = ({
       className="flex gap-1 items-center px-4 group ease-in-out flex-shrink-0"
     >
       <ArrowIcon className="rotate-180 text-[#FF00BD] group-hover:scale-125 transition-transform" />
-      <Image alt="mockbin logo" height={50} src={HeaderImage} />
+      <Image alt="mockbin logo" height={30} src={HeaderImage} />
     </Link>
     <div
       className={cn(
@@ -47,7 +46,6 @@ const BinHeader = ({
       {isOas && <DocsButton docsUrl={docsUrl} />}
     </div>
     <div className="flex gap-4 px-4 items-center">
-      <RMOLink />
       <Button as="a" tabIndex={0} className="whitespace-nowrap" href="/">
         Create Bin
       </Button>

@@ -20,6 +20,7 @@ export async function createMockResponse(request, context) {
   let binId = crypto.randomUUID().replaceAll("-", "");
   const storage = storageClient(context.log);
   const contentType = request.headers.get("content-type") ?? "";
+  let isOpenApi = false;
 
   try {
     let responseData;
@@ -34,6 +35,7 @@ export async function createMockResponse(request, context) {
         url,
       );
     } else if (contentType.startsWith("multipart/form-data")) {
+      isOpenApi = true;
       // Handle OpenAPI mock
       binId += "_oas";
       responseData = await handleOpenApiMock(
@@ -50,7 +52,11 @@ export async function createMockResponse(request, context) {
     }
 
     context.log.debug({ message: "bin_created", binId });
-    context.waitUntil(logAnalytics("bin_created", { binId }));
+    context.waitUntil(
+      logAnalytics(isOpenApi ? "openapi_bin_created" : "bin_created", {
+        binId,
+      }),
+    );
 
     return new Response(JSON.stringify(responseData, null, 2), {
       status: 201,
