@@ -11,13 +11,13 @@ class ZuploBanner extends HTMLElement {
         name: "Zudoku",
         logo: "https://cdn.zuplo.com/uploads/zudoku-logo-only.svg",
         description: "API documentation should be free.",
-        url: "https://zudoku.dev",
+        url: "https://zudoku.dev?utm_source=mockbin&utm_medium=web&utm_campaign=header&ref=mockbin",
       },
       ratemyopenapi: {
         name: "Rate My OpenAPI",
         logo: "https://cdn.zuplo.com/uploads/rmoa-logo-only.svg",
         description: "Get feedback and a rating on your OpenAPI spec",
-        url: "https://ratemyopenapi.com",
+        url: "https://ratemyopenapi.com?utm_source=mockbin&utm_medium=web&utm_campaign=header&ref=mockbin",
       },
       mockbin: {
         name: "Mockbin",
