@@ -5,6 +5,11 @@ const nextConfig = {
       {
         hostname: "cdn.zuplo.com",
       },
+      {
+        protocol: "https",
+        hostname: "img.shields.io",
+        pathname: "/github/stars/**",
+      },
     ],
   },
 };

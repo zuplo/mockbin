@@ -27,8 +27,17 @@ const Header = () => {
             alt="Discord"
             src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"
           />
-          <p className="text-white text-sm font-semibold">Discord</p>
+          <p className="text-white text-md font-semibold">Discord</p>
         </a>
+        <Link target="_blank" href="https://github.com/zuplo/mockbin">
+          <Image
+            height={0}
+            width={124}
+            alt="GitHub Repo stars"
+            unoptimized
+            src="https://img.shields.io/github/stars/zuplo/mockbin"
+          />
+        </Link>
       </div>
     </header>
   );
