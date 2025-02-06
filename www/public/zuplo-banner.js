@@ -25,6 +25,12 @@ class ZuploBanner extends HTMLElement {
         description: "Mock an API from OpenAPI in seconds",
         url: "https://mockbin.io",
       },
+      uuid: {
+        name: "UUID.new",
+        logo: "https://cdn.zuplo.com/uploads/uuidnew-logo-only.svg",
+        description: "Generate UUIDs in your browser",
+        url: "https://uuid.new",
+      },
     };
 
     // Create wrapper
