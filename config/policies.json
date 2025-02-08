@@ -33,8 +33,8 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "rateLimitBy": "ip",
-          "requestsAllowed": 250,
-          "timeWindowMinutes": 0.16
+          "requestsAllowed": 500,
+          "timeWindowMinutes": 0.02
         }
       },
       "name": "rate-limit-inbound",
