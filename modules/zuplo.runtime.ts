@@ -3,6 +3,9 @@ import {
   RuntimeExtensions,
   ZuploRequest,
   environment,
+HydrolixRequestLoggerPlugin,
+HydrolixDefaultEntry,
+defaultGenerateHydrolixEntry,
 } from "@zuplo/runtime";
 
 export function runtimeInit(runtime: RuntimeExtensions) {
@@ -14,6 +17,18 @@ export function runtimeInit(runtime: RuntimeExtensions) {
       }),
     );
   }
+
+  runtime.addPlugin(
+    new HydrolixRequestLoggerPlugin<HydrolixDefaultEntry>({
+      hostname: environment.HYDROLIX_HOSTNAME,
+      username: environment.HYDROLIX_USERNAME,
+      password: environment.HYDROLIX_PASSWORD,
+      token: environment.HYDROLIX_TOKEN,
+      table: environment.HYDROLIX_TABLE,
+      transform: environment.HYDROLIX_TRANSFORM,
+      generateLogEntry: defaultGenerateHydrolixEntry
+    })
+  );
 
   if (environment.USE_WILDCARD_SUBDOMAIN === "true") {
     // This rewrites the URL of the request when the service is hosted
