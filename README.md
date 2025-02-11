@@ -19,7 +19,7 @@
 </p>
 </div>
 
-Easily generate custom endpoints to test HTTP requests, and view the request logs from that API for free. Now with OpenAPI support! Mock your OpenAPI file in seconds.
+Easily generate custom endpoints to test HTTP requests, and view the request logs from that API for free. Now with OpenAPI support; Mock your OpenAPI file in seconds.
 
 ## Usage
 
