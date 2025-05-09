@@ -164,7 +164,7 @@ const Bin = () => {
             them here.
           </p>
 
-          {isOas && (
+          {/* {isOas && (
             <p>
               We have generated{" "}
               <a
@@ -193,7 +193,7 @@ const Bin = () => {
                 <span>Open Docs</span>
               </a>
             </p>
-          )}
+          )} */}
 
           <div className="flex flex-col gap-2">
             <code className="text-md bg-slate-800 rounded border border-slate-700 p-4 py-2 flex items-center gap-2">
