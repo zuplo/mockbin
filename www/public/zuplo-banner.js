@@ -264,6 +264,9 @@ class ZuploBanner extends HTMLElement {
         font-weight: bold;
         white-space: nowrap; /* Prevent wrapping */
       }
+      .menu-item:hover {
+        color: #FF00BD;
+      }
       .tool-description {
         font-size: 12px;
         color: #666;
