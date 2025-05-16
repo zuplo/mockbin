@@ -45,7 +45,12 @@ class ZuploBanner extends HTMLElement {
     openSourceText.textContent = "Open source by ";
 
     // Zuplo Logo using the provided SVG
-    const zuploLogoContainer = document.createElement("div");
+    const zuploLogoContainer = document.createElement("a");
+    zuploLogoContainer.setAttribute(
+      "href",
+      "https://zuplo.com?utm_source=mockbin",
+    );
+    zuploLogoContainer.setAttribute("target", "_blank");
     zuploLogoContainer.setAttribute("class", "zuplo-logo");
     zuploLogoContainer.innerHTML = `
       <!-- Zuplo SVG Logo -->
@@ -258,6 +263,9 @@ class ZuploBanner extends HTMLElement {
       .tool-name {
         font-weight: bold;
         white-space: nowrap; /* Prevent wrapping */
+      }
+      .menu-item:hover {
+        color: #FF00BD;
       }
       .tool-description {
         font-size: 12px;
