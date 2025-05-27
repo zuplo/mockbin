@@ -26,6 +26,7 @@ export interface GetObjectResult {
   contentEncoding: string | undefined;
   contentDisposition: string | undefined;
   lastModified: Date | undefined;
+  metadata: Record<string, string> | undefined;
 }
 
 export class StorageError extends Error {
@@ -101,6 +102,7 @@ export class StorageClient {
       contentDisposition: response.ContentDisposition,
       contentEncoding: response.ContentDisposition,
       lastModified: response.LastModified,
+      metadata: response.Metadata,
     };
   }
 

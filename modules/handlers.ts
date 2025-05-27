@@ -15,87 +15,48 @@ import { default as yaml } from "./third-party/yaml/index";
 
 const MAX_SIZE = 1_048_576;
 
-export async function createMockResponse(request, context) {
-  const url = new URL(request.url);
-  let binId = crypto.randomUUID().replaceAll("-", "");
-  const storage = storageClient(context.log);
-  const contentType = request.headers.get("content-type") ?? "";
-  let isOpenApi = false;
-
-  try {
-    let responseData;
-
-    if (contentType.includes("application/json")) {
-      // Handle standard mock
-      responseData = await handleStandardMock(
-        request,
-        context,
-        binId,
-        storage,
-        url,
-      );
-    } else if (contentType.startsWith("multipart/form-data")) {
-      isOpenApi = true;
-      // Handle OpenAPI mock
-      binId += "_oas";
-      responseData = await handleOpenApiMock(
-        request,
-        context,
-        binId,
-        storage,
-        url,
-      );
-    } else {
-      return HttpProblems.badRequest(request, context, {
-        detail: `Invalid content-type '${contentType}'`,
-      });
-    }
-
-    context.log.debug({ message: "bin_created", binId });
-    context.waitUntil(
-      logAnalytics(isOpenApi ? "openapi_bin_created" : "bin_created", {
-        binId,
-      }),
-    );
-
-    return new Response(JSON.stringify(responseData, null, 2), {
-      status: 201,
-      statusText: "Created",
-    });
-  } catch (err) {
-    context.log.error(err);
-    return HttpProblems.internalServerError(request, context, {
-      detail: err.message,
-    });
-  }
+// Common types for operation context
+interface MockOperationContext {
+  binId: string;
+  secretId: string;
+  storage: any;
+  url: URL;
+  isUpdate: boolean;
 }
 
-async function handleStandardMock(request, context, binId, storage, url) {
-  const body = await request.text();
-  const size = new TextEncoder().encode(body).length;
+interface ParsedOpenApiContent {
+  parsedContent: any;
+  isYaml: boolean;
+  body: string;
+}
+
+// Common helper functions
+function validateContentSize(content: string): void {
+  const size = new TextEncoder().encode(content).length;
   if (size > MAX_SIZE) {
     throw new Error(`Mock size cannot be larger than ${MAX_SIZE} bytes`);
   }
+}
 
-  await storage.uploadObject(`${binId}.json`, body);
-  context.log.info({ binId });
-
-  const mockUrl = getInvokeBinUrl(url, binId);
-
+function createMockMetadata(secretId: string, isUpdate: boolean, existingMetadata?: any) {
+  const now = new Date().toISOString();
   return {
-    id: binId,
-    url: mockUrl.href,
+    secretId,
+    createdAt: isUpdate ? (existingMetadata?.createdAt || now) : now,
+    ...(isUpdate && { updatedAt: now }),
   };
 }
 
-async function handleOpenApiMock(request, context, binId, storage, url) {
-  const formData = await request.formData();
-  const body = await readFirstFileInFormData(formData, context);
+function createMockResponseData(context: MockOperationContext, includeSecret = true) {
+  const mockUrl = getInvokeBinUrl(context.url, context.binId);
+  return {
+    id: context.binId,
+    url: mockUrl.href,
+    ...(includeSecret && { secret: context.secretId }),
+  };
+}
 
-  if (body === undefined) {
-    throw new Error("No file attachment found");
-  }
-
+async function parseOpenApiContent(body: string, context: ZuploContext): Promise<ParsedOpenApiContent> {
   let isYaml = false;
   let parsedContent;
 
@@ -122,50 +83,230 @@ async function handleOpenApiMock(request, context, binId, storage, url) {
     throw new Error(`OpenAPI validation error: ${validationError.message}`);
   }
 
-  let originalYamlUrl: string | undefined;
-  if (isYaml) {
-    // Save the original YAML file
-    const yamlBinId = `${binId}_YAML_original`;
-    await storage.uploadObject(`${yamlBinId}.yaml`, body);
-    const yamlUrl = getInvokeBinUrl(url, yamlBinId);
-    originalYamlUrl = yamlUrl.href;
+  return { parsedContent, isYaml, body };
+}
 
-    // Add x-mockbin-original-url to the parsed content
-    parsedContent["x-mockbin-original-url"] = originalYamlUrl;
-  }
-
-  // Convert the parsed content to a JSON string
-  const jsonBody = JSON.stringify(parsedContent, null, 2);
-
-  // Check the size of the JSON body
-  const size = new TextEncoder().encode(jsonBody).length;
-  if (size > MAX_SIZE) {
-    throw new Error(`Mock size cannot be larger than ${MAX_SIZE} bytes`);
-  }
-
-  // Save the JSON file
-  await storage.uploadObject(`${binId}.json`, jsonBody);
-  context.log.info({ binId });
-
-  const mockUrl = getInvokeBinUrl(url, binId);
-
-  return {
-    id: binId,
-    url: mockUrl.href,
-  };
+async function handleYamlOriginal(
+  context: MockOperationContext,
+  body: string,
+  parsedContent: any
+): Promise<void> {
+  // Save the original YAML file
+  const yamlBinId = `${context.binId}_YAML_original`;
+  await context.storage.uploadObject(`${yamlBinId}.yaml`, body);
+  const yamlUrl = getInvokeBinUrl(context.url, yamlBinId);
+  
+  // Add x-mockbin-original-url to the parsed content
+  parsedContent["x-mockbin-original-url"] = yamlUrl.href;
 }
 
 async function readFirstFileInFormData(
   formData: FormData,
   context: ZuploContext,
 ) {
-  let fileContents;
   for (const [name, value] of formData.entries()) {
     // Check if the value is a file (Blob) and not a regular string field
     if (value instanceof File) {
-      fileContents = await value.text(); // Read file contents as a string
-      return fileContents; // Exit loop after finding the first file
+      return await value.text(); // Read file contents as a string
     }
+  }
+  return undefined;
+}
+
+// Unified mock handlers
+async function handleStandardMock(
+  request: any,
+  context: ZuploContext,
+  operationContext: MockOperationContext
+) {
+  const body = await request.text();
+  validateContentSize(body);
+
+  let existingMetadata;
+  if (operationContext.isUpdate) {
+    const existingBinResult = await operationContext.storage.getObject(`${operationContext.binId}.json`);
+    existingMetadata = existingBinResult.metadata;
+  }
+
+  const metadata = createMockMetadata(operationContext.secretId, operationContext.isUpdate, existingMetadata);
+  await operationContext.storage.uploadObject(`${operationContext.binId}.json`, body, metadata);
+  
+  const logData: any = { binId: operationContext.binId };
+  if (operationContext.isUpdate) logData.action = "updated";
+  context.log.info(logData);
+
+  return createMockResponseData(operationContext, !operationContext.isUpdate);
+}
+
+async function handleOpenApiMock(
+  request: any,
+  context: ZuploContext,
+  operationContext: MockOperationContext
+) {
+  const formData = await request.formData();
+  const body = await readFirstFileInFormData(formData, context);
+
+  if (body === undefined) {
+    throw new Error("No file attachment found");
+  }
+
+  const { parsedContent, isYaml } = await parseOpenApiContent(body, context);
+
+  if (isYaml) {
+    await handleYamlOriginal(operationContext, body, parsedContent);
+  }
+
+  // Convert the parsed content to a JSON string
+  const jsonBody = JSON.stringify(parsedContent, null, 2);
+  validateContentSize(jsonBody);
+
+  let existingMetadata;
+  if (operationContext.isUpdate) {
+    const existingBinResult = await operationContext.storage.getObject(`${operationContext.binId}.json`);
+    existingMetadata = existingBinResult.metadata;
+  }
+
+  const metadata = createMockMetadata(operationContext.secretId, operationContext.isUpdate, existingMetadata);
+  await operationContext.storage.uploadObject(`${operationContext.binId}.json`, jsonBody, metadata);
+  
+  const logData: any = { binId: operationContext.binId };
+  if (operationContext.isUpdate) logData.action = "updated";
+  context.log.info(logData);
+
+  return createMockResponseData(operationContext, !operationContext.isUpdate);
+}
+
+// Main endpoint handlers
+export async function createMockResponse(request, context) {
+  const url = new URL(request.url);
+  let binId = crypto.randomUUID().replaceAll("-", "");
+  const secretId = crypto.randomUUID().replaceAll("-", "");
+  const storage = storageClient(context.log);
+  const contentType = request.headers.get("content-type") ?? "";
+  let isOpenApi = false;
+
+  try {
+    let responseData;
+    
+    if (contentType.startsWith("multipart/form-data")) {
+      isOpenApi = true;
+      binId += "_oas";
+    }
+
+    const operationContext: MockOperationContext = {
+      binId,
+      secretId,
+      storage,
+      url,
+      isUpdate: false,
+    };
+
+    if (contentType.includes("application/json")) {
+      responseData = await handleStandardMock(request, context, operationContext);
+    } else if (contentType.startsWith("multipart/form-data")) {
+      responseData = await handleOpenApiMock(request, context, operationContext);
+    } else {
+      return HttpProblems.badRequest(request, context, {
+        detail: `Invalid content-type '${contentType}'`,
+      });
+    }
+
+    context.log.debug({ message: "bin_created", binId });
+    context.waitUntil(
+      logAnalytics(isOpenApi ? "openapi_bin_created" : "bin_created", {
+        binId,
+      }),
+    );
+
+    return new Response(JSON.stringify(responseData, null, 2), {
+      status: 201,
+      statusText: "Created",
+    });
+  } catch (err) {
+    context.log.error(err);
+    return HttpProblems.internalServerError(request, context, {
+      detail: err.message,
+    });
+  }
+}
+
+export async function updateMockResponse(
+  request: ZuploRequest,
+  context: ZuploContext,
+) {
+  const url = new URL(request.url);
+  const { binId } = request.params;
+  
+  if (!validateBinId(binId)) {
+    return HttpProblems.badRequest(request, context, {
+      detail: "Invalid binId",
+    });
+  }
+
+  const providedSecret = request.headers.get("x-mockbin-secret");
+  if (!providedSecret) {
+    return HttpProblems.unauthorized(request, context, {
+      detail: "Missing x-mockbin-secret header",
+    });
+  }
+
+  const storage = storageClient(context.log);
+  const contentType = request.headers.get("content-type") ?? "";
+  let isOpenApi = false;
+
+  try {
+    // First, check if the bin exists and validate the secret
+    let existingBinResult: GetObjectResult;
+    try {
+      existingBinResult = await storage.getObject(`${binId}.json`);
+    } catch (err) {
+      return getProblemFromStorageError(err, request, context);
+    }
+
+    // Validate the secret from metadata
+    if (!existingBinResult.metadata?.secretId || existingBinResult.metadata.secretId !== providedSecret) {
+      return HttpProblems.unauthorized(request, context, {
+        detail: "Invalid secret",
+      });
+    }
+
+    const operationContext: MockOperationContext = {
+      binId,
+      secretId: providedSecret,
+      storage,
+      url,
+      isUpdate: true,
+    };
+
+    let responseData;
+
+    if (contentType.includes("application/json")) {
+      responseData = await handleStandardMock(request, context, operationContext);
+    } else if (contentType.startsWith("multipart/form-data")) {
+      isOpenApi = true;
+      responseData = await handleOpenApiMock(request, context, operationContext);
+    } else {
+      return HttpProblems.badRequest(request, context, {
+        detail: `Invalid content-type '${contentType}'`,
+      });
+    }
+
+    context.log.debug({ message: "bin_updated", binId });
+    context.waitUntil(
+      logAnalytics(isOpenApi ? "openapi_bin_updated" : "bin_updated", {
+        binId,
+      }),
+    );
+
+    return new Response(JSON.stringify(responseData, null, 2), {
+      status: 200,
+      statusText: "OK",
+    });
+  } catch (err) {
+    context.log.error(err);
+    return HttpProblems.internalServerError(request, context, {
+      detail: err.message,
+    });
   }
 }
 

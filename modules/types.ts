@@ -1,5 +1,6 @@
 export interface BinResponse {
   url: string;
+  secret: string; 
   response?: {
     status: number;
     statusText?: string;
