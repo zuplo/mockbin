@@ -14,10 +14,28 @@
           "201": {
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier for the mock bin"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL to invoke the mock"
+                    },
+                    "secret": {
+                      "type": "string",
+                      "description": "Secret ID required for updating this mock"
+                    }
+                  }
+                },
                 "examples": [
                   {
-                    "binId": "n6zbnzSHBVTdmd05CLrNc",
-                    "url": "https://api.mockbin.io/n6zbnzSHBVTdmd05CLrNc"
+                    "id": "n6zbnzSHBVTdmd05CLrNc",
+                    "url": "https://api.mockbin.io/n6zbnzSHBVTdmd05CLrNc",
+                    "secret": "a1b2c3d4e5f6g7h8i9j0"
                   }
                 ]
               }
@@ -82,7 +100,55 @@
       },
       "post": {
         "summary": "Create OpenAPI bin",
-        "description": "Lorem ipsum dolor sit amet, **consectetur adipiscing** elit, sed do `eiusmod tempor` incididunt ut labore et dolore magna aliqua.",
+        "description": "Creates a new mock bin from an OpenAPI specification file",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "OpenAPI specification file (JSON or YAML)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier for the mock bin"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL to invoke the mock"
+                    },
+                    "secret": {
+                      "type": "string",
+                      "description": "Secret ID required for updating this mock"
+                    }
+                  }
+                },
+                "examples": [
+                  {
+                    "id": "n6zbnzSHBVTdmd05CLrNc_oas",
+                    "url": "https://api.mockbin.io/n6zbnzSHBVTdmd05CLrNc_oas",
+                    "secret": "a1b2c3d4e5f6g7h8i9j0"
+                  }
+                ]
+              }
+            }
+          }
+        },
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -122,6 +188,101 @@
           }
         },
         "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
+      },
+      "put": {
+        "summary": "Update bin",
+        "description": "Updates an existing mock bin using the secret ID for authentication",
+        "parameters": [
+          {
+            "name": "x-mockbin-secret",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Secret ID required for updating the mock"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "response": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "status"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "number"
+                      },
+                      "statusText": {
+                        "type": "string"
+                      },
+                      "headers": {
+                        "type": "object"
+                      },
+                      "body": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "OpenAPI specification file (JSON or YAML)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": [
+                  {
+                    "id": "n6zbnzSHBVTdmd05CLrNc",
+                    "url": "https://api.mockbin.io/n6zbnzSHBVTdmd05CLrNc"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing secret"
+          },
+          "404": {
+            "description": "Mock not found"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "updateMockResponse",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "rate-limit-inbound"
+            ]
+          }
+        },
+        "operationId": "update-bin-response"
       }
     },
     "/v1/bins/{binId}/requests": {
