@@ -1,0 +1,22 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "zudoku dev",
+    "build": "zudoku build",
+    "start": "zudoku start"
+  },
+  "dependencies": {
+    "zudoku": "0.61.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": ">=19",
+    "@types/react-dom": ">=19",
+    "typescript": "5.9.2"
+  }
+}

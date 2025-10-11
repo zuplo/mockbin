@@ -200,6 +200,7 @@
       },
       "get": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -220,6 +221,7 @@
       },
       "post": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -240,6 +242,7 @@
       },
       "put": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -260,6 +263,7 @@
       },
       "head": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -280,6 +284,7 @@
       },
       "patch": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -300,6 +305,7 @@
       },
       "delete": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -320,6 +326,7 @@
       },
       "connect": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -340,6 +347,7 @@
       },
       "options": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
@@ -360,6 +368,7 @@
       },
       "trace": {
         "summary": "Invoke Bin",
+        "x-internal": true,
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
           "handler": {
