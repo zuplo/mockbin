@@ -1,7 +1,12 @@
 import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { logAnalytics } from "./analytics";
 import { MockServer } from "./mock-server";
-import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
+import {
+  GetObjectResult,
+  ListObjectsResult,
+  StorageClient,
+  storageClient,
+} from "./storage";
 import { BinResponse, RequestData, RequestDetails } from "./types";
 import {
   getBinFromUrl,
@@ -15,7 +20,10 @@ import { default as yaml } from "./third-party/yaml/index";
 
 const MAX_SIZE = 1_048_576;
 
-export async function createMockResponse(request, context) {
+export async function createMockResponse(
+  request: ZuploRequest,
+  context: ZuploContext,
+) {
   const url = new URL(request.url);
   let binId = crypto.randomUUID().replaceAll("-", "");
   const storage = storageClient(context.log);
@@ -70,7 +78,13 @@ export async function createMockResponse(request, context) {
   }
 }
 
-async function handleStandardMock(request, context, binId, storage, url) {
+async function handleStandardMock(
+  request: ZuploRequest,
+  context: ZuploContext,
+  binId: string,
+  storage: StorageClient,
+  url: URL,
+) {
   const body = await request.text();
   const size = new TextEncoder().encode(body).length;
   if (size > MAX_SIZE) {
@@ -88,7 +102,13 @@ async function handleStandardMock(request, context, binId, storage, url) {
   };
 }
 
-async function handleOpenApiMock(request, context, binId, storage, url) {
+async function handleOpenApiMock(
+  request: ZuploRequest,
+  context: ZuploContext,
+  binId: string,
+  storage: StorageClient,
+  url: URL,
+) {
   const formData = await request.formData();
   const body = await readFirstFileInFormData(formData, context);
 
@@ -273,13 +293,17 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
 }
 
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
+  context.log.info("hello");
   const url = new URL(request.url);
   // If the url is the root of api.mockbin.io (not a bin) redirect to docs
   if (url.hostname === "api.mockbin.com" && url.pathname === "/") {
     return Response.redirect("https://api.mockbin.io/docs");
   }
+  context.log.info("invokeBin", { url: url.href, pathname: url.pathname });
 
   const urlInfo = getBinFromUrl(url);
+
+  context.log.info("urlInfo", urlInfo);
 
   if (!urlInfo) {
     return HttpProblems.badRequest(request, context, {
@@ -338,7 +362,7 @@ export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
   return response;
 }
 
-function removeBinPath(request) {
+function removeBinPath(request: ZuploRequest) {
   const url = new URL(request.url);
 
   // Split the pathname into parts

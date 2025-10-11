@@ -34,9 +34,7 @@
                   "response": {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": [
-                      "status"
-                    ],
+                    "required": ["status"],
                     "properties": {
                       "status": {
                         "type": "number"
@@ -67,13 +65,10 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "request-validation-inbound",
-              "rate-limit-inbound"
-            ]
+            "inbound": ["request-validation-inbound", "rate-limit-inbound"]
           }
         },
-        "operationId": "2e21caf1-f4c5-4b8a-8358-b335b4fd4222"
+        "operationId": "create_bin"
       }
     },
     "/v1/openapi/bins": {
@@ -94,7 +89,7 @@
             "inbound": []
           }
         },
-        "operationId": "6e4b7ac5-f1e4-48b4-82b5-336d48aaef24"
+        "operationId": "create_openapi_bin"
       }
     },
     "/v1/bins/{binId}": {
@@ -112,16 +107,11 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "block-bad-bins",
-              "rate-limit-inbound"
-            ],
-            "outbound": [
-              "custom-code-outbound"
-            ]
+            "inbound": ["block-bad-bins", "rate-limit-inbound"],
+            "outbound": ["custom-code-outbound"]
           }
         },
-        "operationId": "2ae802d2-c8e1-40ba-ac2e-f45a9b4eafab"
+        "operationId": "get_bin"
       }
     },
     "/v1/bins/{binId}/requests": {
@@ -139,10 +129,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "block-bad-bins",
-              "rate-limit-inbound"
-            ]
+            "inbound": ["block-bad-bins", "rate-limit-inbound"]
           }
         },
         "responses": {
@@ -164,7 +151,7 @@
             }
           }
         },
-        "operationId": "5fbfb141-50e3-4803-8553-084825e7ce81"
+        "operationId": "list_requests"
       }
     },
     "/v1/bins/{binId}/requests/{requestId}": {
@@ -182,10 +169,7 @@
             "options": {}
           },
           "policies": {
-            "inbound": [
-              "block-bad-bins",
-              "rate-limit-inbound"
-            ]
+            "inbound": ["block-bad-bins", "rate-limit-inbound"]
           }
         },
         "responses": {
@@ -207,14 +191,14 @@
             }
           }
         },
-        "operationId": "460b0c3d-6267-4913-9e42-46f6882e2a42"
+        "operationId": "get_request"
       }
     },
     "/(.*)": {
       "x-zuplo-path": {
         "pathMode": "url-pattern"
       },
-      "get,post,put,head,patch,delete,connect,options,trace": {
+      "get": {
         "summary": "Invoke Bin",
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
@@ -232,7 +216,167 @@
             ]
           }
         },
-        "operationId": "d1ef63f4-d081-46d4-ada2-b27e8ec5e24e"
+        "operationId": "invoke_bin_get"
+      },
+      "post": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_post"
+      },
+      "put": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_put"
+      },
+      "head": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_head"
+      },
+      "patch": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_patch"
+      },
+      "delete": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_delete"
+      },
+      "connect": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_connect"
+      },
+      "options": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_options"
+      },
+      "trace": {
+        "summary": "Invoke Bin",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "invokeBin",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "block-bad-bins",
+              "caching-inbound",
+              "rate-limit-inbound",
+              "log-request"
+            ]
+          }
+        },
+        "operationId": "invoke_bin_trace"
       }
     }
   }
