@@ -1,9 +1,4 @@
-import {
-  HttpProblems,
-  ZoneCache,
-  ZuploContext,
-  ZuploRequest,
-} from "@zuplo/runtime";
+import { HttpProblems, ZuploContext, ZuploRequest } from "@zuplo/runtime";
 import { logAnalytics } from "./analytics";
 import { MockServer } from "./mock-server";
 import { GetObjectResult, ListObjectsResult, storageClient } from "./storage";
@@ -186,31 +181,15 @@ export async function getMockResponse(
     });
   }
 
-  const cache = new ZoneCache<BinResponse>("mockbin", context);
-
-  // First check the cache
-  const cached = await cache.get(binId);
-
+  const storage = storageClient(context.log);
   let data: BinResponse;
-  if (cached) {
-    data = cached;
+  try {
+    const response = await storage.getObject(`${binId}.json`);
+    data = JSON.parse(response.body);
     data.url = getInvokeBinUrl(url, binId).href;
-  } else {
-    const storage = storageClient(context.log);
-    try {
-      const response = await storage.getObject(`${binId}.json`);
-
-      data = JSON.parse(response.body);
-
-      // Cache the result for future requests
-      // Caching for 1 year since the data is immutable
-      await cache.put(binId, data, 31536000);
-
-      data.url = getInvokeBinUrl(url, binId).href;
-    } catch (err) {
-      context.log.error(err);
-      return getProblemFromStorageError(err, request, context);
-    }
+  } catch (err) {
+    context.log.error(err);
+    return getProblemFromStorageError(err, request, context);
   }
 
   return data;
