@@ -1,11 +1,12 @@
+export interface BinResponseData {
+  status: number;
+  statusText?: string;
+  headers?: Record<string, string>;
+  body?: string;
+}
 export interface BinResponse {
   url: string;
-  response?: {
-    status: number;
-    statusText?: string;
-    headers?: Record<string, string>;
-    body?: string;
-  };
+  response?: BinResponseData;
 }
 
 export interface RequestData {
