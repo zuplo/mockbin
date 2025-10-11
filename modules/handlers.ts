@@ -194,7 +194,6 @@ export async function getMockResponse(
   let data: BinResponse;
   if (cached) {
     data = cached;
-    data.url = getInvokeBinUrl(url, binId).href;
   } else {
     const storage = storageClient(context.log);
     try {
@@ -205,13 +204,14 @@ export async function getMockResponse(
       // Cache the result for future requests
       // Caching for 1 year since the data is immutable
       await cache.put(binId, data, 31536000);
-
-      data.url = getInvokeBinUrl(url, binId).href;
     } catch (err) {
       context.log.error(err);
       return getProblemFromStorageError(err, request, context);
     }
   }
+
+  // Set the URL after retrieving from cache or storage
+  data.url = getInvokeBinUrl(url, binId).href;
 
   return data;
 }
