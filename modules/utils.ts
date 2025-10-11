@@ -45,7 +45,7 @@ export function getInvokeBinUrl(url: URL, binId: string) {
   return mockUrl;
 }
 
-const binRegEx = /^[0-9a-fA-F]{32}(_oas)?$/;
+const binRegEx = /^[0-9a-fA-F]{32}([-_]oas)?$/;
 
 export function validateBinId(binId: string) {
   return binRegEx.test(binId);
@@ -83,5 +83,5 @@ export function validateOpenApiDocument(document: any): void {
 }
 
 export function isOasBin(binId: string) {
-  return binId.indexOf("_oas") > 0;
+  return binId.indexOf("_oas") > 0 || binId.indexOf("-oas") > 0;
 }
