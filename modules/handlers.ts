@@ -92,7 +92,6 @@ async function handleStandardMock(
   }
 
   await storage.uploadObject(`${binId}.json`, body);
-  context.log.info({ binId });
 
   const mockUrl = getInvokeBinUrl(url, binId);
 
@@ -165,7 +164,6 @@ async function handleOpenApiMock(
 
   // Save the JSON file
   await storage.uploadObject(`${binId}.json`, jsonBody);
-  context.log.info({ binId });
 
   const mockUrl = getInvokeBinUrl(url, binId);
 
@@ -293,17 +291,13 @@ export async function getRequest(request: ZuploRequest, context: ZuploContext) {
 }
 
 export async function invokeBin(request: ZuploRequest, context: ZuploContext) {
-  context.log.info("hello");
   const url = new URL(request.url);
   // If the url is the root of api.mockbin.io (not a bin) redirect to docs
   if (url.hostname === "api.mockbin.com" && url.pathname === "/") {
     return Response.redirect("https://api.mockbin.io/docs");
   }
-  context.log.info("invokeBin", { url: url.href, pathname: url.pathname });
 
   const urlInfo = getBinFromUrl(url);
-
-  context.log.info("urlInfo", urlInfo);
 
   if (!urlInfo) {
     return HttpProblems.badRequest(request, context, {

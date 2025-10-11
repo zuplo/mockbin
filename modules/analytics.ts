@@ -20,7 +20,6 @@ export const logAnalytics = async (
   });
 
   if (response.status !== 200) {
-    console.log(await response.text());
     throw new Error("Failed to send event to PostHog");
   }
 };
