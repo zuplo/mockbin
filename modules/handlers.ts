@@ -201,7 +201,6 @@ export async function getMockResponse(
   request: ZuploRequest,
   context: ZuploContext,
 ) {
-  const url = new URL(request.url);
   const { binId } = request.params;
   if (!validateBinId(binId)) {
     return HttpProblems.badRequest(request, context, {
@@ -233,9 +232,7 @@ export async function getMockResponse(
     }
   }
 
-  const binUrl = getInvokeBinUrl(url, binId).href;
-
-  return { url: binUrl, response: responseData };
+  return responseData;
 }
 
 export async function listRequests(
