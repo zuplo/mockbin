@@ -1,3 +1,4 @@
+import "./dom-parser-polyfill";
 import {
   GetObjectCommand,
   GetObjectCommandOutput,
@@ -8,6 +9,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { Logger } from "@zuplo/runtime";
 import { requiredEnvVariable } from "./env";
+import { NoCacheFetchHttpHandler } from "./no-cache-fetch-http-handler";
 
 export interface UploadObjectResult {
   key: string;
@@ -67,6 +69,7 @@ export class StorageClient {
     this.S3 = new S3Client({
       region: "auto",
       endpoint: options.endpoint,
+      requestHandler: new NoCacheFetchHttpHandler(),
       credentials: {
         accessKeyId: options.accessKeyId,
         secretAccessKey: options.accessKeySecret,

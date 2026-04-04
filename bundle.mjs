@@ -1,12 +1,15 @@
 import esbuild from "esbuild";
 import path from "path";
 
-const toBundle = ["yaml"];
+const toBundle = [
+  { packageName: "yaml", outputDir: "yaml" },
+  { packageName: "@xmldom/xmldom", outputDir: "xmldom" },
+];
 
-for (const dep of toBundle) {
-  const entry = import.meta.resolve(dep);
+for (const { packageName, outputDir } of toBundle) {
+  const entry = import.meta.resolve(packageName);
   const outputPath = new URL(
-    path.resolve("./modules/third-party", dep),
+    path.resolve("./modules/third-party", outputDir),
     import.meta.url,
   ).pathname;
   const url = new URL(entry);
