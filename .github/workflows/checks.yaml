@@ -9,7 +9,7 @@ env:
   CHECKLY_ACCOUNT_ID: ${{ vars.CHECKLY_ACCOUNT_ID }}
   ENVIRONMENT_URL: https://0ad703f2f45143aea75b9a469dc41338.api.mockbin.io
   CHECKLY_TEST_ENVIRONMENT: production
-  GITHUB_NPM_TOKEN: ${{ secrets.GH_NPM_PACKAGE_READ_TOKEN }}
+  GITHUB_NPM_TOKEN: ${{ github.token }}
 
 jobs:
   checkly:
