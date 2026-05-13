@@ -30,6 +30,12 @@ import { default as yaml } from "./third-party/yaml/index";
 
 const MAX_SIZE = 1_048_576;
 
+function getOriginalYamlStorageKey(binId: string) {
+  return binId.endsWith("-oas")
+    ? `${binId}-YAML-original.yaml`
+    : `${binId}_YAML_original.yaml`;
+}
+
 export async function createMockResponse(
   request: ZuploRequest,
   context: ZuploContext,
@@ -55,7 +61,7 @@ export async function createMockResponse(
     } else if (contentType.startsWith("multipart/form-data")) {
       isOpenApi = true;
       // Handle OpenAPI mock
-      binId += "_oas";
+      binId += "-oas";
       responseData = await handleOpenApiMock(
         request,
         context,
@@ -153,13 +159,8 @@ async function handleOpenApiMock(
 
   let originalYamlUrl: string | undefined;
   if (isYaml) {
-    // Save the original YAML file
-    const yamlBinId = `${binId}_YAML_original`;
-    await storage.uploadObject(`${yamlBinId}.yaml`, body);
-    const yamlUrl = getInvokeBinUrl(url, yamlBinId);
-    originalYamlUrl = yamlUrl.href;
-
-    // Add x-mockbin-original-url to the parsed content
+    await storage.uploadObject(getOriginalYamlStorageKey(binId), body);
+    originalYamlUrl = `${url.origin}/v1/bins/${binId}/original.yaml`;
     parsedContent["x-mockbin-original-url"] = originalYamlUrl;
   }
 
@@ -233,6 +234,36 @@ export async function getMockResponse(
   }
 
   return responseData;
+}
+
+export async function getOriginalYaml(
+  request: ZuploRequest,
+  context: ZuploContext,
+) {
+  const { binId } = request.params;
+
+  if (!validateBinId(binId) || !isOasBin(binId)) {
+    return HttpProblems.badRequest(request, context, {
+      detail: "Invalid binId",
+    });
+  }
+
+  const storage = storageClient(context.log);
+  let response: GetObjectResult;
+  try {
+    response = await storage.getObject(getOriginalYamlStorageKey(binId));
+  } catch (err) {
+    context.log.error(err);
+    return getProblemFromStorageError(err, request, context);
+  }
+
+  return new Response(response.body, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/yaml",
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
 }
 
 export async function listRequests(
