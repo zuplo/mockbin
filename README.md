@@ -1,43 +1,56 @@
 <div align="center">
-<img alt="Mockbin by Zuplo logo" src="https://cdn.zuplo.com/assets/53e83603-7b0c-4d0c-af0e-5878c330c263.png">
-
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/public/logo-dark.svg">
+    <img alt="Mockbin by Zuplo" src="./docs/public/logo-light.svg" width="220">
+  </picture>
 </div>
 
 <div align="center">
-<h1>Mockbin by Zuplo</h1>
+  <h1>Mockbin by Zuplo</h1>
   <a href="https://twitter.com/zuplo">
-    <img alt="X (formerly Twitter) Follow" src="https://img.shields.io/twitter/follow/zuplo">
+    <img alt="Follow @zuplo on X" src="https://img.shields.io/twitter/follow/zuplo">
   </a>
-  <p align="center">
-  <a href="#usage
-  "><strong>Usage</strong></a> · 
-  <a href="#about
-  "><strong>About</strong></a> · 
-   <a href="#how-it-works
-  "><strong>How it works</strong></a>
-</p>
-</p>
+  <p>
+    <a href="#usage"><strong>Usage</strong></a> ·
+    <a href="#about"><strong>About</strong></a> ·
+    <a href="#how-it-works"><strong>How it works</strong></a>
+  </p>
 </div>
 
-Easily generate custom endpoints to test HTTP requests, and view the request logs from that API for free. Now with OpenAPI support; Mock your OpenAPI file in seconds.
+Spin up a custom endpoint to test HTTP requests, inspect every inbound call, and (optionally) mock an entire OpenAPI document in seconds. No sign-up, no cost.
 
 ## Usage
 
-Visit https://mockbin.io, create a new bin, and start sending requests to your new endpoint!
+Visit [mockbin.io](https://mockbin.io), create a bin, and start sending requests to your new endpoint.
 
-![How mockbin works](./assets/mockbin.gif)
+Send any HTTP method to the URL you get back:
+
+```bash
+curl -X POST https://api.mockbin.io/<bin-id> \
+  -H "Content-Type: application/json" \
+  -d '{"hello":"world"}'
+```
+
+Then watch incoming requests live from the bin detail page.
 
 ## About
 
 At Zuplo we were big fans of [mockbin.org](https://mockbin.org) and used it for testing APIs and doing demos. Unfortunately, it was shut down.
 
-In the spirit of being scrappy and shipping quickly, a group of us decided to build a replacement as an impromptu hackathon project on a weekend - and we shipped with love ❤️ and a bit of coffee ☕️.
+In the spirit of being scrappy and shipping quickly, a group of us built a replacement as an impromptu hackathon project on a weekend — and we shipped with love ❤️ and a bit of coffee ☕️.
 
 ### How it works
 
-The API for this project is built using [Zuplo](https://zuplo.com) and Cloudflare's [R2](https://www.cloudflare.com/developer-platform/r2/) (or any S3 API compatible storage) for the backend.
+The API is built with [Zuplo](https://zuplo.com) and stores bin data in Cloudflare's [R2](https://www.cloudflare.com/developer-platform/r2/) (or any S3-compatible storage).
 
-The frontend is a simple Next.js app that can be deployed to Vercel or anywhere else you prefer.
+The frontend is a Next.js app under [`www/`](./www) deployable on Vercel or anywhere else you prefer.
+
+#### Running the docs locally
+
+```bash
+npm install
+npm run docs:dev
+```
 
 # License
 

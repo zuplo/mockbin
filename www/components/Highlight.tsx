@@ -19,7 +19,10 @@ const Highlight = ({
 
   return text.split(regex).map((part, index) =>
     regex.test(part) ? (
-      <mark className="font-bold bg-zuplo-primary/50 text-white" key={index}>
+      <mark
+        className="font-semibold bg-accent/20 text-accent rounded-sm px-0.5"
+        key={index}
+      >
         {part}
       </mark>
     ) : (

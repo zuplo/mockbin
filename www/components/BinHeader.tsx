@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import HeaderImage from "@/public/mockbin-white.svg";
+import HeaderImage from "@/public/mockbin-dark.svg";
 import CopyButton from "@/components/CopyButton";
 import RefreshIcon from "@/components/RefreshIcon";
 import ArrowIcon from "@/components/ArrowIcon";
@@ -13,21 +13,29 @@ const BinHeader = ({
   docsUrl,
   binUrl,
   onRefresh,
+  onShowShortcuts,
   isNewBin,
 }: {
   isOas: boolean;
   docsUrl: string;
   binUrl: string;
   onRefresh: () => void;
+  onShowShortcuts?: () => void;
   isNewBin: boolean;
 }) => (
-  <header className="h-[60px] sticky top-0 flex bg-[#000019] items-center">
+  <header className="h-[52px] sticky top-0 z-30 flex bg-white border-b border-line items-center">
     <Link
       href="/"
-      className="flex gap-1 items-center px-4 group ease-in-out flex-shrink-0"
+      className="flex gap-2 items-center px-4 group flex-shrink-0 text-fg-muted hover:text-accent transition-colors"
+      aria-label="Back to home"
     >
-      <ArrowIcon className="rotate-180 text-[#FF00BD] group-hover:scale-125 transition-transform" />
-      <Image alt="mockbin logo" height={30} src={HeaderImage} />
+      <ArrowIcon className="rotate-180 transition-transform group-hover:-translate-x-0.5" />
+      <Image
+        alt="Mockbin"
+        height={24}
+        src={HeaderImage}
+        className="h-6 w-auto"
+      />
     </Link>
     <div
       className={cn(
@@ -35,9 +43,11 @@ const BinHeader = ({
         isNewBin && "invisible",
       )}
     >
-      <span className="whitespace-nowrap hidden md:block">Live at</span>
+      <span className="whitespace-nowrap hidden md:block text-fg-muted text-[13px]">
+        Live at
+      </span>
       <code
-        className="bg-slate-800 rounded border border-slate-700 bg px-2 py-1 text-[#FF00BD] truncate"
+        className="inline-flex items-center bg-bg-muted rounded-lg border border-line px-2.5 py-1 text-fg font-mono text-[12px] truncate max-w-full"
         title={binUrl}
       >
         {binUrl}
@@ -45,16 +55,30 @@ const BinHeader = ({
       <CopyButton textToCopy={binUrl} />
       {isOas && <DocsButton docsUrl={docsUrl} />}
     </div>
-    <div className="flex gap-4 px-4 items-center">
-      <Button as="a" tabIndex={0} className="whitespace-nowrap" href="/">
-        Create Bin
-      </Button>
+    <div className="flex gap-2 px-4 items-center">
+      {onShowShortcuts && (
+        <button
+          type="button"
+          onClick={onShowShortcuts}
+          className="hidden md:inline-flex items-center justify-center w-9 h-9 rounded-lg text-fg-muted hover:text-fg hover:bg-bg-muted transition-colors font-system text-[14px] font-semibold"
+          aria-label="Keyboard shortcuts"
+          title="Keyboard shortcuts (?)"
+        >
+          ?
+        </button>
+      )}
       <button
-        className="px-2 py-2 hover:bg-slate-800 rounded"
+        type="button"
+        className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-fg-muted hover:text-fg hover:bg-bg-muted transition-colors"
         onClick={onRefresh}
+        aria-label="Refresh (R)"
+        title="Refresh (R)"
       >
         <RefreshIcon />
       </button>
+      <Button as="a" tabIndex={0} href="/">
+        New Bin
+      </Button>
     </div>
   </header>
 );

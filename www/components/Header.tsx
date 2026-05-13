@@ -1,44 +1,43 @@
 /* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
-import HeaderImage from "../public/mockbin-white.svg";
+import HeaderImage from "../public/mockbin-dark.svg";
+import GitHubStars from "./GitHubStars";
 
 const Header = () => {
   return (
-    <header className="flex flex-row w-full justify-between items-center">
-      <Link href="/">
+    <header className="flex flex-row w-full justify-between items-center h-[52px]">
+      <Link href="/" className="flex items-center">
         <Image
-          height={40}
-          alt="mockbin logo"
+          height={28}
+          alt="Mockbin"
           src={HeaderImage}
-          className="py-4"
+          className="h-7 w-auto"
         />
       </Link>
-      <div className="flex gap-x-2 items-center">
-        <a
-          target="_blank"
-          className="hidden sm:flex items-center gap-x-1 bg-[#5865F2] h-[31px] border border-[#464ec7] hover:bg-[#464ec7] p-2 py-[4px] rounded-[4px]"
-          href="https://discord.zuplo.com"
+      <Link
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://github.com/zuplo/mockbin"
+        className="inline-flex items-center gap-2 h-9 pl-3 pr-1.5 rounded-lg border border-line bg-white text-[13px] font-semibold text-fg hover:bg-bg-subtle transition-colors"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
         >
-          <Image
-            className="h-[16px] w-auto"
-            height={16}
-            width={16}
-            alt="Discord"
-            src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"
-          />
-          <p className="text-white text-md font-semibold">Discord</p>
-        </a>
-        <Link target="_blank" href="https://github.com/zuplo/mockbin">
-          <Image
-            height={0}
-            width={124}
-            alt="GitHub Repo stars"
-            unoptimized
-            src="https://img.shields.io/github/stars/zuplo/mockbin"
-          />
-        </Link>
-      </div>
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+          <path d="M9 18c-4.51 2-5-2-7-2" />
+        </svg>
+        <span>GitHub</span>
+        <GitHubStars repo="zuplo/mockbin" />
+      </Link>
     </header>
   );
 };

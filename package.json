@@ -3,10 +3,15 @@
   "version": "1.0.3",
   "author": "",
   "copyright": "",
+  "workspaces": [
+    "docs"
+  ],
   "scripts": {
     "dev": "zup dev",
     "test": "vitest",
-    "bundle": "node ./bundle.mjs"
+    "bundle": "node ./bundle.mjs",
+    "docs:dev": "npm -w mockbin-docs run dev",
+    "docs:build": "npm -w mockbin-docs run build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.654.0",
