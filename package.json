@@ -17,7 +17,7 @@
     "@aws-sdk/client-s3": "^3.654.0",
     "@xmldom/xmldom": "0.9.9",
     "vitest": "^2.1.4",
-    "yaml": "^2.6.0",
+    "yaml": "^2.8.3",
     "zuplo": "^6.61.23"
   },
   "devDependencies": {
