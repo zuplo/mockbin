@@ -13,12 +13,14 @@ const BinHeader = ({
   docsUrl,
   binUrl,
   onRefresh,
+  onShowShortcuts,
   isNewBin,
 }: {
   isOas: boolean;
   docsUrl: string;
   binUrl: string;
   onRefresh: () => void;
+  onShowShortcuts?: () => void;
   isNewBin: boolean;
 }) => (
   <header className="h-[52px] sticky top-0 z-30 flex bg-white border-b border-line items-center">
@@ -54,11 +56,23 @@ const BinHeader = ({
       {isOas && <DocsButton docsUrl={docsUrl} />}
     </div>
     <div className="flex gap-2 px-4 items-center">
+      {onShowShortcuts && (
+        <button
+          type="button"
+          onClick={onShowShortcuts}
+          className="hidden md:inline-flex items-center justify-center w-9 h-9 rounded-lg text-fg-muted hover:text-fg hover:bg-bg-muted transition-colors font-system text-[14px] font-semibold"
+          aria-label="Keyboard shortcuts"
+          title="Keyboard shortcuts (?)"
+        >
+          ?
+        </button>
+      )}
       <button
         type="button"
         className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-fg-muted hover:text-fg hover:bg-bg-muted transition-colors"
         onClick={onRefresh}
-        aria-label="Refresh"
+        aria-label="Refresh (R)"
+        title="Refresh (R)"
       >
         <RefreshIcon />
       </button>

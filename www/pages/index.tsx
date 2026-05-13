@@ -40,6 +40,17 @@ const Card = ({
   </section>
 );
 
+const handleCmdEnter = (
+  e: React.KeyboardEvent<HTMLFormElement>,
+  disabled: boolean,
+) => {
+  if (disabled) return;
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+    e.preventDefault();
+    e.currentTarget.requestSubmit();
+  }
+};
+
 const Index = () => {
   const [status, setStatus] = useState("200");
   const [statusText, setStatusText] = useState("OK");
@@ -204,6 +215,7 @@ const Index = () => {
             <form
               className="flex flex-col gap-5 items-stretch"
               onSubmit={handleOpenApiSubmit}
+              onKeyDown={(e) => handleCmdEnter(e, isCreating)}
             >
               <div className="flex flex-col gap-1">
                 <h2 className="font-display text-[22px] font-semibold tracking-tight">
@@ -215,7 +227,15 @@ const Index = () => {
                 </p>
               </div>
               <FileInput onChange={handleFileChange} />
-              <div className="flex justify-end gap-2 pt-2 border-t border-line">
+              <div className="flex justify-end items-center gap-3 pt-2 border-t border-line">
+                <kbd className="hidden sm:inline-flex items-center gap-1 font-system text-[11px] text-fg-faint mt-4">
+                  <span className="px-1.5 py-0.5 rounded border border-line bg-bg-subtle">
+                    ⌘
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded border border-line bg-bg-subtle">
+                    ↵
+                  </span>
+                </kbd>
                 <Button
                   disabled={isCreating}
                   type="submit"
@@ -232,6 +252,7 @@ const Index = () => {
             <form
               className="flex flex-col gap-5 items-stretch"
               onSubmit={handleSubmit}
+              onKeyDown={(e) => handleCmdEnter(e, isCreating)}
             >
               <div className="flex flex-col gap-1">
                 <h2 className="font-display text-[22px] font-semibold tracking-tight">
@@ -287,7 +308,15 @@ const Index = () => {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-line">
+              <div className="flex justify-end items-center gap-3 pt-2 border-t border-line">
+                <kbd className="hidden sm:inline-flex items-center gap-1 font-system text-[11px] text-fg-faint mt-4">
+                  <span className="px-1.5 py-0.5 rounded border border-line bg-bg-subtle">
+                    ⌘
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded border border-line bg-bg-subtle">
+                    ↵
+                  </span>
+                </kbd>
                 <Button
                   disabled={isCreating}
                   type="submit"
@@ -339,9 +368,27 @@ const Index = () => {
                 ))}
               </ul>
             ) : (
-              <div className="px-5 py-6 text-center">
-                <p className="text-[13px] text-fg-muted italic">
-                  No bins yet. Recent ones will show up here.
+              <div className="px-5 py-5 flex flex-col gap-3">
+                <p className="text-[13px] text-fg-muted">
+                  No bins yet. Create one and it&apos;ll appear here. Then call
+                  it like this:
+                </p>
+                <pre className="bg-code-bg text-code-fg font-mono text-[11px] leading-relaxed p-3 rounded-lg overflow-x-auto">
+                  <span className="text-fg-faint">$ </span>
+                  <span className="text-info">curl</span>
+                  {" -X "}
+                  <span className="text-warn">POST</span>
+                  {" \\\n    "}
+                  <span className="text-success">{`"https://api.mockbin.io/<bin-id>"`}</span>
+                  {" \\\n    -H "}
+                  <span className="text-success">
+                    &quot;Content-Type: application/json&quot;
+                  </span>
+                  {" \\\n    -d "}
+                  <span className="text-success">{`'{"hello":"world"}'`}</span>
+                </pre>
+                <p className="text-[11px] text-fg-faint">
+                  Inspect every request from the bin detail page.
                 </p>
               </div>
             )}
