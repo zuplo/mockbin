@@ -55,7 +55,7 @@ export async function createMockResponse(
     } else if (contentType.startsWith("multipart/form-data")) {
       isOpenApi = true;
       // Handle OpenAPI mock
-      binId += "_oas";
+      binId += "-oas";
       responseData = await handleOpenApiMock(
         request,
         context,
@@ -154,7 +154,7 @@ async function handleOpenApiMock(
   let originalYamlUrl: string | undefined;
   if (isYaml) {
     // Save the original YAML file
-    const yamlBinId = `${binId}_YAML_original`;
+    const yamlBinId = `${binId}-YAML-original`;
     await storage.uploadObject(`${yamlBinId}.yaml`, body);
     const yamlUrl = getInvokeBinUrl(url, yamlBinId);
     originalYamlUrl = yamlUrl.href;
