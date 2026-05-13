@@ -16,8 +16,15 @@ const Input = React.forwardRef<
       value={value}
       onChange={onChange}
       className={cn(
-        "bg-transparent border font-mono p-1 px-2 border-slate-700 flex-grow rounded",
-        "focus:ring-4 focus:outline-none focus:ring-slate-700/50 hover:bg-black/25",
+        "w-full bg-white text-fg font-mono text-[13px] leading-5",
+        "border-[1.5px] border-line rounded-lg",
+        "px-3 py-2",
+        !textarea && "h-9",
+        "placeholder:text-fg-faint",
+        "transition-colors",
+        "hover:border-line-strong",
+        "focus:outline-none focus:border-accent focus:shadow-focus",
+        "disabled:cursor-not-allowed disabled:bg-bg-muted disabled:opacity-60",
         className,
       )}
       {...props}
