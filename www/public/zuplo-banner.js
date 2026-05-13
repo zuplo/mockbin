@@ -137,25 +137,30 @@ class ZuploBanner extends HTMLElement {
 
     rightDiv.appendChild(menu);
 
-    menuButton.addEventListener("click", (event) => {
+    const closeMenu = () => {
+      menu.classList.remove("visible");
+      menuButton.setAttribute("aria-expanded", "false");
+    };
+
+    this._onMenuButtonClick = (event) => {
       event.stopPropagation();
       const isOpen = menu.classList.toggle("visible");
       menuButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    });
+    };
 
-    document.addEventListener("click", (event) => {
+    this._onDocumentClick = (event) => {
       if (!this.contains(event.target)) {
-        menu.classList.remove("visible");
-        menuButton.setAttribute("aria-expanded", "false");
+        closeMenu();
       }
-    });
+    };
 
-    document.addEventListener("keydown", (event) => {
+    this._onDocumentKeyDown = (event) => {
       if (event.key === "Escape") {
-        menu.classList.remove("visible");
-        menuButton.setAttribute("aria-expanded", "false");
+        closeMenu();
       }
-    });
+    };
+
+    menuButton.addEventListener("click", this._onMenuButtonClick);
 
     const style = document.createElement("style");
     style.textContent = `
@@ -408,6 +413,24 @@ class ZuploBanner extends HTMLElement {
     }
 
     shadow.appendChild(style);
+  }
+
+  connectedCallback() {
+    if (this._onDocumentClick) {
+      document.addEventListener("click", this._onDocumentClick);
+    }
+    if (this._onDocumentKeyDown) {
+      document.addEventListener("keydown", this._onDocumentKeyDown);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._onDocumentClick) {
+      document.removeEventListener("click", this._onDocumentClick);
+    }
+    if (this._onDocumentKeyDown) {
+      document.removeEventListener("keydown", this._onDocumentKeyDown);
+    }
   }
 
   getZuploLogoSVG() {

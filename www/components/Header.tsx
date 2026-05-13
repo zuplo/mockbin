@@ -17,6 +17,7 @@ const Header = () => {
       </Link>
       <Link
         target="_blank"
+        rel="noopener noreferrer"
         href="https://github.com/zuplo/mockbin"
         className="inline-flex items-center gap-2 h-9 pl-3 pr-1.5 rounded-lg border border-line bg-white text-[13px] font-semibold text-fg hover:bg-bg-subtle transition-colors"
       >

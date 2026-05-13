@@ -19,18 +19,62 @@ const formatStars = (n: number) => {
   return String(n);
 };
 
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const cacheKey = (repo: string) => `mockbin:gh-stars:${repo}`;
+
+type CacheEntry = { count: number; fetchedAt: number };
+
+const readCache = (repo: string): CacheEntry | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(cacheKey(repo));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CacheEntry;
+    if (
+      typeof parsed?.count !== "number" ||
+      typeof parsed?.fetchedAt !== "number"
+    )
+      return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const writeCache = (repo: string, count: number) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(
+      cacheKey(repo),
+      JSON.stringify({ count, fetchedAt: Date.now() }),
+    );
+  } catch {
+    // localStorage full / disabled — silently skip cache
+  }
+};
+
 const GitHubStars = ({ repo }: { repo: string }) => {
   const [stars, setStars] = useState<number | null>(null);
 
   useEffect(() => {
+    const cached = readCache(repo);
+    if (cached) {
+      setStars(cached.count);
+      if (Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
+        return;
+      }
+    }
+
     let cancelled = false;
     fetch(`https://api.github.com/repos/${repo}`, {
       headers: { Accept: "application/vnd.github+json" },
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data && typeof data.stargazers_count === "number") {
+        if (cancelled) return;
+        if (data && typeof data.stargazers_count === "number") {
           setStars(data.stargazers_count);
+          writeCache(repo, data.stargazers_count);
         }
       })
       .catch(() => {});

@@ -9,6 +9,7 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import InfoIcon from "@/components/InfoIcon";
 import FileInput from "@/components/FileInput";
+import InlineError from "@/components/InlineError";
 
 const RECENT_BIN_KEY = "LAST_BINS";
 type RecentBin = {
@@ -74,6 +75,8 @@ const Index = () => {
   const [recentBins, setRecentBins] = useState<RecentBin[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [binError, setBinError] = useState<string | null>(null);
+  const [oasError, setOasError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -94,6 +97,7 @@ const Index = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setBinError(null);
     setIsCreating(true);
     const responseHeaders = headers.reduce((cleanHeaders, header) => {
       if (!header.key || header.hasError) {
@@ -123,7 +127,10 @@ const Index = () => {
       );
 
       if (response.status !== 201) {
-        alert(`Error ${response.status}\n\n ${await response.text()}`);
+        const body = await response.text();
+        setBinError(
+          `Mockbin replied ${response.status}.${body ? `\n\n${body}` : ""}`,
+        );
         setIsCreating(false);
         return;
       }
@@ -132,9 +139,11 @@ const Index = () => {
       router.push(`/bins/${result.id}`);
       updateRecentBins(result, recentBins);
     } catch (err: any) {
-      alert(`Error - ${err.message}`);
+      setBinError(
+        err?.message ??
+          "Couldn't reach the Mockbin API. Check your connection and retry.",
+      );
       setIsCreating(false);
-      return;
     }
   };
 
@@ -144,8 +153,9 @@ const Index = () => {
 
   const handleOpenApiSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setOasError(null);
     if (!file) {
-      alert("Please select a file to upload.");
+      setOasError("Choose an OpenAPI file before submitting.");
       return;
     }
 
@@ -162,34 +172,36 @@ const Index = () => {
         },
       );
 
-      setIsCreating(false);
-
       if (response.status !== 201) {
+        let detail: string | null = null;
         try {
-          const problem = await response.json();
-          if (!problem.detail) {
-            throw new Error("Not recognized format");
-          }
-          alert(problem.detail);
-          return;
-        } catch (err) {
-          // fall through
+          const problem = await response.clone().json();
+          if (problem?.detail) detail = problem.detail;
+        } catch {
+          // not problem+json, fall back to raw text
         }
-
-        alert(`Error ${response.status}\n\n ${await response.text()}`);
-
+        if (!detail) {
+          const text = await response.text();
+          detail = `Mockbin replied ${response.status}.${
+            text ? `\n\n${text}` : ""
+          }`;
+        }
+        setOasError(detail);
+        setIsCreating(false);
         return;
       }
 
       const result: { id: string; url: string } = await response.json();
+      setIsCreating(false);
       router.push(`/bins/${result.id}`);
       updateRecentBins(result, recentBins);
     } catch (error: any) {
-      alert(`Error - ${error.message}`);
+      setOasError(
+        error?.message ??
+          "Couldn't reach the Mockbin API. Check your connection and retry.",
+      );
       setIsCreating(false);
     }
-
-    setIsCreating(false);
   };
 
   return (
@@ -227,6 +239,10 @@ const Index = () => {
                 </p>
               </div>
               <FileInput onChange={handleFileChange} />
+              <InlineError
+                message={oasError}
+                onDismiss={() => setOasError(null)}
+              />
               <div className="flex justify-end items-center gap-3 pt-2 border-t border-line">
                 <kbd className="hidden sm:inline-flex items-center gap-1 font-system text-[11px] text-fg-faint mt-4">
                   <span className="px-1.5 py-0.5 rounded border border-line bg-bg-subtle">
@@ -307,6 +323,11 @@ const Index = () => {
                   className="h-36 resize-y"
                 />
               </div>
+
+              <InlineError
+                message={binError}
+                onDismiss={() => setBinError(null)}
+              />
 
               <div className="flex justify-end items-center gap-3 pt-2 border-t border-line">
                 <kbd className="hidden sm:inline-flex items-center gap-1 font-system text-[11px] text-fg-faint mt-4">
