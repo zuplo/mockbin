@@ -114,15 +114,16 @@ const HeaderRow = ({
         <Input placeholder="Key" title="Header key" {...getInputProps()} />
         <button
           type="button"
-          className="absolute right-1 text-slate-600 top-0 bottom-0 flex items-center"
+          className="absolute right-2 top-0 bottom-0 flex items-center text-fg-muted hover:text-fg"
           {...getToggleButtonProps()}
+          aria-label="Toggle header suggestions"
         >
           <ArrowIcon className="rotate-90" />
         </button>
         <ul
           className={cn(
             !isOpen && "hidden",
-            "absolute z-10 top-full max-h-[200px] overflow-y-auto translate-y-1 w-full bg-slate-800 rounded-md",
+            "absolute z-10 top-full mt-1 max-h-[200px] overflow-y-auto w-full bg-white border border-line rounded-lg shadow-lg p-1",
           )}
           {...getMenuProps()}
         >
@@ -130,8 +131,8 @@ const HeaderRow = ({
             filteredHeaders.map((item, index) => (
               <li
                 className={cn(
-                  "p-2 cursor-pointer font-mono text-xs",
-                  highlightedIndex === index && "bg-slate-700",
+                  "px-2.5 py-1.5 cursor-pointer font-mono text-[12px] rounded-md text-fg-secondary",
+                  highlightedIndex === index && "bg-bg-muted text-fg",
                 )}
                 key={`${item}-${index}`}
                 {...getItemProps({ item, index })}
@@ -141,7 +142,7 @@ const HeaderRow = ({
             ))}
         </ul>
         {keyError ? (
-          <p className="mt-2 text-sm text-red-600">&nbsp;{keyError}</p>
+          <p className="mt-1.5 text-xs text-danger">{keyError}</p>
         ) : null}
       </div>
       <div className="w-full flex flex-col mt-2 sm:mt-0">
@@ -152,14 +153,15 @@ const HeaderRow = ({
           ref={valueRef}
         />
         {valueError ? (
-          <p className="mt-2 text-sm text-red-600">&nbsp;{valueError}</p>
+          <p className="mt-1.5 text-xs text-danger">{valueError}</p>
         ) : null}
       </div>
       <button
-        className="p-1 translate-y-[2px] enabled:hover:bg-gray-400 dark:enabled:hover:bg-slate-800 rounded transition-all disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex items-center justify-center w-9 h-9 rounded-lg text-fg-muted enabled:hover:bg-bg-muted enabled:hover:text-danger transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         type="button"
         onClick={onClickDelete}
         disabled={!canBeDeleted}
+        aria-label="Remove header"
       >
         <TrashIcon />
       </button>

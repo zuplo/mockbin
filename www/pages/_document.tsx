@@ -1,5 +1,4 @@
 import { Head, Html, Main, NextScript } from "next/document";
-import Script from "next/script";
 
 export default function Document() {
   return (
@@ -34,11 +33,16 @@ export default function Document() {
           content="https://cdn.zuplo.com/assets/8e93df64-1a75-4cfe-afb7-10a99def9e0c.png"
         />
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script src="zuplo-banner.js"></script>
+        <script src="/zuplo-banner.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
-          href="https://fonts.googleapis.com/css?family=Fira+Code"
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
           rel="stylesheet"
-          type="text/css"
         />
         {process.env.NEXT_PUBLIC_ANALYTICS_URL ? (
           // eslint-disable-next-line @next/next/no-sync-scripts
@@ -67,9 +71,7 @@ export default function Document() {
         ) : null}
       </Head>
       <body>
-        <div className="w-full px-14 bg-white mb-5">
-          <zuplo-banner mode="light"></zuplo-banner>
-        </div>
+        <zuplo-banner mode="light"></zuplo-banner>
         <Main />
         <NextScript />
       </body>

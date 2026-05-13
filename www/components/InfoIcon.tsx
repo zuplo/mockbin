@@ -1,19 +1,14 @@
 const InfoIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="lucide lucide-info"
+    width="14"
+    height="14"
+    viewBox="0 0 256 256"
+    fill="currentColor"
+    fillRule="evenodd"
+    aria-hidden="true"
   >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M12 16v-4" />
-    <path d="M12 8h.01" />
+    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z" />
   </svg>
 );
 

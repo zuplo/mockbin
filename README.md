@@ -45,8 +45,6 @@ The API is built with [Zuplo](https://zuplo.com) and stores bin data in Cloudfla
 
 The frontend is a Next.js app under [`www/`](./www) deployable on Vercel or anywhere else you prefer.
 
-The developer portal (API reference + guides) is built with [Zudoku](https://zudoku.dev) and lives in [`docs/`](./docs). It deploys alongside the API via `zup deploy`.
-
 #### Running the docs locally
 
 ```bash

@@ -2,7 +2,7 @@ import CopyButton from "@/components/CopyButton";
 import Tabs, { Tab } from "@/components/Tabs";
 import React, { useLayoutEffect, useState } from "react";
 import { RequestDetails } from "../utils/interfaces";
-import { getMethodTextColor } from "@/components/MethodIndicator";
+import MethodIndicator from "@/components/MethodIndicator";
 import CloseIcon from "@/components/CloseIcon";
 
 type TestOperationResponseProps = {
@@ -12,14 +12,13 @@ type TestOperationResponseProps = {
 };
 
 const FloatingCopyButton = ({ textToCopy }: { textToCopy: string }) => (
-  <div className="hidden sm:block absolute right-4 z-40">
+  <div className="hidden sm:block absolute right-2 top-2 z-40">
     <CopyButton textToCopy={textToCopy} />
   </div>
 );
 
 const getRequestIsJson = (requestDetails: RequestDetails | undefined) => {
   if (!requestDetails) {
-    // We don't know yet so lets assume its JSON
     return true;
   }
 
@@ -28,7 +27,6 @@ const getRequestIsJson = (requestDetails: RequestDetails | undefined) => {
     return requestContentType.includes("json");
   }
 
-  // If no content type, look at the body
   if (!requestDetails.body) {
     return false;
   }
@@ -63,7 +61,6 @@ const BinRequest = ({
     requestIsJson ? "JSON" : "RAW",
   );
 
-  // useLayoutEffect is used here to prevent flickering of the wrong tab being selected
   useLayoutEffect(() => {
     setSelectedTab(requestIsJson ? "JSON" : "RAW");
   }, [requestIsJson]);
@@ -75,12 +72,18 @@ const BinRequest = ({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center translate-y-[250px]">Loading...</div>
+      <div className="flex justify-center pt-32 text-fg-muted text-sm">
+        Loading…
+      </div>
     );
   }
 
   if (!requestDetails) {
-    return <p>Click on a request to see its details here</p>;
+    return (
+      <p className="p-6 text-fg-muted text-sm">
+        Click on a request to see its details here
+      </p>
+    );
   }
 
   const requestBody = requestDetails.body
@@ -90,72 +93,78 @@ const BinRequest = ({
     : undefined;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex gap-2 border-b sticky top-0 bg-slate-950 z-50 border-slate-800 p-4">
-        <span
-          className={`font-bold ${getMethodTextColor(requestDetails.method)}`}
+    <div className="flex flex-col h-full bg-white">
+      <div className="flex items-center gap-3 border-b border-line sticky top-0 bg-white z-10 px-4 py-3">
+        <MethodIndicator method={requestDetails.method} />
+        <pre className="flex-grow font-mono text-[12px] text-fg truncate">
+          {requestUrl}
+        </pre>
+        <button
+          onClick={onClose}
+          className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-fg-muted hover:text-fg hover:bg-bg-muted transition-colors"
+          aria-label="Close request panel"
         >
-          {requestDetails.method}
-        </span>
-        <pre className="flex-grow">{requestUrl}</pre>
-        <button onClick={onClose}>
           <CloseIcon />
         </button>
       </div>
-      <div className="flex px-4 py-2 gap-1 text-slate-600">
-        Request time: {new Date(requestDetails.timestamp).toLocaleString()},
-        size: {requestDetails.size} B
+      <div className="flex px-4 py-2 gap-2 text-xs text-fg-muted border-b border-line">
+        <span>{new Date(requestDetails.timestamp).toLocaleString()}</span>
+        <span aria-hidden="true">•</span>
+        <span>{requestDetails.size} B</span>
       </div>
-      <div>
-        <div className="border-b border-slate-800">
-          <div className="px-3 sm:px-4">
-            <Tabs
-              selectedTab={selectedTab}
-              tabs={tabs}
-              onChange={setSelectedTab}
-            />
-          </div>
-        </div>
+      <div className="px-4">
+        <Tabs
+          selectedTab={selectedTab}
+          tabs={tabs}
+          onChange={setSelectedTab}
+        />
       </div>
-      <div className="m-4">
+      <div className="p-4 overflow-auto flex-1">
         {(selectedTab === "RAW" || selectedTab === "JSON") && (
-          <div className="flex overflow-x-auto overflow-y-clip">
+          <div className="relative">
             {requestBody ? (
-              <code className="whitespace-pre">{requestBody}</code>
+              <pre className="bg-code-bg text-code-fg font-mono text-[12px] leading-relaxed p-4 rounded-xl overflow-x-auto whitespace-pre">
+                {requestBody}
+              </pre>
             ) : (
-              <span className="italic">No request body sent.</span>
+              <span className="text-fg-muted italic text-sm">
+                No request body sent.
+              </span>
             )}
-            {requestBody && (
-              <div className="relative w-full">
-                <FloatingCopyButton textToCopy={requestBody} />
-              </div>
-            )}
+            {requestBody && <FloatingCopyButton textToCopy={requestBody} />}
           </div>
         )}
         {selectedTab === "HEADERS" && (
-          <table className="text-sm mx-4 border-collapse h-full table-auto">
-            <tr>
-              <th className="text-left border border-input-border px-2">
-                HEADER
-              </th>
-              <th className="text-left border border-input-border px-2">
-                VALUE
-              </th>
-            </tr>
-            {requestDetails.headers &&
-              Object.entries(requestDetails.headers).map(([key, value]) => {
-                return (
-                  <tr className="font-mono" key={key}>
-                    <td className="text-left border border-input-border px-2">
-                      {key}
-                    </td>
-                    <td className="text-left whitespace-pre-line break-all border border-input-border px-2">
-                      {value}
-                    </td>
-                  </tr>
-                );
-              })}
-          </table>
+          <div className="overflow-x-auto rounded-xl border border-line">
+            <table className="w-full text-[13px] border-collapse">
+              <thead>
+                <tr className="bg-bg-subtle">
+                  <th className="text-left px-3 py-2 text-[11px] uppercase tracking-wide text-fg-faint font-semibold">
+                    Header
+                  </th>
+                  <th className="text-left px-3 py-2 text-[11px] uppercase tracking-wide text-fg-faint font-semibold">
+                    Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {requestDetails.headers &&
+                  Object.entries(requestDetails.headers).map(([key, value]) => (
+                    <tr
+                      key={key}
+                      className="border-t border-bg-muted font-mono"
+                    >
+                      <td className="px-3 py-2 text-fg font-semibold align-top">
+                        {key}
+                      </td>
+                      <td className="px-3 py-2 text-fg-secondary whitespace-pre-line break-all align-top">
+                        {value}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

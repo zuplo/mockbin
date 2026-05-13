@@ -1,10 +1,5 @@
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 
-type CopyButtonProps = {
-  classNames?: string;
-  textToCopy: string;
-};
-
 const DuplicateIcon = ({ className }: { className: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -12,7 +7,7 @@ const DuplicateIcon = ({ className }: { className: string }) => (
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
-    strokeWidth={2}
+    strokeWidth={1.75}
   >
     <path
       strokeLinecap="round"
@@ -35,17 +30,23 @@ const CheckIcon = ({ className }: { className: string }) => (
   </svg>
 );
 
+type CopyButtonProps = {
+  classNames?: string;
+  textToCopy: string;
+};
+
 const CopyButton = ({ textToCopy }: CopyButtonProps) => {
   const [hasCopied, copy] = useCopyToClipboard();
 
   return (
     <button
       type="button"
-      className={`items-center rounded-md p-1 hover:bg-slate-800 transition-all`}
+      aria-label={hasCopied ? "Copied" : "Copy to clipboard"}
+      className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-fg-muted hover:text-fg hover:bg-bg-muted transition-colors"
       onClick={() => copy(textToCopy)}
     >
       {hasCopied ? (
-        <CheckIcon className="h-4 w-4 text-green-500" />
+        <CheckIcon className="h-4 w-4 text-success" />
       ) : (
         <DuplicateIcon className="h-4 w-4" />
       )}

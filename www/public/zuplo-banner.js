@@ -2,10 +2,8 @@ class ZuploBanner extends HTMLElement {
   constructor() {
     super();
 
-    // Attach a shadow root
     const shadow = this.attachShadow({ mode: "open" });
 
-    // JSON data for the tools
     const toolsData = {
       zudoku: {
         name: "Zudoku",
@@ -33,78 +31,65 @@ class ZuploBanner extends HTMLElement {
       },
     };
 
-    // Create wrapper
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "zuplo-banner");
 
-    // Left side: Text and logo
     const leftDiv = document.createElement("div");
     leftDiv.setAttribute("class", "left");
 
     const openSourceText = document.createElement("span");
-    openSourceText.textContent = "Open source by ";
+    openSourceText.setAttribute("class", "tagline");
+    openSourceText.textContent = "Open source by";
 
-    // Zuplo Logo using the provided SVG
     const zuploLogoContainer = document.createElement("a");
     zuploLogoContainer.setAttribute(
       "href",
       "https://zuplo.com?utm_source=mockbin",
     );
     zuploLogoContainer.setAttribute("target", "_blank");
+    zuploLogoContainer.setAttribute("rel", "noopener noreferrer");
     zuploLogoContainer.setAttribute("class", "zuplo-logo");
-    zuploLogoContainer.innerHTML = `
-      <!-- Zuplo SVG Logo -->
-      ${this.getZuploLogoSVG()}
-    `;
+    zuploLogoContainer.setAttribute("aria-label", "Zuplo");
+    zuploLogoContainer.innerHTML = this.getZuploLogoSVG();
 
     leftDiv.appendChild(openSourceText);
     leftDiv.appendChild(zuploLogoContainer);
 
-    // Right side: Button with grip icon and "View Tools" text
     const rightDiv = document.createElement("div");
     rightDiv.setAttribute("class", "right");
 
     const menuButton = document.createElement("button");
     menuButton.setAttribute("class", "menu-button");
+    menuButton.setAttribute("type", "button");
+    menuButton.setAttribute("aria-haspopup", "true");
+    menuButton.setAttribute("aria-expanded", "false");
 
-    // Grip icon SVG
     const gripIconSVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-           stroke="currentColor" fill="none" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="2" cy="2" r="1"/>
-        <circle cx="8" cy="2" r="1"/>
-        <circle cx="14" cy="2" r="1"/>
-        <circle cx="2" cy="8" r="1"/>
-        <circle cx="8" cy="8" r="1"/>
-        <circle cx="14" cy="8" r="1"/>
-        <circle cx="2" cy="14" r="1"/>
-        <circle cx="8" cy="14" r="1"/>
-        <circle cx="14" cy="14" r="1"/>
+      <svg xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 256 256"
+           fill="currentColor"
+           fill-rule="evenodd"
+           aria-hidden="true">
+        <path d="M84,64A12,12,0,1,1,72,52,12,12,0,0,1,84,64Zm44,12a12,12,0,1,0-12-12A12,12,0,0,0,128,76Zm56,0a12,12,0,1,0-12-12A12,12,0,0,0,184,76ZM72,116a12,12,0,1,0,12,12A12,12,0,0,0,72,116Zm56,0a12,12,0,1,0,12,12A12,12,0,0,0,128,116Zm56,0a12,12,0,1,0,12,12A12,12,0,0,0,184,116ZM72,180a12,12,0,1,0,12,12A12,12,0,0,0,72,180Zm56,0a12,12,0,1,0,12,12A12,12,0,0,0,128,180Zm56,0a12,12,0,1,0,12,12A12,12,0,0,0,184,180Z"/>
       </svg>
     `;
 
-    // Add "View Tools" text and icon to the button
     const buttonContent = document.createElement("span");
     buttonContent.setAttribute("class", "button-content");
     buttonContent.innerHTML = `${gripIconSVG}<span class="button-text">View Tools</span>`;
 
     menuButton.appendChild(buttonContent);
-
     rightDiv.appendChild(menuButton);
 
-    // Append left and right divs to wrapper
     wrapper.appendChild(leftDiv);
     wrapper.appendChild(rightDiv);
 
-    // Append wrapper to shadow root
     shadow.appendChild(wrapper);
 
-    // Create the menu (initially hidden)
     const menu = document.createElement("div");
     menu.setAttribute("class", "menu");
+    menu.setAttribute("role", "menu");
 
-    // Create menu items based on toolsData
     for (const key in toolsData) {
       const tool = toolsData[key];
 
@@ -112,10 +97,18 @@ class ZuploBanner extends HTMLElement {
       menuItem.setAttribute("href", tool.url);
       menuItem.setAttribute("class", "menu-item");
       menuItem.setAttribute("target", "_blank");
+      menuItem.setAttribute("rel", "noopener noreferrer");
+      menuItem.setAttribute("role", "menuitem");
+
+      const logoWrap = document.createElement("span");
+      logoWrap.setAttribute("class", "menu-item-logo");
 
       const logo = document.createElement("img");
       logo.setAttribute("src", tool.logo);
-      logo.setAttribute("alt", tool.name);
+      logo.setAttribute("alt", "");
+      logo.setAttribute("loading", "lazy");
+
+      logoWrap.appendChild(logo);
 
       const textContainer = document.createElement("div");
       textContainer.setAttribute("class", "text-container");
@@ -130,222 +123,323 @@ class ZuploBanner extends HTMLElement {
 
       textContainer.appendChild(name);
       textContainer.appendChild(description);
-      menuItem.appendChild(logo);
+
+      menuItem.appendChild(logoWrap);
       menuItem.appendChild(textContainer);
 
       menu.appendChild(menuItem);
     }
 
-    // Add the footer to the menu
     const menuFooter = document.createElement("div");
     menuFooter.setAttribute("class", "menu-footer");
-    menuFooter.textContent = "Created with ❤️ by Zuplo";
-
+    menuFooter.textContent = "Crafted by Zuplo";
     menu.appendChild(menuFooter);
 
-    // Append menu to the rightDiv instead of shadow root
     rightDiv.appendChild(menu);
 
-    // Handle button click to toggle menu visibility
-    menuButton.addEventListener("click", (event) => {
+    const closeMenu = () => {
+      menu.classList.remove("visible");
+      menuButton.setAttribute("aria-expanded", "false");
+    };
+
+    this._onMenuButtonClick = (event) => {
       event.stopPropagation();
-      menu.classList.toggle("visible");
-    });
+      const isOpen = menu.classList.toggle("visible");
+      menuButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
 
-    // Close menu when clicking outside
-    document.addEventListener("click", (event) => {
+    this._onDocumentClick = (event) => {
       if (!this.contains(event.target)) {
-        menu.classList.remove("visible");
+        closeMenu();
       }
-    });
+    };
 
-    // Styles
+    this._onDocumentKeyDown = (event) => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    };
+
+    menuButton.addEventListener("click", this._onMenuButtonClick);
+
     const style = document.createElement("style");
     style.textContent = `
-      /* Set font family to Helvetica throughout */
-      * {
-        font-family: 'Helvetica', sans-serif;
-        box-sizing: border-box;
+      :host {
+        all: initial;
+        display: block;
       }
+
+      * {
+        box-sizing: border-box;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
       .zuplo-banner {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: white;
-        color: black;
-        padding: 10px 20px;
+        gap: 16px;
+        background-color: #ffffff;
+        color: #111827;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 10px 24px;
         width: 100%;
-        flex-wrap: nowrap; /* Prevent wrapping */
+        flex-wrap: nowrap;
       }
+
       .left {
         display: flex;
         align-items: center;
+        gap: 10px;
+        min-width: 0;
       }
-      .left .zuplo-logo {
+
+      .tagline {
+        font-size: 13px;
+        font-weight: 500;
+        color: #6b7280;
+        white-space: nowrap;
+      }
+
+      .zuplo-logo {
+        display: inline-flex;
+        align-items: center;
+        line-height: 0;
+        text-decoration: none;
+        color: #111827;
+        transition: color 0.15s ease;
+      }
+      .zuplo-logo:hover {
+        color: #ff00bd;
+      }
+      .zuplo-logo svg {
         height: 20px;
-        margin-left: 10px;
-        display: flex;
-        align-items: center; /* Center vertically */
-        position: relative;
-        top: 1px; /* Move down slightly */
-      }
-      .left .zuplo-logo svg {
-        height: 100%;
         width: auto;
       }
+
       .right {
         position: relative;
         display: flex;
         align-items: center;
       }
+
       .menu-button {
-        display: flex;
-        align-items: center;
-        background-color: #ff00bd;
-        color: white;
-        border: none;
-        padding: 10px 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        line-height: 1;
-        white-space: nowrap; /* Prevent text wrapping */
-      }
-      .menu-button .button-content {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        background-color: #ffffff;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+        height: 36px;
+        padding: 0 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+      }
+      .menu-button:hover {
+        background-color: #f9fafb;
+      }
+      .menu-button:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 0, 189, 0.15);
+      }
+
+      .menu-button .button-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
       }
       .menu-button svg {
-        width: 20px;
-        height: 20px;
-        margin-right: 8px;
+        width: 16px;
+        height: 16px;
+        display: block;
+        color: #6b7280;
       }
-      .menu-button .button-text {
-        display: inline-block;
-      }
+
       .menu {
         display: none;
         position: absolute;
         right: 0;
-        top: calc(100% + 5px); /* Place below the button with 5px margin */
-        background-color: white;
-        color: black;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Add shadow */
-        z-index: 9999; /* High z-index */
-        width: auto; /* Adjust width */
-        min-width: 200px; /* Optional: set a minimum width */
+        top: calc(100% + 8px);
+        background-color: #ffffff;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.10);
+        z-index: 9999;
+        width: 340px;
         padding: 10px;
+        overflow: hidden;
       }
       .menu.visible {
         display: block;
       }
+
       .menu-item {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        gap: 14px;
         text-decoration: none;
-        color: black;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
+        color: #111827;
+        padding: 10px;
+        border-radius: 10px;
+        transition: background-color 0.15s ease;
       }
-      .menu-item:last-child {
-        border-bottom: none;
+      .menu-item:hover,
+      .menu-item:focus-visible {
+        background-color: #f9fafb;
+        outline: none;
       }
-      .menu-item img {
+
+      .menu-item-logo {
+        flex-shrink: 0;
         width: 40px;
         height: 40px;
-        margin-right: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
+      .menu-item-logo img {
+        width: 40px;
+        height: 40px;
+        display: block;
+        object-fit: contain;
+      }
+
       .text-container {
         display: flex;
         flex-direction: column;
+        min-width: 0;
+        gap: 2px;
+        padding-top: 2px;
       }
       .tool-name {
-        font-weight: bold;
-        white-space: nowrap; /* Prevent wrapping */
-      }
-      .menu-item:hover {
-        color: #FF00BD;
+        font-size: 15px;
+        font-weight: 700;
+        color: #111827;
+        white-space: nowrap;
+        line-height: 1.2;
       }
       .tool-description {
-        font-size: 12px;
-        color: #666;
+        font-size: 13px;
+        font-weight: 400;
+        color: #6b7280;
+        line-height: 1.4;
       }
+
       .menu-footer {
         text-align: center;
-        margin-top: 10px;
-        font-size: 12px;
-        color: #666;
+        margin-top: 4px;
+        padding: 10px 8px 4px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #9ca3af;
+        border-top: 1px solid #e5e7eb;
       }
-      /* Responsive */
-      @media (max-width: 600px) {
+
+      @media (max-width: 640px) {
         .zuplo-banner {
-          flex-direction: column-reverse; /* Stack left content below right */
-          align-items: center; /* Center horizontally */
+          padding: 10px 16px;
         }
-        .left {
-          margin-top: 10px;
-        }
-        .right {
-          margin-top: 0;
-          width: auto;
-          justify-content: center;
+        .tagline {
+          display: none;
         }
         .menu {
-          right: 0;
-          width: auto; /* Ensure menu is as wide as needed */
+          width: min(320px, calc(100vw - 32px));
         }
       }
     `;
 
-    // Handle mode attribute
     const mode = this.getAttribute("mode") || "light";
 
     if (mode === "dark") {
       style.textContent += `
         .zuplo-banner {
-          background-color: black;
-          color: white;
+          background-color: #111827;
+          color: #ffffff;
+          border-bottom-color: #1f2937;
         }
-        .menu {
-          background-color: black;
-          color: white;
+        .tagline {
+          color: #9ca3af;
         }
-        .menu-item {
-          color: white;
-        }
-        .menu-footer {
-          color: #ccc;
+        .zuplo-logo {
+          color: #ffffff;
         }
         .menu-button {
-          background-color: #ff00bd;
-          color: white;
+          background-color: transparent;
+          color: #ffffff;
+          border-color: #1f2937;
         }
-        /* Invert Zuplo logo for dark mode */
-        .left .zuplo-logo svg path {
-          fill: white;
+        .menu-button:hover {
+          background-color: #1f2937;
         }
-      `;
-    } else {
-      /* Set Zuplo logo color for light mode */
-      style.textContent += `
-        .left .zuplo-logo svg path {
-          fill: black;
+        .menu-button svg {
+          color: #9ca3af;
+        }
+        .menu {
+          background-color: #111827;
+          color: #ffffff;
+          border-color: #1f2937;
+        }
+        .menu-item {
+          color: #ffffff;
+        }
+        .menu-item:hover,
+        .menu-item:focus-visible {
+          background-color: #1f2937;
+        }
+        .menu-item-logo {
+          background-color: #1f2937;
+        }
+        .tool-name {
+          color: #ffffff;
+        }
+        .tool-description {
+          color: #9ca3af;
+        }
+        .menu-footer {
+          color: #6b7280;
+          border-top-color: #1f2937;
         }
       `;
     }
 
-    // Append styles to shadow root
     shadow.appendChild(style);
   }
 
-  // Method to return the Zuplo SVG logo
+  connectedCallback() {
+    if (this._onDocumentClick) {
+      document.addEventListener("click", this._onDocumentClick);
+    }
+    if (this._onDocumentKeyDown) {
+      document.addEventListener("keydown", this._onDocumentKeyDown);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._onDocumentClick) {
+      document.removeEventListener("click", this._onDocumentClick);
+    }
+    if (this._onDocumentKeyDown) {
+      document.removeEventListener("keydown", this._onDocumentKeyDown);
+    }
+  }
+
   getZuploLogoSVG() {
     return `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true" viewBox="0 0 147 33" alt="Zuplo logo" class="w-auto h-8"><path fill="#FFF" d="M27.142 19.978H16.62L27.83 8.746a.758.758 0 0 0-.534-1.293H9.488V0h19.534a7.57 7.57 0 0 1 4.065 1.125 7.6 7.6 0 0 1 2.836 3.126 7.4 7.4 0 0 1-1.461 8.398l-7.32 7.328z"></path><path fill="#FFF" d="M9.489 11.042h10.524l-11.19 11.21a.772.772 0 0 0 .543 1.316h17.759v7.452H7.61a7.57 7.57 0 0 1-4.065-1.125A7.6 7.6 0 0 1 .71 26.768a7.4 7.4 0 0 1 1.462-8.397zm73.297 5.728c0 2.657-1.034 4.283-3.46 4.244-2.227-.04-3.38-1.666-3.38-4.283V6.696h-5.488v10.43c0 5.038 3.142 8.607 8.868 8.647 5.25.04 8.948-3.807 8.948-8.606V6.697h-5.488zm53.306-10.512c-5.925 0-10.098 4.204-10.098 9.757 0 5.552 4.175 9.756 10.098 9.756s10.099-4.204 10.099-9.756-4.173-9.757-10.099-9.757m0 14.794c-2.744 0-4.69-2.063-4.69-5.037 0-2.975 1.948-5.038 4.69-5.038s4.691 2.063 4.691 5.038-1.947 5.037-4.691 5.037M101.966 6.258c-5.926 0-10.099 4.204-10.099 9.757 0 .073.009.144.01.22h-.01v15.772h5.408V24.75a10.9 10.9 0 0 0 4.691 1.02c5.926 0 10.099-4.204 10.099-9.756s-4.173-9.756-10.099-9.756m0 14.794c-2.744 0-4.69-2.063-4.69-5.037 0-2.975 1.948-5.038 4.69-5.038s4.691 2.063 4.691 5.038-1.947 5.037-4.691 5.037M49.868 11.41h10.814l-10.814 8.452v5.473h17.514v-4.716h-10.84l10.84-8.473V6.694H49.868zm74.501 13.925h-1.831a7.46 7.46 0 0 1-5.262-2.177 7.42 7.42 0 0 1-2.183-5.248V.005h5.518V17.91a1.927 1.927 0 0 0 1.927 1.921h1.831z"></path></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true" viewBox="0 0 147 33"><path fill="currentColor" d="M27.142 19.978H16.62L27.83 8.746a.758.758 0 0 0-.534-1.293H9.488V0h19.534a7.57 7.57 0 0 1 4.065 1.125 7.6 7.6 0 0 1 2.836 3.126 7.4 7.4 0 0 1-1.461 8.398l-7.32 7.328z"></path><path fill="currentColor" d="M9.489 11.042h10.524l-11.19 11.21a.772.772 0 0 0 .543 1.316h17.759v7.452H7.61a7.57 7.57 0 0 1-4.065-1.125A7.6 7.6 0 0 1 .71 26.768a7.4 7.4 0 0 1 1.462-8.397zm73.297 5.728c0 2.657-1.034 4.283-3.46 4.244-2.227-.04-3.38-1.666-3.38-4.283V6.696h-5.488v10.43c0 5.038 3.142 8.607 8.868 8.647 5.25.04 8.948-3.807 8.948-8.606V6.697h-5.488zm53.306-10.512c-5.925 0-10.098 4.204-10.098 9.757 0 5.552 4.175 9.756 10.098 9.756s10.099-4.204 10.099-9.756-4.173-9.757-10.099-9.757m0 14.794c-2.744 0-4.69-2.063-4.69-5.037 0-2.975 1.948-5.038 4.69-5.038s4.691 2.063 4.691 5.038-1.947 5.037-4.691 5.037M101.966 6.258c-5.926 0-10.099 4.204-10.099 9.757 0 .073.009.144.01.22h-.01v15.772h5.408V24.75a10.9 10.9 0 0 0 4.691 1.02c5.926 0 10.099-4.204 10.099-9.756s-4.173-9.756-10.099-9.756m0 14.794c-2.744 0-4.69-2.063-4.69-5.037 0-2.975 1.948-5.038 4.69-5.038s4.691 2.063 4.691 5.038-1.947 5.037-4.691 5.037M49.868 11.41h10.814l-10.814 8.452v5.473h17.514v-4.716h-10.84l10.84-8.473V6.694H49.868zm74.501 13.925h-1.831a7.46 7.46 0 0 1-5.262-2.177 7.42 7.42 0 0 1-2.183-5.248V.005h5.518V17.91a1.927 1.927 0 0 0 1.927 1.921h1.831z"></path></svg>
     `;
   }
 }
 
-// Define the custom element
-customElements.define("zuplo-banner", ZuploBanner);
+if (!customElements.get("zuplo-banner")) {
+  customElements.define("zuplo-banner", ZuploBanner);
+}
