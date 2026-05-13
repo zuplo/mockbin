@@ -17,7 +17,7 @@ description: Open-source API mocking — create a bin, send requests, inspect ev
 - **No sign-up.** Create a bin and start sending requests.
 - **Inspect everything.** Every request is captured — method, headers, body, size, timestamp.
 - **OpenAPI-aware.** Upload an OpenAPI 3.1 document and Mockbin will mock it from your schemas and examples.
-- **Open source.** [Source on GitHub](https://github.com/zuplo/mockbin) — Apache-licensed, contributions welcome.
+- **Open source.** [Source on GitHub](https://github.com/zuplo/mockbin) — MIT-licensed, contributions welcome.
 
 ## How it works
 
