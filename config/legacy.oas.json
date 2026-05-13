@@ -1,0 +1,29 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Legacy redirects",
+    "version": "1.0.0",
+    "description": "Redirects legacy /docs/* URLs from the retired Zuplo Developer Portal to the new Zudoku-powered portal."
+  },
+  "paths": {
+    "/docs(.*)": {
+      "x-zuplo-path": {
+        "pathMode": "url-pattern"
+      },
+      "get": {
+        "summary": "Redirect legacy dev portal URLs",
+        "operationId": "redirect_legacy_dev_portal",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "legacyDevPortalHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "mode": "redirect"
+            }
+          }
+        }
+      }
+    }
+  }
+}
