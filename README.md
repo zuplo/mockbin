@@ -39,6 +39,15 @@ The API for this project is built using [Zuplo](https://zuplo.com) and Cloudflar
 
 The frontend is a simple Next.js app that can be deployed to Vercel or anywhere else you prefer.
 
+The developer portal (API reference + guides) is built with [Zudoku](https://zudoku.dev) and lives in [`docs/`](./docs). It deploys alongside the API via `zup deploy`.
+
+#### Running the docs locally
+
+```bash
+npm install
+npm run docs:dev
+```
+
 # License
 
 [MIT License](./LICENSE)
