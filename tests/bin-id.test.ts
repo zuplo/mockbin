@@ -55,6 +55,14 @@ describe("isOasBin", () => {
   test("returns false for plain bin", () => {
     assert.isFalse(isOasBin("12345678901234567890123456789012"));
   });
+
+  test("returns false when -oas appears mid-string but is not the suffix", () => {
+    assert.isFalse(isOasBin("foo-oas-bar"));
+  });
+
+  test("returns false when _oas appears mid-string but is not the suffix", () => {
+    assert.isFalse(isOasBin("foo_oas_bar"));
+  });
 });
 
 describe("DNS hostname compliance", () => {

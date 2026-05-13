@@ -236,7 +236,7 @@ const Bin = () => {
   const docsUrl = `https://zudoku.dev/demo?api-url=${process.env.NEXT_PUBLIC_API_URL}/v1/bins/${binId}`;
   const binUrl = requests.url ?? `${process.env.NEXT_PUBLIC_API_URL}/${binId}`;
   const isOas =
-    (binId ?? "").indexOf("-oas") > 0 || (binId ?? "").indexOf("_oas") > 0;
+    (binId ?? "").endsWith("-oas") || (binId ?? "").endsWith("_oas");
 
   return (
     <main className="bg-bg-subtle min-h-screen">

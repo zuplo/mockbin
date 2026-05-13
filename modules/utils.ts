@@ -83,5 +83,5 @@ export function validateOpenApiDocument(document: any): void {
 }
 
 export function isOasBin(binId: string) {
-  return binId.indexOf("-oas") > 0 || binId.indexOf("_oas") > 0;
+  return binId.endsWith("-oas") || binId.endsWith("_oas");
 }

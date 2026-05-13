@@ -114,6 +114,27 @@
         "operationId": "get_bin"
       }
     },
+    "/v1/bins/{binId}/original.yaml": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Get original YAML",
+        "description": "Returns the original YAML document uploaded when the OpenAPI bin was created",
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "getOriginalYaml",
+            "module": "$import(./modules/handlers)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": ["block-bad-bins", "rate-limit-inbound"]
+          }
+        },
+        "operationId": "get_original_yaml"
+      }
+    },
     "/v1/bins/{binId}/requests": {
       "x-zuplo-path": {
         "pathMode": "open-api"
