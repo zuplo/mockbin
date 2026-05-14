@@ -21,8 +21,7 @@
     "zuplo": "6.61.23"
   },
   "devDependencies": {
-    "@zuplo/checkly": "^1.2.0",
-    "checkly": "^4.9.0",
+    "checkly": "^7.15.0",
     "esbuild": "^0.24.0",
     "openapi-types": "^12.1.3",
     "prettier": "^3.0.3"

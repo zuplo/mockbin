@@ -5,7 +5,6 @@
  * - https://www.checklyhq.com/docs/cli/constructs-reference/#checkgroup
  */
 
-import { ApiCheckOptions, asserts, check as baseCheck } from "@zuplo/checkly";
 import {
   AlertEscalationBuilder,
   CheckGroup,
@@ -41,8 +40,3 @@ export const group = new CheckGroup("mockbin", {
     sameRegion: true,
   }),
 });
-
-const check = (props: Omit<ApiCheckOptions, "group">) =>
-  baseCheck({ ...props, group });
-
-export { asserts, check };
