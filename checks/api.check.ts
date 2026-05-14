@@ -1,14 +1,14 @@
-import { asserts, check } from "./group";
+import { ApiCheck, AssertionBuilder } from "checkly/constructs";
+import { group } from "./group";
 
-check({
+new ApiCheck("mockbin-should-200-requesting-a-mock", {
   name: "Should 200 requesting a mock",
+  group,
   shouldFail: false,
   request: {
-    url: `/`,
+    url: "{{GROUP_BASE_URL}}/",
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: [{ key: "Content-Type", value: "application/json" }],
+    assertions: [AssertionBuilder.statusCode().equals(200)],
   },
-  assertions: [asserts().statusCode().equals(200)],
 });

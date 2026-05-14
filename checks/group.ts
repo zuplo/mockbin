@@ -12,7 +12,6 @@ import {
   RetryStrategyBuilder,
   WebhookAlertChannel,
 } from "checkly/constructs";
-import { asserts, groupedCheck } from "./_lib";
 
 export const incidentChannel = WebhookAlertChannel.fromId(231732);
 
@@ -41,7 +40,3 @@ export const group = new CheckGroup("mockbin", {
     sameRegion: true,
   }),
 });
-
-const check = groupedCheck(group);
-
-export { asserts, check };
