@@ -5,7 +5,6 @@
  * - https://www.checklyhq.com/docs/cli/constructs-reference/#checkgroup
  */
 
-import { ApiCheckOptions, asserts, check as baseCheck } from "@zuplo/checkly";
 import {
   AlertEscalationBuilder,
   CheckGroup,
@@ -13,6 +12,7 @@ import {
   RetryStrategyBuilder,
   WebhookAlertChannel,
 } from "checkly/constructs";
+import { asserts, groupedCheck } from "./_lib";
 
 export const incidentChannel = WebhookAlertChannel.fromId(231732);
 
@@ -42,7 +42,6 @@ export const group = new CheckGroup("mockbin", {
   }),
 });
 
-const check = (props: Omit<ApiCheckOptions, "group">) =>
-  baseCheck({ ...props, group });
+const check = groupedCheck(group);
 
 export { asserts, check };
