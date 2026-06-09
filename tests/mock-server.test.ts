@@ -383,6 +383,45 @@ describe("MockServer Tests for Pizza API", () => {
         }
       `);
     });
+
+    const indirectCircularDoc = {
+      openapi: "3.0.0",
+      info: { title: "Indirect Circular Test", version: "1.0.0" },
+      paths: {
+        "/a": {
+          get: {
+            responses: {
+              "200": {
+                description: "OK",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/A" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      components: {
+        schemas: {
+          // A and B are pure $refs pointing at each other, so resolveRef()
+          // itself would recurse forever without a cycle guard.
+          A: { $ref: "#/components/schemas/B" },
+          B: { $ref: "#/components/schemas/A" },
+        },
+      },
+    };
+    const indirectCircularMockServer = new MockServer(indirectCircularDoc);
+
+    test("Should return 200 without stack overflow for indirect circular $ref chains", async () => {
+      const request = new Request("http://localhost/a", {
+        method: "GET",
+      });
+      const response = await indirectCircularMockServer.handleRequest(request);
+      assert.strictEqual(response.status, 200);
+      expect(await response.json()).toBeNull();
+    });
   });
 
   // Error Tests

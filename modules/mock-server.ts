@@ -278,12 +278,20 @@ export class MockServer {
     return errors;
   }
 
-  private resolveRef(obj: any): any {
+  private resolveRef(obj: any, seen: Set<string> = new Set()): any {
     if (!obj || !obj.$ref) {
       return obj;
     }
 
     const refPath = obj.$ref;
+    if (seen.has(refPath)) {
+      // Circular $ref chain (e.g. A -> B -> A) - stop resolving to avoid
+      // infinite recursion. Return the unresolved ref so callers degrade
+      // gracefully instead of overflowing the stack.
+      return obj;
+    }
+    seen.add(refPath);
+
     const parts = refPath.replace(/^#\//, "").split("/"); // Remove initial '#/' and split
     let refObj = this.openApiDoc;
 
@@ -297,7 +305,7 @@ export class MockServer {
 
     if (refObj.$ref) {
       // Recursively resolve nested $ref
-      return this.resolveRef(refObj);
+      return this.resolveRef(refObj, seen);
     } else {
       return refObj;
     }
