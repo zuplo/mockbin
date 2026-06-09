@@ -1,5 +1,5 @@
 import { MockServer } from "../modules/mock-server"; // Adjust the path as needed
-import { describe, test, assert } from "vitest";
+import { describe, test, assert, expect } from "vitest";
 import json from "./pizza.oas.json";
 
 // OpenAPI document
@@ -330,6 +330,58 @@ describe("MockServer Tests for Pizza API", () => {
       const responseBody = await response.text();
       assert.ok(responseBody);
       // Further assertions can be made based on the default content type and response
+    });
+  });
+
+  describe("Circular Schema Tests", () => {
+    const circularDoc = {
+      openapi: "3.0.0",
+      info: { title: "Circular Test", version: "1.0.0" },
+      paths: {
+        "/nodes": {
+          get: {
+            responses: {
+              "200": {
+                description: "OK",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/Node" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      components: {
+        schemas: {
+          Node: {
+            type: "object",
+            properties: {
+              value: { type: "string" },
+              next: { $ref: "#/components/schemas/Node" },
+            },
+          },
+        },
+      },
+    };
+    const circularMockServer = new MockServer(circularDoc);
+
+    test("Should return 200 without stack overflow for circular $ref schemas", async () => {
+      const request = new Request("http://localhost/nodes", {
+        method: "GET",
+      });
+      const response = await circularMockServer.handleRequest(request);
+      assert.strictEqual(response.status, 200);
+      expect(await response.json()).toMatchInlineSnapshot(`
+        {
+          "next": {
+            "next": null,
+            "value": "string",
+          },
+          "value": "string",
+        }
+      `);
     });
   });
 
