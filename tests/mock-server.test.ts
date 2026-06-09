@@ -375,10 +375,62 @@ describe("MockServer Tests for Pizza API", () => {
       assert.strictEqual(response.status, 200);
       expect(await response.json()).toMatchInlineSnapshot(`
         {
-          "next": {
-            "next": null,
-            "value": "string",
+          "next": null,
+          "value": "string",
+        }
+      `);
+    });
+
+    // Regression: the real-world trigger was a cycle through array items
+    // (e.g. Comment.replies[] -> Comment), a different recursion path than a
+    // direct object property.
+    const arrayCycleDoc = {
+      openapi: "3.0.0",
+      info: { title: "Array Cycle Test", version: "1.0.0" },
+      paths: {
+        "/trees": {
+          get: {
+            responses: {
+              "200": {
+                description: "OK",
+                content: {
+                  "application/json": {
+                    schema: { $ref: "#/components/schemas/Tree" },
+                  },
+                },
+              },
+            },
           },
+        },
+      },
+      components: {
+        schemas: {
+          Tree: {
+            type: "object",
+            properties: {
+              value: { type: "string" },
+              children: {
+                type: "array",
+                items: { $ref: "#/components/schemas/Tree" },
+              },
+            },
+          },
+        },
+      },
+    };
+    const arrayCycleMockServer = new MockServer(arrayCycleDoc);
+
+    test("Should return 200 without stack overflow for cycles through array items", async () => {
+      const request = new Request("http://localhost/trees", {
+        method: "GET",
+      });
+      const response = await arrayCycleMockServer.handleRequest(request);
+      assert.strictEqual(response.status, 200);
+      expect(await response.json()).toMatchInlineSnapshot(`
+        {
+          "children": [
+            null,
+          ],
           "value": "string",
         }
       `);

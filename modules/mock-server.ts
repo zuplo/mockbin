@@ -485,10 +485,10 @@ export class MockServer {
       responseBody = mediaType.example;
     }
 
-    // Generate from schema if no example is available
+    // Generate from schema if no example is available. Pass the unresolved
+    // schema so a top-level $ref is seeded into the cycle guard.
     if (responseBody === null && mediaType.schema) {
-      const schema = this.resolveRef(mediaType.schema);
-      responseBody = this.generateExampleFromSchema(schema);
+      responseBody = this.generateExampleFromSchema(mediaType.schema);
     }
 
     // For non-JSON content types, ensure responseBody is a string
