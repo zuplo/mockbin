@@ -278,12 +278,20 @@ export class MockServer {
     return errors;
   }
 
-  private resolveRef(obj: any): any {
+  private resolveRef(obj: any, seen: Set<string> = new Set()): any {
     if (!obj || !obj.$ref) {
       return obj;
     }
 
     const refPath = obj.$ref;
+    if (seen.has(refPath)) {
+      // Circular $ref chain (e.g. A -> B -> A) - stop resolving to avoid
+      // infinite recursion. Return the unresolved ref so callers degrade
+      // gracefully instead of overflowing the stack.
+      return obj;
+    }
+    seen.add(refPath);
+
     const parts = refPath.replace(/^#\//, "").split("/"); // Remove initial '#/' and split
     let refObj = this.openApiDoc;
 
@@ -297,7 +305,7 @@ export class MockServer {
 
     if (refObj.$ref) {
       // Recursively resolve nested $ref
-      return this.resolveRef(refObj);
+      return this.resolveRef(refObj, seen);
     } else {
       return refObj;
     }
@@ -477,10 +485,10 @@ export class MockServer {
       responseBody = mediaType.example;
     }
 
-    // Generate from schema if no example is available
+    // Generate from schema if no example is available. Pass the unresolved
+    // schema so a top-level $ref is seeded into the cycle guard.
     if (responseBody === null && mediaType.schema) {
-      const schema = this.resolveRef(mediaType.schema);
-      responseBody = this.generateExampleFromSchema(schema);
+      responseBody = this.generateExampleFromSchema(mediaType.schema);
     }
 
     // For non-JSON content types, ensure responseBody is a string
@@ -554,8 +562,18 @@ export class MockServer {
     return null;
   }
 
-  private generateExampleFromSchema(schema: any): any {
+  private generateExampleFromSchema(
+    schema: any,
+    refStack: Set<string> = new Set(),
+  ): any {
     if (!schema) return null;
+
+    const refPath = schema.$ref;
+    if (refPath) {
+      if (refStack.has(refPath)) return null;
+      refStack = new Set(refStack);
+      refStack.add(refPath);
+    }
 
     schema = this.resolveRef(schema);
 
@@ -584,16 +602,16 @@ export class MockServer {
             for (const [propName, propSchema] of Object.entries(
               schema.properties,
             )) {
-              const resolvedPropSchema = this.resolveRef(propSchema);
-              obj[propName] =
-                this.generateExampleFromSchema(resolvedPropSchema);
+              obj[propName] = this.generateExampleFromSchema(
+                propSchema,
+                refStack,
+              );
             }
           }
           return obj;
         case "array":
           if (schema.items) {
-            const resolvedItemSchema = this.resolveRef(schema.items);
-            return [this.generateExampleFromSchema(resolvedItemSchema)];
+            return [this.generateExampleFromSchema(schema.items, refStack)];
           }
           return [];
         case "string":
@@ -620,25 +638,22 @@ export class MockServer {
 
     if (schema.anyOf && schema.anyOf.length > 0) {
       // Pick a random schema from anyOf
-      const randomSchema = this.resolveRef(
-        schema.anyOf[Math.floor(Math.random() * schema.anyOf.length)],
-      );
-      return this.generateExampleFromSchema(randomSchema);
+      const randomSchema =
+        schema.anyOf[Math.floor(Math.random() * schema.anyOf.length)];
+      return this.generateExampleFromSchema(randomSchema, refStack);
     }
 
     if (schema.oneOf && schema.oneOf.length > 0) {
       // Pick a random schema from oneOf
-      const randomSchema = this.resolveRef(
-        schema.oneOf[Math.floor(Math.random() * schema.oneOf.length)],
-      );
-      return this.generateExampleFromSchema(randomSchema);
+      const randomSchema =
+        schema.oneOf[Math.floor(Math.random() * schema.oneOf.length)];
+      return this.generateExampleFromSchema(randomSchema, refStack);
     }
 
     if (schema.allOf && schema.allOf.length > 0) {
       let result = {};
       for (const subSchema of schema.allOf) {
-        const resolvedSubSchema = this.resolveRef(subSchema);
-        const subResult = this.generateExampleFromSchema(resolvedSubSchema);
+        const subResult = this.generateExampleFromSchema(subSchema, refStack);
         result = { ...result, ...subResult };
       }
       return result;
