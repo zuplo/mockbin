@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { describeAccept, matchesAccept, parseAccept } from "@/utils/fileAccept";
 
 const UploadIcon = ({ className }: { className?: string }) => (
   <svg
@@ -38,19 +39,6 @@ const formatBytes = (bytes: number) => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
-
-const parseAccept = (accept: string) =>
-  accept
-    .split(",")
-    .map((extension) => extension.trim().toLowerCase())
-    .filter(Boolean);
-
-const hasAcceptedExtension = (fileName: string, extensions: string[]) => {
-  if (extensions.length === 0) return true;
-  return extensions.some((extension) =>
-    fileName.toLowerCase().endsWith(extension),
-  );
 };
 
 export default function FileInput({
@@ -93,11 +81,11 @@ export default function FileInput({
     // The `accept` attribute only filters the OS file picker, so drag-and-drop
     // needs the same check — otherwise an unsupported file silently fails on
     // submit instead of saying why here.
-    const extensions = parseAccept(accept);
-    if (!hasAcceptedExtension(selected.name, extensions)) {
-      const allowed = extensions.join(", ");
+    const entries = parseAccept(accept);
+    if (!matchesAccept(selected, entries)) {
+      const allowed = describeAccept(entries);
       onError?.(
-        `${selected.name} isn't a supported file type. Upload an OpenAPI document ending in ${allowed}.`,
+        `${selected.name} isn't a supported file type. Upload an OpenAPI document ${allowed}.`,
       );
       return;
     }
