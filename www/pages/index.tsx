@@ -234,11 +234,11 @@ const Index = () => {
                   Create an OpenAPI bin
                 </h2>
                 <p className="text-fg-muted text-[13px]">
-                  Upload an OpenAPI v3.1 document and we&apos;ll use its
-                  schemas and examples to mock it.
+                  Upload an OpenAPI 3.x document (JSON or YAML) and we&apos;ll
+                  use its schemas and examples to mock it.
                 </p>
               </div>
-              <FileInput onChange={handleFileChange} />
+              <FileInput onChange={handleFileChange} onError={setOasError} />
               <InlineError
                 message={oasError}
                 onDismiss={() => setOasError(null)}
